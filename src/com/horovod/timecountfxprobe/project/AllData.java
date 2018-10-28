@@ -36,7 +36,7 @@ public class AllData {
         return idNumber.get();
     }
 
-    public static void setIdNumber(int newIdNumber) {
+    public static synchronized void setIdNumber(int newIdNumber) {
         idNumber.set(newIdNumber);
     }
 
@@ -64,7 +64,7 @@ public class AllData {
         AllData.workSumProjects.set(newWorkSumProjects);
     }
 
-    private static void addWorkSumProjects(int addTime) {
+    private static synchronized void addWorkSumProjects(int addTime) {
         AllData.workSumProjects.addAndGet(addTime);
     }
 
@@ -133,7 +133,7 @@ public class AllData {
         return false;
     }
 
-    public static boolean changeProjectArchiveStatus(int changedProject, boolean projectIsArchive) {
+    public static synchronized void changeProjectArchiveStatus(int changedProject, boolean projectIsArchive) {
         if (isProjectExist(changedProject)) {
             Project chProject = allProjects.get(changedProject);
             chProject.setArchive(projectIsArchive);
@@ -144,9 +144,7 @@ public class AllData {
             else if (!projectIsArchive) {
                 activeProjects.put(changedProject, chProject);
             }
-            return true;
         }
-        return false;
     }
 
 
@@ -157,21 +155,14 @@ public class AllData {
         if (idProject <= 0 || idProject > getIdNumber()) {
             return false;
         }
-        if (allProjects.containsKey(idProject)) {
-            return true;
-        }
-        return false;
+        return allProjects.containsKey(idProject);
     }
 
     public static boolean isProjectArchive(int idProject) {
-
-        if (isProjectExist(idProject)) {
-            Project project = allProjects.get(idProject);
-            if (project.isArchive()) {
-                return true;
-            }
+        if (!isProjectExist(idProject)) {
+            return false;
         }
-        return false;
+        return allProjects.get(idProject).isArchive();
     }
 
 

@@ -73,18 +73,21 @@ public class Project {
 
     public void setIdNumber(int idNumber) {
         this.idNumber = idNumber;
+        this.idNumberProperty.set(idNumber);
     }
 
+    @XmlTransient
     public int getIdNumberProperty() {
         return idNumberProperty.get();
     }
 
+    @XmlTransient
     public IntegerProperty idNumberProperty() {
         return idNumberProperty;
     }
 
-    public void setIdNumberProperty(int idNumberProperty) {
-        this.idNumberProperty.set(idNumberProperty);
+    public void setIdNumberProperty(int newIdNumberProperty) {
+        this.idNumberProperty.set(newIdNumberProperty);
     }
 
     @XmlElement(name = "clientcompany")
@@ -92,8 +95,9 @@ public class Project {
         return company;
     }
 
-    public void setCompany(String company) {
-        this.company = company;
+    public void setCompany(String newCompany) {
+        this.company = newCompany;
+        this.companyProperty.set(newCompany);
     }
 
     @XmlTransient
@@ -106,8 +110,8 @@ public class Project {
         return companyProperty;
     }
 
-    public void setCompanyProperty(String companyProperty) {
-        this.companyProperty.set(companyProperty);
+    public void setCompanyProperty(String newCompanyProperty) {
+        this.companyProperty.set(newCompanyProperty);
     }
 
     @XmlElement(name = "initby")
@@ -115,8 +119,9 @@ public class Project {
         return initiator;
     }
 
-    public synchronized void setInitiator(String initiator) {
-        this.initiator = initiator;
+    public void setInitiator(String newInitiator) {
+        this.initiator = newInitiator;
+        this.initiatorProperty.set(newInitiator);
     }
 
     @XmlTransient
@@ -129,8 +134,8 @@ public class Project {
         return initiatorProperty;
     }
 
-    public synchronized void setInitiatorProperty(String initiatorProperty) {
-        this.initiatorProperty.set(initiatorProperty);
+    public void setInitiatorProperty(String newInitiatorProperty) {
+        this.initiatorProperty.set(newInitiatorProperty);
     }
 
     @XmlElement(name = "descr")
@@ -138,8 +143,9 @@ public class Project {
         return description;
     }
 
-    public synchronized void setDescription(String description) {
-        this.description = description;
+    public void setDescription(String newDescription) {
+        this.description = newDescription;
+        this.descriptionProperty.set(newDescription);
     }
 
     @XmlTransient
@@ -152,8 +158,8 @@ public class Project {
         return descriptionProperty;
     }
 
-    public void setDescriptionProperty(String descriptionProperty) {
-        this.descriptionProperty.set(descriptionProperty);
+    public void setDescriptionProperty(String newDescriptionProperty) {
+        this.descriptionProperty.set(newDescriptionProperty);
     }
 
     @XmlElement(name = "datecreationstring")
@@ -161,7 +167,7 @@ public class Project {
         return dateCreationString;
     }
 
-    public synchronized void setDateCreationString(String newDateCreationString) {
+    public void setDateCreationString(String newDateCreationString) {
         this.dateCreationString = newDateCreationString;
     }
 
@@ -170,7 +176,7 @@ public class Project {
         return isArchive;
     }
 
-    public synchronized void setArchive(boolean archive) {
+    public void setArchive(boolean archive) {
         isArchive = archive;
     }
 
@@ -179,8 +185,8 @@ public class Project {
         return comment;
     }
 
-    public synchronized void setComment(String comment) {
-        this.comment = comment;
+    public void setComment(String newComment) {
+        this.comment = newComment;
     }
 
     @XmlElement(name = "linkedprojects")
@@ -188,11 +194,11 @@ public class Project {
         return this.linkedProjects;
     }
 
-    public synchronized void setLinkedProject(Set<Integer> newLinkedProjects) {
+    public void setLinkedProject(Set<Integer> newLinkedProjects) {
         this.linkedProjects = newLinkedProjects;
     }
 
-    public synchronized void addLinkedProjects(Integer... args) {
+    public void addLinkedProjects(Integer... args) {
         this.linkedProjects.addAll(Arrays.asList(args));
     }
 
@@ -201,7 +207,7 @@ public class Project {
         return PONumber;
     }
 
-    public synchronized void setPONumber(int newPONumber) {
+    public void setPONumber(int newPONumber) {
         this.PONumber = newPONumber;
     }
 
@@ -238,8 +244,8 @@ public class Project {
         return workSumProperty;
     }
 
-    public void setWorkSumProperty(double workSumProperty) {
-        this.workSumProperty.set(workSumProperty);
+    public void setWorkSumProperty(double newWorkSumProperty) {
+        this.workSumProperty.set(newWorkSumProperty);
     }
 
     @XmlElement(name = "listworks")
@@ -247,8 +253,8 @@ public class Project {
         return work;
     }
 
-    public synchronized void setWork(List<WorkTime> work) {
-        this.work = work;
+    public void setWork(List<WorkTime> newWork) {
+        this.work = newWork;
     }
 
 

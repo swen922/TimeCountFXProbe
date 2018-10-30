@@ -3,18 +3,22 @@ package com.horovod.timecountfxprobe.view;
 import com.horovod.timecountfxprobe.MainApp;
 import com.horovod.timecountfxprobe.project.AllData;
 import com.horovod.timecountfxprobe.project.Project;
+import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.collections.transformation.FilteredList;
 import javafx.collections.transformation.SortedList;
 import javafx.fxml.FXML;
 import javafx.geometry.Pos;
 import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
+import javafx.scene.control.TextField;
 import javafx.util.Callback;
 
 import java.util.Comparator;
+import java.util.function.Predicate;
 
 public class TableProjectsController {
 
@@ -28,6 +32,9 @@ public class TableProjectsController {
      * либо делать промежуточные классы-посредники между данными и таблицей
      * */
     private ObservableList<Project> tableProjects = FXCollections.observableArrayList();
+
+    @FXML
+    private TextField filterField;
 
     @FXML
     private TableView<Project> projectsTable;
@@ -140,9 +147,46 @@ public class TableProjectsController {
             }
         });
 
+        FilteredList<Project> filterData = new FilteredList<>(tableProjects, p -> true);
 
+        filterField.textProperty().addListener(new ChangeListener<String>() {
+            @Override
+            public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
+                filterData.setPredicate(new Predicate<Project>() {
+                    @Override
+                    public boolean test(Project project) {
+                        if (newValue == null || newValue.isEmpty()) {
+                            return true;
+                        }
 
-        projectsTable.setItems(tableProjects);
+                        String lowerCaseFilter = newValue.toLowerCase();
+
+                        if (String.valueOf(project.getIdNumber()).contains(lowerCaseFilter)) {
+                            return true;
+                        }
+                        else if (String.valueOf(project.getWorkSum()).contains(lowerCaseFilter)) {
+                            return true;
+                        }
+                        else if (project.getCompany().contains(lowerCaseFilter)) {
+                            return true;
+                        }
+                        else if (project.getInitiator().contains(lowerCaseFilter)) {
+                            return true;
+                        }
+                        else if (project.getDescription().contains(lowerCaseFilter)) {
+                            return true;
+                        }
+                        return false;
+                    }
+                });
+            }
+        });
+
+        SortedList<Project> sortedList = new SortedList<>(filterData);
+
+        sortedList.comparatorProperty().bind(projectsTable.comparatorProperty());
+
+        projectsTable.setItems(sortedList);
 
     }
 }

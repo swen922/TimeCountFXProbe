@@ -25,11 +25,11 @@ public class MainApp extends Application {
         /** TODO убрать эту строчку в рабочем варианте */
         Generator.generate();
 
-        initRootLaput();
+        initRootLayut();
         showTableProjects();
     }
 
-    private void initRootLaput() {
+    private void initRootLayut() {
         try {
             FXMLLoader loader = new FXMLLoader();
             loader.setLocation(MainApp.class.getResource("view/RootLayout.fxml"));

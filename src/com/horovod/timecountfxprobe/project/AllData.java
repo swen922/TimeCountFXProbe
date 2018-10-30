@@ -138,10 +138,10 @@ public class AllData {
             Project chProject = allProjects.get(changedProject);
             chProject.setArchive(projectIsArchive);
 
-            if (projectIsArchive) {
+            if (projectIsArchive == true) {
                 activeProjects.remove(changedProject);
             }
-            else if (!projectIsArchive) {
+            else if (projectIsArchive == false) {
                 activeProjects.put(changedProject, chProject);
             }
         }
@@ -158,10 +158,9 @@ public class AllData {
         return allProjects.containsKey(idProject);
     }
 
+    // Перед применением данного метода ВСЕГДА сначала вызывать isProjectExist(int idProject),
+    // то есть проверять проект на существование
     public static boolean isProjectArchive(int idProject) {
-        if (!isProjectExist(idProject)) {
-            return false;
-        }
         return allProjects.get(idProject).isArchive();
     }
 

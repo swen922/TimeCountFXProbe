@@ -3,21 +3,24 @@ package com.horovod.timecountfxprobe.view;
 import com.horovod.timecountfxprobe.MainApp;
 import com.horovod.timecountfxprobe.project.AllData;
 import com.horovod.timecountfxprobe.project.Project;
+import com.horovod.timecountfxprobe.project.WorkTime;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
 import javafx.collections.transformation.SortedList;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.geometry.Pos;
-import javafx.scene.control.TableCell;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.util.Callback;
 
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Comparator;
+import java.util.List;
 import java.util.function.Predicate;
 
 public class TableProjectsController {
@@ -37,13 +40,16 @@ public class TableProjectsController {
     private TextField filterField;
 
     @FXML
+    Button deleteSearchTextButton;
+
+    @FXML
     private TableView<Project> projectsTable;
 
     @FXML
-    private TableColumn<Project, Integer> columnID;
+    private TableColumn<Project, String> columnID;
 
     @FXML
-    private TableColumn<Project, Double> columnTime;
+    private TableColumn<Project, String> columnTime;
 
     @FXML
     private TableColumn<Project, String> columnCompany;
@@ -79,52 +85,32 @@ public class TableProjectsController {
     @FXML
     private void initialize() {
 
-        columnID.setCellValueFactory(new Callback<TableColumn.CellDataFeatures<Project, Integer>, ObservableValue<Integer>>() {
+        //filterField.setPrefColumnCount(20);
+
+        columnID.setCellValueFactory(new Callback<TableColumn.CellDataFeatures<Project, String>, ObservableValue<String>>() {
             @Override
-            public ObservableValue<Integer> call(TableColumn.CellDataFeatures<Project, Integer> param) {
-                return param.getValue().idNumberProperty().asObject();
+            public ObservableValue<String> call(TableColumn.CellDataFeatures<Project, String> param) {
+                return param.getValue().idNumberProperty();
             }
         });
 
-        columnID.setCellFactory(new Callback<TableColumn<Project, Integer>, TableCell<Project, Integer>>() {
+        columnID.setStyle("-fx-alignment: CENTER;");
+
+
+
+        Callback<TableColumn<Project, String>, TableCell<Project, String>> cellFactory =
+                (TableColumn<Project, String> p) -> new EditingCell();
+
+        columnTime.setCellFactory(cellFactory);
+
+        columnTime.setCellValueFactory(new Callback<TableColumn.CellDataFeatures<Project, String>, ObservableValue<String>>() {
             @Override
-            public TableCell<Project, Integer> call(TableColumn<Project, Integer> param) {
-                TableCell cell = new TableCell() {
-                    @Override
-                    protected void updateItem(Object item, boolean empty) {
-                        if (item != null) {
-                            setText(String.valueOf(item));
-                        }
-                    }
-                };
-                cell.setAlignment(Pos.BASELINE_CENTER);
-                return cell;
+            public ObservableValue<String> call(TableColumn.CellDataFeatures<Project, String> param) {
+                return param.getValue().workSumProperty();
             }
         });
 
-        columnTime.setCellValueFactory(new Callback<TableColumn.CellDataFeatures<Project, Double>, ObservableValue<Double>>() {
-            @Override
-            public ObservableValue<Double> call(TableColumn.CellDataFeatures<Project, Double> param) {
-                return param.getValue().workSumProperty().asObject();
-            }
-        });
-
-        columnTime.setCellFactory(new Callback<TableColumn<Project, Double>, TableCell<Project, Double>>() {
-            @Override
-            public TableCell<Project, Double> call(TableColumn<Project, Double> param) {
-                TableCell cell = new TableCell() {
-                    @Override
-                    protected void updateItem(Object item, boolean empty) {
-                        if (item != null) {
-                            setText(String.valueOf(item));
-                        }
-                    }
-                };
-                cell.setAlignment(Pos.BASELINE_CENTER);
-
-                return cell;
-            }
-        });
+        columnTime.setStyle("-fx-alignment: CENTER;");
 
         columnCompany.setCellValueFactory(new Callback<TableColumn.CellDataFeatures<Project, String>, ObservableValue<String>>() {
             @Override
@@ -164,16 +150,16 @@ public class TableProjectsController {
                         if (String.valueOf(project.getIdNumber()).contains(lowerCaseFilter)) {
                             return true;
                         }
-                        else if (String.valueOf(project.getWorkSum()).contains(lowerCaseFilter)) {
+                        else if (String.valueOf(AllData.intToDouble(project.getWorkSum())).contains(lowerCaseFilter)) {
                             return true;
                         }
-                        else if (project.getCompany().contains(lowerCaseFilter)) {
+                        else if (project.getCompany().toLowerCase().contains(lowerCaseFilter)) {
                             return true;
                         }
-                        else if (project.getInitiator().contains(lowerCaseFilter)) {
+                        else if (project.getInitiator().toLowerCase().contains(lowerCaseFilter)) {
                             return true;
                         }
-                        else if (project.getDescription().contains(lowerCaseFilter)) {
+                        else if (project.getDescription().toLowerCase().contains(lowerCaseFilter)) {
                             return true;
                         }
                         return false;
@@ -186,7 +172,107 @@ public class TableProjectsController {
 
         sortedList.comparatorProperty().bind(projectsTable.comparatorProperty());
 
+
+
+
+
+        /*columnTime.setOnEditCommit((TableColumn.CellEditEvent<Project, String> t) -> {
+            double newTimeDouble = Double.parseDouble(t.getNewValue());
+            WorkTime newWorkTime = new WorkTime(LocalDate.now(), 5, newTimeDouble);
+            List<WorkTime> newTimeList = new ArrayList<>();
+            newTimeList.addAll(t.getTableView().getItems().get(t.getTablePosition()).getRow().getWork());
+            newTimeList.add(newWorkTime);
+            ((Project) t.getTableView().getItems().get(t.getTablePosition().getRow())).setWork(newTimeList);
+        });*/
+
+        columnTime.setOnEditCommit(new EventHandler<TableColumn.CellEditEvent<Project, String>>() {
+            @Override
+            public void handle(TableColumn.CellEditEvent<Project, String> event) {
+                double newTimeDouble = Double.parseDouble(event.getNewValue());
+                WorkTime newWorkTime = new WorkTime(LocalDate.now(), 5, newTimeDouble);
+                List<WorkTime> newTimeList = new ArrayList<>();
+                newTimeList.addAll((List<WorkTime>) event.getTableView().getItems().get(event.getTablePosition().getRow()).getWork());
+                newTimeList.add(newWorkTime);
+                event.getTableView().getItems().get(event.getTablePosition().getRow()).setWork(newTimeList);
+            }
+        });
+
+
+
         projectsTable.setItems(sortedList);
 
     }
+
+    public void handleDeleteSearch() {
+        filterField.setText("");
+    }
+
+
+    class EditingCell extends TableCell<Project, String> {
+
+        private TextField textField;
+
+        public EditingCell() {
+        }
+
+        @Override
+        public void startEdit() {
+            if (!isEmpty()) {
+                super.startEdit();
+                createTextField();
+                setText(null);
+                setGraphic(textField);
+                textField.selectAll();
+            }
+
+        }
+
+        @Override
+        public void cancelEdit() {
+            super.cancelEdit();
+
+            setText((String) getItem());
+            setGraphic(null);
+        }
+
+        @Override
+        protected void updateItem(String item, boolean empty) {
+            super.updateItem(item, empty);
+            if (empty) {
+                setText(null);
+                setGraphic(null);
+            }
+            else {
+                if (isEditing()) {
+                    if (textField != null) {
+                        textField.setText(getString());
+                    }
+                    setText(null);
+                    setGraphic(null);
+                }
+                else {
+                    setText(getString());
+                    setGraphic(null);
+                }
+            }
+        }
+
+        private void createTextField() {
+            textField = new TextField(getString());
+            textField.setMinWidth(this.getWidth() - this.getGraphicTextGap() * 2);
+            textField.focusedProperty().addListener(new ChangeListener<Boolean>() {
+                @Override
+                public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
+                    if (!newValue) {
+                        commitEdit(textField.getText());
+                    }
+                }
+            });
+        }
+
+        private String getString() {
+            return getItem() == null ? "" : getItem().toString();
+        }
+    }
+
 }

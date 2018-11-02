@@ -12,9 +12,13 @@ public class AllUsers {
 
     private static Map<Integer, User> users = new ConcurrentHashMap<>();
 
-    // Заводим отдельный список для удаленных пользователей, чтобы иметь возможность
-    // подставлять вместо них обозначение "пользователь удален" в подборках статистики
+    // Заводим отдельный список для удаленных пользователей,
+    // чтобы иметь возможность использовать их в подборках статистики
     private static Map<Integer, User> deletedUsers = new ConcurrentHashMap<>();
+
+    private static Map<Integer, SecurePassword> usersPass = new ConcurrentHashMap<>();
+
+    private static int currentUser = 0;
 
 
 
@@ -46,6 +50,22 @@ public class AllUsers {
 
     public static synchronized void setDeletedUsers(Map<Integer, User> deletedUsers) {
         AllUsers.deletedUsers = deletedUsers;
+    }
+
+    public static Map<Integer, SecurePassword> getUsersPass() {
+        return usersPass;
+    }
+
+    public static synchronized void setUsersPass(Map<Integer, SecurePassword> newUsersPass) {
+        AllUsers.usersPass = newUsersPass;
+    }
+
+    public static int getCurrentUser() {
+        return currentUser;
+    }
+
+    public static void setCurrentUser(int newCurrentUser) {
+        AllUsers.currentUser = newCurrentUser;
     }
 
     /** Геттеры отдельных юзеров из мапы
@@ -81,13 +101,40 @@ public class AllUsers {
 
     /** Добавление и удаление пользователя */
 
-    public static synchronized boolean addUser(User user) {
+    /** @return null !!!
+     * */
+    public static synchronized User createUser(String login, String password, Role role) {
+        User result = null;
+        if (!isNameLoginExist(login)) {
+            if (role.equals(Role.DESIGNER)) {
+                result = new Designer(login, password);
+                users.put(result.getIDNumber(), result);
+                SecurePassword sp = SecurePassword.getInstance(password);
+                if (sp == null) {
+                    return null;
+                }
+                usersPass.put(result.getIDNumber(), sp);
+            }
+            else if (role.equals(Role.MANAGER)) {
+                result = new Manager(login, password);
+                users.put(result.getIDNumber(), result);
+                SecurePassword sp = SecurePassword.getInstance(password);
+                if (sp == null) {
+                    return null;
+                }
+                usersPass.put(result.getIDNumber(), sp);
+            }
+        }
+        return result;
+    }
+
+    /*public static synchronized boolean addUser(User user) {
         if (!users.containsKey(user.getIDNumber()) && !isNameLoginExist(user.getNameLogin())) {
             users.put(user.getIDNumber(), user);
             return true;
         }
         return false;
-    }
+    }*/
 
     public static synchronized boolean deleteUser(int idUser) {
         if (isUserExist(idUser)) {
@@ -121,7 +168,7 @@ public class AllUsers {
 
     public static boolean isNameLoginExist(String nameLog) {
         if (nameLog == null || nameLog.isEmpty()) {
-            return false;
+            return true;
         }
 
         Collection<User> tmpUsers = users.values();
@@ -136,10 +183,38 @@ public class AllUsers {
     }
 
     public static boolean isUserDeleted(int idNumber) {
-        if (idNumber <= 0 || idNumber > getIDCounterAllUsers()) {
+        return deletedUsers.containsKey(idNumber);
+    }
+
+
+
+    /** Методы работы с паролями и хранения паролей */
+
+    public static boolean isPassExistForUser(int IDuser) {
+        return usersPass.containsKey(IDuser);
+    }
+
+    public static boolean deletePassForUser(int IDuser) {
+        if (isPassExistForUser(IDuser)) {
+            usersPass.remove(IDuser);
+            return true;
+        }
+        return false;
+    }
+
+    public static boolean isPassCorrectForUser(int IDuser, String password) {
+        if (!users.containsKey(IDuser) || !usersPass.containsKey(IDuser)) {
             return false;
         }
-        return deletedUsers.containsKey(idNumber);
+        String securePass = usersPass.get(IDuser).getSecurePass();
+        String salt = usersPass.get(IDuser).getSalt();
+        boolean result;
+        try {
+            result = PasswordUtil.verifyUserPassword(password, securePass, salt);
+            return result;
+        } catch (Error error) {
+        }
+        return false;
     }
 
 }

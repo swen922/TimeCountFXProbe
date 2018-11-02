@@ -12,7 +12,7 @@ public class Manager implements User {
     private String fullName;
     private String email;
 
-    public Manager(String nameLogin) {
+    public Manager(String nameLogin, String password) {
         this.IDNumber = AllUsers.incrementIdNumberAndGet();
         this.nameLogin = nameLogin.toLowerCase();
     }

@@ -258,6 +258,8 @@ public class Project {
 
     public void setWork(List<WorkTime> newWork) {
         this.work = newWork;
+        computeWorkSum();
+        this.workSumProperty = new SimpleStringProperty(String.valueOf(AllData.intToDouble(workSum)));
     }
 
 
@@ -266,7 +268,7 @@ public class Project {
      * Возвращаемое значение int используется в AllData для добавления
      * к суммарному общему рабочему времени workSumProjects
      * */
-    protected int addWorkTime(LocalDate newDate, int idUser, double newTimeDouble) {
+    public int addWorkTime(LocalDate newDate, int idUser, double newTimeDouble) {
 
         int newTimeInt = AllData.doubleToInt(newTimeDouble);
 
@@ -285,7 +287,8 @@ public class Project {
             }
         }
 
-        // Создаем новый экземпляр WorkTime и кладем в список
+        // Если существующего экземпляра WorkTime с такой же датой и дизайнером не обнаружено,
+        // то создаем новый экземпляр WorkTime и кладем в список
         int newWorkSumInt = getWorkSum() + newTimeInt;
         work.add(new WorkTime(newDate, idUser, newTimeDouble));
         setWorkSum(newWorkSumInt);
@@ -293,8 +296,47 @@ public class Project {
         return newTimeInt;
     }
 
+    public boolean containsWorkTime(int designerID, LocalDate date) {
+        for (WorkTime wt2 : work) {
+            if ((designerID == wt2.getDesignerID()) && (AllData.parseDate(wt2.getDateString()).equals(date))) {
+                return true;
+            }
+        }
+        return false;
+    }
 
-    public void computeWorkSum() {
+    public int getWorkTimeForDesigner(int designerID) {
+        int result = 0;
+        for (WorkTime wt : work) {
+            if (wt.getDesignerID() == designerID) {
+                result += wt.getTime();
+            }
+        }
+        return result;
+    }
+
+    public int getWorkTimeForDate(LocalDate date) {
+        int result = 0;
+        for (WorkTime wt : work) {
+            if (wt.getDate().equals(date)) {
+                result += wt.getTime();
+            }
+        }
+        return result;
+    }
+
+    public int getWorkTimeForDesignerAndDate(int designerID, LocalDate date) {
+        int result = 0;
+        for (WorkTime wt : work) {
+            if (wt.getDesignerID() == designerID && wt.getDate().equals(date)) {
+                result += wt.getTime();
+            }
+        }
+        return result;
+    }
+
+
+    private void computeWorkSum() {
         int result = 0;
         for (WorkTime wt : this.work) {
             result += wt.getTime();

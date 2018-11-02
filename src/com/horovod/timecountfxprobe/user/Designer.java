@@ -18,7 +18,7 @@ public class Designer implements User {
      * */
 
 
-    public Designer(String nameLogin) {
+    public Designer(String nameLogin, String password) {
         this.IDNumber = AllUsers.incrementIdNumberAndGet();
         this.nameLogin = nameLogin.toLowerCase();
     }

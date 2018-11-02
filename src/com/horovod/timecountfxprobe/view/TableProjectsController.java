@@ -27,13 +27,6 @@ public class TableProjectsController {
 
     private MainApp mainApp;
 
-
-    /**
-     * TODO здесь противоречие в данных:
-     * для таблицы нужны Propertie типа StringProperty
-     * так что надо либо переделывать классы с данными,
-     * либо делать промежуточные классы-посредники между данными и таблицей
-     * */
     private ObservableList<Project> tableProjects = FXCollections.observableArrayList();
 
     @FXML

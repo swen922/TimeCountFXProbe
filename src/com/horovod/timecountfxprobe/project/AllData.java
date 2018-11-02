@@ -1,9 +1,10 @@
 package com.horovod.timecountfxprobe.project;
 
-
-import javafx.beans.property.SimpleDoubleProperty;
+import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleIntegerProperty;
-import javafx.beans.property.SimpleStringProperty;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+import javafx.collections.ObservableMap;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -16,12 +17,15 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class AllData {
 
     private static volatile AtomicInteger idNumber = new AtomicInteger(0);
+    private static volatile IntegerProperty idNumberProperty = new SimpleIntegerProperty(idNumber.get());
 
-    private static Map<Integer, Project> activeProjects = new ConcurrentHashMap<>();
-
-    private static Map<Integer, Project> allProjects = new ConcurrentHashMap<>();
+    private static ObservableMap<Integer, Project> allProjects = FXCollections.synchronizedObservableMap(FXCollections.observableHashMap());
+    private static ObservableMap<Integer, Project> activeProjects = FXCollections.synchronizedObservableMap(FXCollections.observableHashMap());
 
     private static volatile AtomicInteger workSumProjects = new AtomicInteger(0);
+    private static volatile IntegerProperty workSumProjectsProperty = new SimpleIntegerProperty(workSumProjects.get());
+
+
 
 
 
@@ -38,23 +42,42 @@ public class AllData {
 
     public static synchronized void setIdNumber(int newIdNumber) {
         idNumber.set(newIdNumber);
+        idNumberProperty.set(newIdNumber);
     }
+
+    public static int getIdNumberProperty() {
+        return idNumberProperty.get();
+    }
+
+    public static IntegerProperty idNumberProperty() {
+        return idNumberProperty;
+    }
+
+    private static void setIdNumberProperty(int newIdNumberProperty) {
+        AllData.idNumberProperty.set(newIdNumberProperty);
+    }
+
+
+    public static ObservableMap<Integer, Project> getAllProjects() {
+        return allProjects;
+    }
+
+    public static synchronized void setAllProjects(Map<Integer, Project> newAllProjects) {
+        AllData.allProjects.clear();
+        AllData.allProjects.putAll(newAllProjects);
+        rebuildActiveProjects();
+    }
+
 
     public static Map<Integer, Project> getActiveProjects() {
         return activeProjects;
     }
 
-    public static synchronized void setActiveProjects(Map<Integer, Project> newActiveProjects) {
+    public static synchronized void setActiveProjects(ObservableMap<Integer, Project> newActiveProjects) {
         AllData.activeProjects = newActiveProjects;
     }
 
-    public static Map<Integer, Project> getAllProjects() {
-        return allProjects;
-    }
 
-    public static synchronized void setAllProjects(Map<Integer, Project> newAllProjects) {
-        AllData.allProjects = newAllProjects;
-    }
 
     public static int getWorkSumProjects() {
         return workSumProjects.get();
@@ -62,13 +85,25 @@ public class AllData {
 
     public static synchronized void setWorkSumProjects(int newWorkSumProjects) {
         AllData.workSumProjects.set(newWorkSumProjects);
+        AllData.workSumProjectsProperty().set(newWorkSumProjects);
     }
 
-    private static synchronized void addWorkSumProjects(int addTime) {
+    public static synchronized void addWorkSumProjects(int addTime) {
         AllData.workSumProjects.addAndGet(addTime);
+        AllData.workSumProjectsProperty().set(workSumProjects.get());
     }
 
+    public static int getWorkSumProjectsProperty() {
+        return workSumProjectsProperty.get();
+    }
 
+    public static IntegerProperty workSumProjectsProperty() {
+        return workSumProjectsProperty;
+    }
+
+    public static void setWorkSumProjectsProperty(int newWorkSumProjectsProperty) {
+        AllData.workSumProjectsProperty.set(newWorkSumProjectsProperty);
+    }
 
     /** Геттеры активного, неактивного и любого проекта из мапы
      * @return null
@@ -180,6 +215,14 @@ public class AllData {
     }
 
 
+    public static boolean containsWorkTime(int projectID, int designerID, LocalDate date) {
+        if (allProjects.containsKey(projectID)) {
+            return allProjects.get(projectID).containsWorkTime(designerID, date);
+        }
+        return false;
+    }
+
+
 
     /** Метод сверки и синхронизации списков и поля суммарного времени */
     public static synchronized void rebuildActiveProjects() {
@@ -230,7 +273,15 @@ public class AllData {
         return result.doubleValue();
     }
 
-    /** Форматировщик даты. */
+    public static double formatDouble(double argDouble) {
+        BigDecimal result = new BigDecimal(Double.toString(argDouble));
+        result = result.setScale(1, RoundingMode.HALF_UP);
+        return result.doubleValue();
+    }
+
+    /** Форматировщик даты.
+     * @return null
+     * */
     private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("yyyy.MM.dd");
 
     public static String formatDate(LocalDate date) {

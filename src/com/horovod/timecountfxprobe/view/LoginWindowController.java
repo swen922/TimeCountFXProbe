@@ -68,21 +68,25 @@ public class LoginWindowController {
 
             if (login == null || login.isEmpty()) {
                 loginField.setText("Введите логин и пароль!");
+                passField.setText("");
                 break;
             }
             if (pass == null || pass.isEmpty()) {
                 loginField.setText("Введите логин и пароль!");
+                passField.setText("");
                 break;
             }
 
             User user = AllUsers.getOneUser(login);
             if (user == null) {
                 loginField.setText("Неправильно! Введите еще раз логин и пароль!");
+                passField.setText("");
                 break;
             }
             boolean result = AllUsers.isPassCorrectForUser(user.getIDNumber(), pass);
             if (!result) {
                 loginField.setText("Неправильно! Введите еще раз логин и пароль!");
+                passField.setText("");
                 break;
             }
             else {

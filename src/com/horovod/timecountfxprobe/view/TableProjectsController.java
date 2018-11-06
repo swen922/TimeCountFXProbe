@@ -76,16 +76,16 @@ public class TableProjectsController {
     }
 
     @FXML
-    private void initialize() {
+    public void initialize() {
 
         //filterField.setPrefColumnCount(20);
 
-        columnID.setCellValueFactory(new Callback<TableColumn.CellDataFeatures<Project, String>, ObservableValue<String>>() {
+        /*columnID.setCellValueFactory(new Callback<TableColumn.CellDataFeatures<Project, String>, ObservableValue<String>>() {
             @Override
             public ObservableValue<String> call(TableColumn.CellDataFeatures<Project, String> param) {
                 return param.getValue().idNumberProperty();
             }
-        });
+        });*/
 
         columnID.setStyle("-fx-alignment: CENTER;");
 
@@ -96,12 +96,12 @@ public class TableProjectsController {
 
         columnTime.setCellFactory(cellFactory);
 
-        columnTime.setCellValueFactory(new Callback<TableColumn.CellDataFeatures<Project, String>, ObservableValue<String>>() {
+        /*columnTime.setCellValueFactory(new Callback<TableColumn.CellDataFeatures<Project, String>, ObservableValue<String>>() {
             @Override
             public ObservableValue<String> call(TableColumn.CellDataFeatures<Project, String> param) {
                 return param.getValue().workSumProperty();
             }
-        });
+        });*/
 
         columnTime.setStyle("-fx-alignment: CENTER;");
 

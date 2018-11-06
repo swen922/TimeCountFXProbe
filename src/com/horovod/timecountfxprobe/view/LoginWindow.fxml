@@ -29,7 +29,7 @@
                   <Insets right="10.0" />
                </HBox.margin>
             </Button>
-            <Button fx:id="buttonOK" minHeight="40.0" minWidth="100.0" mnemonicParsing="false" onAction="#handlOK" text="OK">
+            <Button fx:id="buttonOK" defaultButton="true" minHeight="40.0" minWidth="100.0" mnemonicParsing="false" onAction="#handlOK" text="OK">
                <HBox.margin>
                   <Insets left="10.0" />
                </HBox.margin>

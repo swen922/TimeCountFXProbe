@@ -254,7 +254,7 @@ public class AllData {
             p.setCompanyProperty(p.getCompany());
             p.setInitiatorProperty(p.getInitiator());
             p.setDescriptionProperty(p.getDescription());
-            p.setWorkSumProperty(p.getWorkSumDouble());
+            p.setWorkSumProperty(String.valueOf(p.getWorkSumDouble()));
         }
     }
 

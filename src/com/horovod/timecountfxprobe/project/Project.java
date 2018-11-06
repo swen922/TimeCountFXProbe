@@ -13,7 +13,8 @@ import java.util.*;
 public class Project {
 
     private int idNumber;
-    private StringProperty idNumberProperty;
+    //private StringProperty idNumberProperty;
+    private IntegerProperty idNumberProperty;
     private String company;
     private StringProperty companyProperty;
     private String initiator;
@@ -27,12 +28,14 @@ public class Project {
     private int PONumber;
     private volatile int workSum = 0;
     private StringProperty workSumProperty;
+    //private DoubleProperty workSumProperty;
     private List<WorkTime> work = new ArrayList<>();
 
 
     public Project(String comp, String initiator, String description) {
         this.idNumber = AllData.incrementIdNumberAndGet();
-        this.idNumberProperty = new SimpleStringProperty(String.valueOf(idNumber));
+        //this.idNumberProperty = new SimpleStringProperty(String.valueOf(idNumber));
+        this.idNumberProperty = new SimpleIntegerProperty(idNumber);
         this.company = comp;
         this.companyProperty = new SimpleStringProperty(comp);
         this.initiator = initiator;
@@ -41,11 +44,13 @@ public class Project {
         this.descriptionProperty = new SimpleStringProperty(description);
         this.dateCreationString = AllData.formatDate(LocalDate.now());
         this.workSumProperty = new SimpleStringProperty(String.valueOf(AllData.intToDouble(workSum)));
+        //this.workSumProperty = new SimpleDoubleProperty(AllData.intToDouble(workSum));
     }
 
     public Project(String comp, String initiator, String description, LocalDate newDate) {
         this.idNumber = AllData.incrementIdNumberAndGet();
-        this.idNumberProperty = new SimpleStringProperty(String.valueOf(idNumber));
+        //this.idNumberProperty = new SimpleStringProperty(String.valueOf(idNumber));
+        this.idNumberProperty = new SimpleIntegerProperty(idNumber);
         this.company = comp;
         this.companyProperty = new SimpleStringProperty(comp);
         this.initiator = initiator;
@@ -54,11 +59,13 @@ public class Project {
         this.descriptionProperty = new SimpleStringProperty(description);
         this.dateCreationString = AllData.formatDate(newDate);
         this.workSumProperty = new SimpleStringProperty(String.valueOf(AllData.intToDouble(workSum)));
+        //this.workSumProperty = new SimpleDoubleProperty(AllData.intToDouble(workSum));
     }
 
     public Project() {
         this.idNumber = 0;
-        this.idNumberProperty = new SimpleStringProperty(String.valueOf(idNumber));
+        //this.idNumberProperty = new SimpleStringProperty(String.valueOf(idNumber));
+        this.idNumberProperty = new SimpleIntegerProperty(idNumber);
         this.company = "";
         this.companyProperty = new SimpleStringProperty("");
         this.initiator = "";
@@ -67,6 +74,7 @@ public class Project {
         this.descriptionProperty = new SimpleStringProperty("");
         this.dateCreationString = AllData.formatDate(LocalDate.now());
         this.workSumProperty = new SimpleStringProperty(String.valueOf(AllData.intToDouble(workSum)));
+        //this.workSumProperty = new SimpleDoubleProperty(AllData.intToDouble(workSum));
     }
 
     @XmlElement(name = "projectidnumber")
@@ -74,12 +82,13 @@ public class Project {
         return idNumber;
     }
 
-    public void setIdNumber(int idNumber) {
-        this.idNumber = idNumber;
-        this.idNumberProperty.set(String.valueOf(idNumber));
+    public void setIdNumber(int newIdNumber) {
+        this.idNumber = newIdNumber;
+        //this.idNumberProperty.set(String.valueOf(idNumber));
+        this.idNumberProperty.set(newIdNumber);
     }
 
-    @XmlTransient
+    /*@XmlTransient
     public String getIdNumberProperty() {
         return idNumberProperty.get();
     }
@@ -91,6 +100,20 @@ public class Project {
 
     public void setIdNumberProperty(int newIdNumberProperty) {
         this.idNumberProperty.set(String.valueOf(newIdNumberProperty));
+    }*/
+
+    @XmlTransient
+    public int getIdNumberProperty() {
+        return idNumberProperty.get();
+    }
+
+    @XmlTransient
+    public IntegerProperty idNumberProperty() {
+        return idNumberProperty;
+    }
+
+    public void setIdNumberProperty(int idNumberProperty) {
+        this.idNumberProperty.set(idNumberProperty);
     }
 
     @XmlElement(name = "clientcompany")
@@ -247,8 +270,8 @@ public class Project {
         return workSumProperty;
     }
 
-    public void setWorkSumProperty(double newWorkSumProperty) {
-        this.workSumProperty.set(String.valueOf(newWorkSumProperty));
+    public void setWorkSumProperty(String workSumProperty) {
+        this.workSumProperty.set(workSumProperty);
     }
 
     @XmlElement(name = "listworks")
@@ -260,6 +283,7 @@ public class Project {
         this.work = newWork;
         computeWorkSum();
         this.workSumProperty = new SimpleStringProperty(String.valueOf(AllData.intToDouble(workSum)));
+        //this.workSumProperty = new SimpleDoubleProperty(AllData.intToDouble(workSum));
     }
 
 
@@ -283,6 +307,7 @@ public class Project {
                 // теперь вносим время в список рабочего времени
                 wt.setTime(newTimeInt);
                 this.workSumProperty.set(String.valueOf(AllData.intToDouble(newWorkSumInt)));
+                //this.workSumProperty.set(AllData.intToDouble(newWorkSumInt));
                 return diff;
             }
         }
@@ -293,6 +318,7 @@ public class Project {
         work.add(new WorkTime(newDate, idUser, newTimeDouble));
         setWorkSum(newWorkSumInt);
         this.workSumProperty.set(String.valueOf(AllData.intToDouble(newWorkSumInt)));
+        //this.workSumProperty.set(AllData.intToDouble(newWorkSumInt));
         return newTimeInt;
     }
 
@@ -343,14 +369,17 @@ public class Project {
         }
         this.workSum = result;
         this.workSumProperty.set(String.valueOf(AllData.intToDouble(result)));
+        //this.workSumProperty.set(AllData.intToDouble(result));
     }
 
     public void computeProperties() {
-        this.idNumberProperty = new SimpleStringProperty(String.valueOf(idNumber));
+        //this.idNumberProperty = new SimpleStringProperty(String.valueOf(idNumber));
+        this.idNumberProperty = new SimpleIntegerProperty(idNumber);
         this.companyProperty = new SimpleStringProperty(company);
         this.initiatorProperty = new SimpleStringProperty(initiator);
         this.descriptionProperty = new SimpleStringProperty(description);
         this.workSumProperty = new SimpleStringProperty(String.valueOf(AllData.intToDouble(workSum)));
+        //this.workSumProperty = new SimpleDoubleProperty(AllData.intToDouble(workSum));
     }
 
 

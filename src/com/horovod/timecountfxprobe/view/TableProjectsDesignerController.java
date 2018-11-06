@@ -11,6 +11,7 @@ import javafx.beans.property.StringProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
+import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.collections.ObservableMap;
 import javafx.collections.transformation.FilteredList;
@@ -52,7 +53,7 @@ public class TableProjectsDesignerController {
     private TableView<Map.Entry<Integer, Project>> projectsTable;
 
     @FXML
-    private TableColumn<Map.Entry<Integer, Project>, String> columnID;
+    private TableColumn<Map.Entry<Integer, Project>, Integer> columnID;
 
     @FXML
     private TableColumn<Map.Entry<Integer, Project>, String> columnTime;
@@ -81,15 +82,23 @@ public class TableProjectsDesignerController {
             }
         });
 
-        columnID.setCellValueFactory(new Callback<TableColumn.CellDataFeatures<Map.Entry<Integer, Project>, String>, ObservableValue<String>>() {
+        /*columnID.setCellValueFactory(new Callback<TableColumn.CellDataFeatures<Map.Entry<Integer, Project>, String>, ObservableValue<String>>() {
             @Override
             public ObservableValue<String> call(TableColumn.CellDataFeatures<Map.Entry<Integer, Project>, String> param) {
                 return param.getValue().getValue().idNumberProperty();
             }
+        });*/
+
+        columnID.setCellValueFactory(new Callback<TableColumn.CellDataFeatures<Map.Entry<Integer, Project>, Integer>, ObservableValue<Integer>>() {
+            @Override
+            public ObservableValue<Integer> call(TableColumn.CellDataFeatures<Map.Entry<Integer, Project>, Integer> param) {
+                return param.getValue().getValue().idNumberProperty().asObject();
+            }
         });
 
-        columnID.setStyle("-fx-alignment: CENTER;");
 
+
+        columnID.setStyle("-fx-alignment: CENTER;");
 
 
         Callback<TableColumn<Map.Entry<Integer, Project>, String>, TableCell<Map.Entry<Integer, Project>, String>> cellFactory =
@@ -97,8 +106,11 @@ public class TableProjectsDesignerController {
 
         columnTime.setCellFactory(cellFactory);
 
-        /** В этом методе заменить ID-номер дизайнера 5 на реальный,
-         * который будет браться из свойств аккаунта дизайнера*/
+
+        /** TODO Придется переписать время в DoubleProperty,
+         * т.к. в аккаунте админа значения больше 10, и сортировка тогда со строками не работает правильно
+         * */
+
         columnTime.setCellValueFactory(new Callback<TableColumn.CellDataFeatures<Map.Entry<Integer, Project>, String>, ObservableValue<String>>() {
             @Override
             public ObservableValue<String> call(TableColumn.CellDataFeatures<Map.Entry<Integer, Project>, String> param) {
@@ -180,18 +192,6 @@ public class TableProjectsDesignerController {
             }
         });
 
-        SortedList<Map.Entry<Integer, Project>> sortedList = new SortedList<>(filterData);
-
-        sortedList.setComparator(new Comparator<Map.Entry<Integer, Project>>() {
-            @Override
-            public int compare(Map.Entry<Integer, Project> o1, Map.Entry<Integer, Project> o2) {
-                return compareTime(o1, o2);
-            }
-        });
-
-        sortedList.comparatorProperty().bind(projectsTable.comparatorProperty());
-
-
 
         columnTime.setOnEditCommit(new EventHandler<TableColumn.CellEditEvent<Map.Entry<Integer, Project>, String>>() {
             @Override
@@ -203,7 +203,16 @@ public class TableProjectsDesignerController {
             }
         });
 
+        SortedList<Map.Entry<Integer, Project>> sortedList = new SortedList<>(filterData, new Comparator<Map.Entry<Integer, Project>>() {
+            @Override
+            public int compare(Map.Entry<Integer, Project> o1, Map.Entry<Integer, Project> o2) {
+                return compareTime(o1, o2);
+            }
+        });
+
         projectsTable.setItems(sortedList);
+
+        sortedList.comparatorProperty().bind(projectsTable.comparatorProperty());
 
     }
 

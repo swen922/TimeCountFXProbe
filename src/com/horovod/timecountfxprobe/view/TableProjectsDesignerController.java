@@ -23,6 +23,7 @@ import javafx.scene.Cursor;
 import javafx.scene.control.*;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
+import javafx.scene.text.Text;
 import javafx.util.Callback;
 
 import java.time.LocalDate;
@@ -75,12 +76,7 @@ public class TableProjectsDesignerController {
     @FXML
     private void initialize() {
 
-        tableProjects.sort(new Comparator<Map.Entry<Integer, Project>>() {
-            @Override
-            public int compare(Map.Entry<Integer, Project> o1, Map.Entry<Integer, Project> o2) {
-                return compareTime(o1, o2);
-            }
-        });
+        sortTableProjects();
 
         /*columnID.setCellValueFactory(new Callback<TableColumn.CellDataFeatures<Map.Entry<Integer, Project>, String>, ObservableValue<String>>() {
             @Override
@@ -137,6 +133,8 @@ public class TableProjectsDesignerController {
             }
         });
 
+        columnCompany.setStyle("-fx-alignment: CENTER;");
+
         columnManager.setCellValueFactory(new Callback<TableColumn.CellDataFeatures<Map.Entry<Integer, Project>, String>, ObservableValue<String>>() {
             @Override
             public ObservableValue<String> call(TableColumn.CellDataFeatures<Map.Entry<Integer, Project>, String> param) {
@@ -144,12 +142,45 @@ public class TableProjectsDesignerController {
             }
         });
 
+        columnManager.setStyle("-fx-alignment: CENTER;");
+
         columnDescription.setCellValueFactory(new Callback<TableColumn.CellDataFeatures<Map.Entry<Integer, Project>, String>, ObservableValue<String>>() {
             @Override
             public ObservableValue<String> call(TableColumn.CellDataFeatures<Map.Entry<Integer, Project>, String> param) {
                 return param.getValue().getValue().descriptionProperty();
             }
         });
+
+        columnDescription.setCellFactory(new Callback<TableColumn<Map.Entry<Integer, Project>, String>, TableCell<Map.Entry<Integer, Project>, String>>() {
+            @Override
+            public TableCell<Map.Entry<Integer, Project>, String> call(TableColumn<Map.Entry<Integer, Project>, String> param) {
+
+                return new TableCell<Map.Entry<Integer, Project>, String>() {
+                    private Text text;
+
+                    @Override
+                    protected void updateItem(String item, boolean empty) {
+                        super.updateItem(item, empty);
+                        if (!isEmpty()) {
+                            text = new Text(item.toString());
+                            text.setWrappingWidth(columnDescription.getWidth());
+                            this.setWrapText(true);
+                            setGraphic(text);
+                        }
+                    }
+                };
+
+                /*TableCell<Map.Entry<Integer, Project>, String> cell = new TableCell();
+                Text text = new Text();
+                cell.setGraphic(text);
+                cell.setPrefHeight(Control.USE_COMPUTED_SIZE);
+                text.wrappingWidthProperty().bind(cell.widthProperty());
+                text.textProperty().bind(cell.itemProperty());
+                return cell;*/
+            }
+        });
+
+
 
         FilteredList<Map.Entry<Integer, Project>> filterData = new FilteredList<>(tableProjects, p -> true);
 
@@ -189,6 +220,7 @@ public class TableProjectsDesignerController {
                         return false;
                     }
                 });
+                sortTableProjects();
             }
         });
 
@@ -200,6 +232,8 @@ public class TableProjectsDesignerController {
 
                 Project project = (Project) event.getTableView().getItems().get(event.getTablePosition().getRow()).getValue();
                 AllData.addWorkTime(project.getIdNumber(), LocalDate.now(), designerID, newTimeDouble);
+                filterField.setText("---");
+                filterField.clear();
             }
         });
 
@@ -218,6 +252,15 @@ public class TableProjectsDesignerController {
 
     public void handleDeleteSearch() {
         filterField.setText("");
+    }
+
+    public void sortTableProjects() {
+        tableProjects.sort(new Comparator<Map.Entry<Integer, Project>>() {
+            @Override
+            public int compare(Map.Entry<Integer, Project> o1, Map.Entry<Integer, Project> o2) {
+                return compareTime(o1, o2);
+            }
+        });
     }
 
 

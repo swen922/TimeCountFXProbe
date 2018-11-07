@@ -27,7 +27,7 @@ public class Project {
     private Set<Integer> linkedProjects = new TreeSet<>();
     private int PONumber;
     private volatile int workSum = 0;
-    private StringProperty workSumProperty;
+    private volatile StringProperty workSumProperty;
     //private DoubleProperty workSumProperty;
     private List<WorkTime> work = new ArrayList<>();
 
@@ -82,25 +82,11 @@ public class Project {
         return idNumber;
     }
 
-    public void setIdNumber(int newIdNumber) {
+    public synchronized void setIdNumber(int newIdNumber) {
         this.idNumber = newIdNumber;
         //this.idNumberProperty.set(String.valueOf(idNumber));
         this.idNumberProperty.set(newIdNumber);
     }
-
-    /*@XmlTransient
-    public String getIdNumberProperty() {
-        return idNumberProperty.get();
-    }
-
-    @XmlTransient
-    public StringProperty idNumberProperty() {
-        return idNumberProperty;
-    }
-
-    public void setIdNumberProperty(int newIdNumberProperty) {
-        this.idNumberProperty.set(String.valueOf(newIdNumberProperty));
-    }*/
 
     @XmlTransient
     public int getIdNumberProperty() {
@@ -112,7 +98,7 @@ public class Project {
         return idNumberProperty;
     }
 
-    public void setIdNumberProperty(int idNumberProperty) {
+    public synchronized void setIdNumberProperty(int idNumberProperty) {
         this.idNumberProperty.set(idNumberProperty);
     }
 
@@ -121,7 +107,7 @@ public class Project {
         return company;
     }
 
-    public void setCompany(String newCompany) {
+    public synchronized void setCompany(String newCompany) {
         this.company = newCompany;
         this.companyProperty.set(newCompany);
     }
@@ -136,7 +122,7 @@ public class Project {
         return companyProperty;
     }
 
-    public void setCompanyProperty(String newCompanyProperty) {
+    public synchronized void setCompanyProperty(String newCompanyProperty) {
         this.companyProperty.set(newCompanyProperty);
     }
 
@@ -145,7 +131,7 @@ public class Project {
         return initiator;
     }
 
-    public void setInitiator(String newInitiator) {
+    public synchronized void setInitiator(String newInitiator) {
         this.initiator = newInitiator;
         this.initiatorProperty.set(newInitiator);
     }
@@ -160,7 +146,7 @@ public class Project {
         return initiatorProperty;
     }
 
-    public void setInitiatorProperty(String newInitiatorProperty) {
+    public synchronized void setInitiatorProperty(String newInitiatorProperty) {
         this.initiatorProperty.set(newInitiatorProperty);
     }
 
@@ -169,7 +155,7 @@ public class Project {
         return description;
     }
 
-    public void setDescription(String newDescription) {
+    public synchronized void setDescription(String newDescription) {
         this.description = newDescription;
         this.descriptionProperty.set(newDescription);
     }
@@ -184,7 +170,7 @@ public class Project {
         return descriptionProperty;
     }
 
-    public void setDescriptionProperty(String newDescriptionProperty) {
+    public synchronized void setDescriptionProperty(String newDescriptionProperty) {
         this.descriptionProperty.set(newDescriptionProperty);
     }
 
@@ -193,7 +179,7 @@ public class Project {
         return dateCreationString;
     }
 
-    public void setDateCreationString(String newDateCreationString) {
+    public synchronized void setDateCreationString(String newDateCreationString) {
         this.dateCreationString = newDateCreationString;
     }
 
@@ -202,7 +188,7 @@ public class Project {
         return isArchive;
     }
 
-    public void setArchive(boolean archive) {
+    public synchronized void setArchive(boolean archive) {
         isArchive = archive;
     }
 
@@ -211,7 +197,7 @@ public class Project {
         return comment;
     }
 
-    public void setComment(String newComment) {
+    public synchronized void setComment(String newComment) {
         this.comment = newComment;
     }
 
@@ -220,11 +206,11 @@ public class Project {
         return this.linkedProjects;
     }
 
-    public void setLinkedProject(Set<Integer> newLinkedProjects) {
+    public synchronized void setLinkedProject(Set<Integer> newLinkedProjects) {
         this.linkedProjects = newLinkedProjects;
     }
 
-    public void addLinkedProjects(Integer... args) {
+    public synchronized void addLinkedProjects(Integer... args) {
         this.linkedProjects.addAll(Arrays.asList(args));
     }
 
@@ -233,7 +219,7 @@ public class Project {
         return PONumber;
     }
 
-    public void setPONumber(int newPONumber) {
+    public synchronized void setPONumber(int newPONumber) {
         this.PONumber = newPONumber;
     }
 
@@ -242,7 +228,7 @@ public class Project {
         return workSum;
     }
 
-    private void setWorkSum(int newWorkSum) {
+    private synchronized void setWorkSum(int newWorkSum) {
         this.workSum = newWorkSum >= 0 ? newWorkSum : 0;
     }
 
@@ -251,7 +237,7 @@ public class Project {
         return AllData.intToDouble(workSum);
     }
 
-    protected void setWorkSumDouble(double newWorkSumDouble) {
+    protected synchronized void setWorkSumDouble(double newWorkSumDouble) {
         if (newWorkSumDouble <= 0) {
             setWorkSum(0);
         }
@@ -270,7 +256,7 @@ public class Project {
         return workSumProperty;
     }
 
-    public void setWorkSumProperty(String workSumProperty) {
+    public synchronized void setWorkSumProperty(String workSumProperty) {
         this.workSumProperty.set(workSumProperty);
     }
 
@@ -279,7 +265,7 @@ public class Project {
         return work;
     }
 
-    public void setWork(List<WorkTime> newWork) {
+    public synchronized void setWork(List<WorkTime> newWork) {
         this.work = newWork;
         computeWorkSum();
         this.workSumProperty = new SimpleStringProperty(String.valueOf(AllData.intToDouble(workSum)));
@@ -292,7 +278,7 @@ public class Project {
      * Возвращаемое значение int используется в AllData для добавления
      * к суммарному общему рабочему времени workSumProjects
      * */
-    public int addWorkTime(LocalDate newDate, int idUser, double newTimeDouble) {
+    public synchronized int addWorkTime(LocalDate newDate, int idUser, double newTimeDouble) {
 
         int newTimeInt = AllData.doubleToInt(newTimeDouble);
 
@@ -362,7 +348,7 @@ public class Project {
     }
 
 
-    private void computeWorkSum() {
+    private synchronized void computeWorkSum() {
         int result = 0;
         for (WorkTime wt : this.work) {
             result += wt.getTime();
@@ -372,7 +358,7 @@ public class Project {
         //this.workSumProperty.set(AllData.intToDouble(result));
     }
 
-    public void computeProperties() {
+    public synchronized void computeProperties() {
         //this.idNumberProperty = new SimpleStringProperty(String.valueOf(idNumber));
         this.idNumberProperty = new SimpleIntegerProperty(idNumber);
         this.companyProperty = new SimpleStringProperty(company);

@@ -5,8 +5,11 @@
 <?import javafx.scene.chart.LineChart?>
 <?import javafx.scene.chart.NumberAxis?>
 <?import javafx.scene.control.Button?>
+<?import javafx.scene.control.CheckBox?>
 <?import javafx.scene.control.ChoiceBox?>
+<?import javafx.scene.control.DatePicker?>
 <?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Separator?>
 <?import javafx.scene.control.TableColumn?>
 <?import javafx.scene.control.TableView?>
 <?import javafx.scene.control.TextField?>
@@ -16,9 +19,9 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane prefHeight="800.0" prefWidth="1200.0" xmlns="http://javafx.com/javafx/9.0.4" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.horovod.timecountfxprobe.view.TableProjectsDesignerController">
+<AnchorPane prefHeight="800.0" prefWidth="1200.0" xmlns="http://javafx.com/javafx/8.0.4" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.horovod.timecountfxprobe.view.TableProjectsDesignerController">
     <children>
-        <TableView fx:id="projectsTable" editable="true" layoutX="93.0" layoutY="87.0" prefHeight="200.0" prefWidth="200.0" tableMenuButtonVisible="true" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="100.0">
+        <TableView fx:id="projectsTable" editable="true" layoutX="93.0" layoutY="87.0" prefHeight="200.0" prefWidth="200.0" tableMenuButtonVisible="true" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="120.0">
             <columns>
                 <TableColumn fx:id="columnID" maxWidth="1500.0" prefWidth="75.0" text="ID проекта" />
                 <TableColumn fx:id="columnTime" maxWidth="1500.0" prefWidth="75.0" text="Время" />
@@ -32,17 +35,28 @@
         </TableView>
         <HBox alignment="CENTER_LEFT" prefHeight="100.0" prefWidth="200.0" spacing="10.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
             <children>
-            <VBox alignment="BOTTOM_CENTER" prefHeight="50.0" prefWidth="300.0" spacing="10.0">
+            <VBox alignment="BOTTOM_CENTER" prefHeight="50.0" prefWidth="300.0" spacing="3.0">
                <children>
-                  <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0" spacing="20.0">
+                  <HBox alignment="CENTER_LEFT" prefHeight="20.0" prefWidth="200.0" spacing="10.0">
                      <children>
-                        <ChoiceBox prefWidth="500.0">
+                        <CheckBox lineSpacing="10.0" mnemonicParsing="false" text="Только мои проекты">
                            <padding>
-                              <Insets left="10.0" right="10.0" />
-                           </padding>
-                        </ChoiceBox>
+                              <Insets bottom="5.0" />
+                           </padding></CheckBox>
                      </children>
                   </HBox>
+                  <Separator prefWidth="200.0" />
+                  <HBox alignment="CENTER_LEFT" prefHeight="50.0" prefWidth="200.0" spacing="10.0">
+                     <children>
+                        <Label text="За период:" />
+                        <DatePicker prefWidth="90.0" promptText="c" />
+                        <DatePicker prefWidth="90.0" promptText="по" />
+                     </children>
+                     <VBox.margin>
+                        <Insets bottom="3.0" top="1.0" />
+                     </VBox.margin>
+                  </HBox>
+                  <Separator prefWidth="200.0" />
                   <HBox alignment="CENTER" prefHeight="50.0" prefWidth="200.0" spacing="10.0">
                      <children>
                             <TextField fx:id="filterField" prefHeight="26.0" prefWidth="250.0" promptText="Найти проект">
@@ -52,13 +66,19 @@
                             </TextField>
                             <Button fx:id="deleteSearchTextButton" mnemonicParsing="false" onAction="#handleDeleteSearch" text="X" />
                      </children>
+                     <VBox.margin>
+                        <Insets bottom="-10.0" top="2.0" />
+                     </VBox.margin>
                   </HBox>
                </children>
                <padding>
                   <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
                </padding>
+               <HBox.margin>
+                  <Insets />
+               </HBox.margin>
             </VBox>
-            <LineChart alternativeRowFillVisible="false" createSymbols="false" focusTraversable="true" horizontalGridLinesVisible="false" horizontalZeroLineVisible="false" legendSide="TOP" legendVisible="false" maxHeight="100.0" minHeight="100.0" prefHeight="100.0" prefWidth="500.0" verticalGridLinesVisible="false" verticalZeroLineVisible="false">
+            <LineChart alternativeColumnFillVisible="true" createSymbols="false" focusTraversable="true" legendVisible="false" maxHeight="100.0" minHeight="100.0" prefHeight="100.0" prefWidth="500.0">
               <xAxis>
                 <CategoryAxis side="BOTTOM" />
               </xAxis>
@@ -81,6 +101,11 @@
                   <InnerShadow choke="0.14" />
                </effect>
             </AnchorPane>
+            <ChoiceBox prefWidth="200.0">
+               <padding>
+                  <Insets left="10.0" right="10.0" />
+               </padding>
+            </ChoiceBox>
             </children>
         </HBox>
     </children>

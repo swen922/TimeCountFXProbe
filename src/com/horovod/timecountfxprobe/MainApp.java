@@ -3,10 +3,7 @@ package com.horovod.timecountfxprobe;
 import com.horovod.timecountfxprobe.test.Generator;
 import com.horovod.timecountfxprobe.user.AllUsers;
 import com.horovod.timecountfxprobe.user.Designer;
-import com.horovod.timecountfxprobe.view.LoginWindowController;
-import com.horovod.timecountfxprobe.view.RootLayoutController;
-import com.horovod.timecountfxprobe.view.TableProjectsController;
-import com.horovod.timecountfxprobe.view.TableProjectsDesignerController;
+import com.horovod.timecountfxprobe.view.*;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
@@ -31,7 +28,14 @@ public class MainApp extends Application {
         Generator.generate();
 
         initRootLayut();
-        showLoginWindow();
+
+        if (AllUsers.getCurrentUser() == 0) {
+            showLoginWindowOnStart();
+        }
+        else {
+            showTableProjectsDesigner();
+        }
+
         //showTableProjectsDesigner();
     }
 
@@ -101,5 +105,32 @@ public class MainApp extends Application {
         } catch (IOException e) {
 
         }
+    }
+
+    public void showLoginWindowOnStart() {
+        try {
+            FXMLLoader loaderLoginWindowOnStart = new FXMLLoader();
+            loaderLoginWindowOnStart.setLocation(MainApp.class.getResource("view/LoginWindowOnStart.fxml"));
+            AnchorPane loginWindowOnStart = (AnchorPane) loaderLoginWindowOnStart.load();
+
+            Stage logWinStage = new Stage();
+            logWinStage.setTitle("Войти в программу");
+            logWinStage.initModality(Modality.APPLICATION_MODAL);
+            logWinStage.initOwner(primaryStage);
+            Scene scene = new Scene(loginWindowOnStart);
+            logWinStage.setScene(scene);
+            LoginWindowOnStartController loginWindowOnStartController = loaderLoginWindowOnStart.getController();
+            loginWindowOnStartController.setMainApp(this);
+
+            loginWindowOnStartController.setStage(logWinStage);
+            logWinStage.showAndWait();
+        } catch (IOException e) {
+
+        }
+    }
+
+    public void closeApp() {
+        primaryStage.close();
+        System.exit(0);
     }
 }

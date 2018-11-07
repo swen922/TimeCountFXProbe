@@ -57,6 +57,9 @@ public class Generator {
             //LocalDate date = LocalDate.of(year, month, day);
             LocalDate date = LocalDate.now();
             String descr = new StringBuilder("project number ").append(j).append(" is of ").append(init).append(", and company is ").append(companyClient).toString();
+            if (j % 10 == 0) {
+                descr = descr + " | " + descr + " | " + descr;
+            }
             Project project = new Project(companyClient, init, descr, date);
 
             int works = (int) (Math.random() * 4);

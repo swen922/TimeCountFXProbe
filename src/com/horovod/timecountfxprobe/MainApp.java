@@ -3,6 +3,7 @@ package com.horovod.timecountfxprobe;
 import com.horovod.timecountfxprobe.test.Generator;
 import com.horovod.timecountfxprobe.user.AllUsers;
 import com.horovod.timecountfxprobe.user.Designer;
+import com.horovod.timecountfxprobe.user.Role;
 import com.horovod.timecountfxprobe.view.*;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
@@ -33,7 +34,14 @@ public class MainApp extends Application {
             showLoginWindowOnStart();
         }
         else {
-            showTableProjectsDesigner();
+            Role role = AllUsers.getOneUser(AllUsers.getCurrentUser()).getRole();
+            if (role.equals(Role.DESIGNER)) {
+                showTableProjectsDesigner();
+            }
+            else if (role.equals(Role.MANAGER)) {
+                // TODO аписать класс таблицы для менеджера
+                //showTableProjectsManager();
+            }
         }
 
         //showTableProjectsDesigner();

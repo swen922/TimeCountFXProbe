@@ -19,7 +19,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane prefHeight="800.0" prefWidth="1200.0" xmlns="http://javafx.com/javafx/8.0.4" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.horovod.timecountfxprobe.view.TableProjectsDesignerController">
+<AnchorPane prefHeight="800.0" prefWidth="1200.0" xmlns="http://javafx.com/javafx/9.0.4" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.horovod.timecountfxprobe.view.TableProjectsDesignerController">
     <children>
         <TableView fx:id="projectsTable" editable="true" layoutX="93.0" layoutY="87.0" prefHeight="200.0" prefWidth="200.0" tableMenuButtonVisible="true" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="120.0">
             <columns>
@@ -35,77 +35,77 @@
         </TableView>
         <HBox alignment="CENTER_LEFT" prefHeight="100.0" prefWidth="200.0" spacing="10.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
             <children>
-            <VBox alignment="BOTTOM_CENTER" prefHeight="50.0" prefWidth="300.0" spacing="3.0">
-               <children>
-                  <HBox alignment="CENTER_LEFT" prefHeight="20.0" prefWidth="200.0" spacing="10.0">
-                     <children>
-                        <CheckBox lineSpacing="10.0" mnemonicParsing="false" text="Только мои проекты">
-                           <padding>
-                              <Insets bottom="5.0" />
-                           </padding></CheckBox>
-                     </children>
-                  </HBox>
-                  <Separator prefWidth="200.0" />
-                  <HBox alignment="CENTER_LEFT" prefHeight="50.0" prefWidth="200.0" spacing="10.0">
-                     <children>
-                        <Label text="За период:" />
-                        <DatePicker prefWidth="90.0" promptText="c" />
-                        <DatePicker prefWidth="90.0" promptText="по" />
-                     </children>
-                     <VBox.margin>
-                        <Insets bottom="3.0" top="1.0" />
-                     </VBox.margin>
-                  </HBox>
-                  <Separator prefWidth="200.0" />
-                  <HBox alignment="CENTER" prefHeight="50.0" prefWidth="200.0" spacing="10.0">
-                     <children>
-                            <TextField fx:id="filterField" prefHeight="26.0" prefWidth="250.0" promptText="Найти проект">
-                                <opaqueInsets>
-                                    <Insets right="2010.0" />
-                                </opaqueInsets>
-                            </TextField>
-                            <Button fx:id="deleteSearchTextButton" mnemonicParsing="false" onAction="#handleDeleteSearch" text="X" />
-                     </children>
-                     <VBox.margin>
-                        <Insets bottom="-10.0" top="2.0" />
-                     </VBox.margin>
-                  </HBox>
-               </children>
-               <padding>
-                  <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
-               </padding>
-               <HBox.margin>
-                  <Insets />
-               </HBox.margin>
-            </VBox>
-            <LineChart alternativeColumnFillVisible="true" createSymbols="false" focusTraversable="true" legendVisible="false" maxHeight="100.0" minHeight="100.0" prefHeight="100.0" prefWidth="500.0">
-              <xAxis>
-                <CategoryAxis side="BOTTOM" />
-              </xAxis>
-              <yAxis>
-                <NumberAxis side="LEFT" />
-              </yAxis>
-            </LineChart>
-            <AnchorPane prefHeight="100.0" prefWidth="100.0">
-               <children>
-                  <Label alignment="CENTER" contentDisplay="CENTER" layoutX="60.0" layoutY="41.0" text="0" textAlignment="CENTER" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
-                     <font>
-                        <Font name="System Bold" size="36.0" />
-                     </font>
-                     <effect>
-                        <InnerShadow blurType="GAUSSIAN" choke="1.0" />
-                     </effect>
-                  </Label>
-               </children>
-               <effect>
-                  <InnerShadow choke="0.14" />
-               </effect>
-            </AnchorPane>
-            <ChoiceBox prefWidth="200.0">
-               <padding>
-                  <Insets left="10.0" right="10.0" />
-               </padding>
-            </ChoiceBox>
+                <VBox alignment="BOTTOM_CENTER" prefHeight="50.0" prefWidth="300.0" spacing="3.0">
+                    <children>
+                        <HBox alignment="CENTER_LEFT" prefHeight="20.0" prefWidth="200.0" spacing="10.0">
+                            <children>
+                                <CheckBox fx:id="showMyProjectsCheckBox" lineSpacing="10.0" mnemonicParsing="false" onAction="#handleShowMyProjectsCheckBox" text="Только мои проекты">
+                                    <padding>
+                                        <Insets bottom="5.0" />
+                                    </padding></CheckBox>
+                            </children>
+                        </HBox>
+                        <Separator prefWidth="200.0" />
+                        <HBox alignment="CENTER_LEFT" prefHeight="50.0" prefWidth="200.0" spacing="10.0">
+                            <children>
+                                <Label text="За период:" />
+                                <DatePicker prefWidth="90.0" promptText="c" />
+                                <DatePicker prefWidth="90.0" promptText="по" />
+                            </children>
+                            <VBox.margin>
+                                <Insets bottom="3.0" top="1.0" />
+                            </VBox.margin>
+                        </HBox>
+                        <Separator prefWidth="200.0" />
+                        <HBox alignment="CENTER" prefHeight="50.0" prefWidth="200.0" spacing="10.0">
+                            <children>
+                                <TextField fx:id="filterField" prefHeight="26.0" prefWidth="250.0" promptText="Найти проект">
+                                    <opaqueInsets>
+                                        <Insets right="2010.0" />
+                                    </opaqueInsets>
+                                </TextField>
+                                <Button fx:id="deleteSearchTextButton" mnemonicParsing="false" onAction="#handleDeleteSearch" text="X" />
+                            </children>
+                            <VBox.margin>
+                                <Insets bottom="-10.0" top="2.0" />
+                            </VBox.margin>
+                        </HBox>
+                    </children>
+                    <padding>
+                        <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+                    </padding>
+                    <HBox.margin>
+                        <Insets />
+                    </HBox.margin>
+                </VBox>
+                <LineChart alternativeColumnFillVisible="true" createSymbols="false" focusTraversable="true" legendVisible="false" maxHeight="100.0" minHeight="100.0" prefHeight="100.0" prefWidth="500.0">
+                    <xAxis>
+                        <CategoryAxis side="BOTTOM" />
+                    </xAxis>
+                    <yAxis>
+                        <NumberAxis side="LEFT" />
+                    </yAxis>
+                </LineChart>
+                <AnchorPane prefHeight="100.0" prefWidth="100.0">
+                    <children>
+                        <Label alignment="CENTER" contentDisplay="CENTER" layoutX="60.0" layoutY="41.0" text="0" textAlignment="CENTER" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                            <font>
+                                <Font name="System Bold" size="36.0" />
+                            </font>
+                            <effect>
+                                <InnerShadow blurType="GAUSSIAN" choke="1.0" />
+                            </effect>
+                        </Label>
+                    </children>
+                    <effect>
+                        <InnerShadow choke="0.14" />
+                    </effect>
+                </AnchorPane>
+                <ChoiceBox prefWidth="200.0">
+                    <padding>
+                        <Insets left="10.0" right="10.0" />
+                    </padding>
+                </ChoiceBox>
             </children>
         </HBox>
     </children>

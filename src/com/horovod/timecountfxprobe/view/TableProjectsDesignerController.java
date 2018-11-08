@@ -18,12 +18,14 @@ import javafx.collections.transformation.FilteredList;
 import javafx.collections.transformation.SortedList;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
+import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Cursor;
 import javafx.scene.control.*;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.text.Text;
+import javafx.scene.text.TextAlignment;
 import javafx.util.Callback;
 
 import java.time.LocalDate;
@@ -32,23 +34,21 @@ import java.util.function.Predicate;
 
 public class TableProjectsDesignerController {
 
-    private int designerID;
     private ObservableList<Map.Entry<Integer, Project>> tableProjects = FXCollections.observableArrayList(AllData.getActiveProjects().entrySet());
+    /*private ObservableList<Map.Entry<Integer, Project>> tableProjects =
+            FXCollections.observableArrayList(AllData.getActiveProjectsForDesigner(AllUsers.getCurrentUser()).entrySet());*/
+    FilteredList<Map.Entry<Integer, Project>> filterData = new FilteredList<>(tableProjects, p -> true);
 
-
-    public int getDesignerID() {
-        return designerID;
-    }
-
-    public void setDesignerID(int newDesignerID) {
-        this.designerID = newDesignerID;
-    }
 
     @FXML
     private TextField filterField;
 
     @FXML
-    Button deleteSearchTextButton;
+    private Button deleteSearchTextButton;
+
+    @FXML
+    private CheckBox showMyProjectsCheckBox;
+
 
     @FXML
     private TableView<Map.Entry<Integer, Project>> projectsTable;
@@ -68,9 +68,6 @@ public class TableProjectsDesignerController {
     @FXML
     private TableColumn<Map.Entry<Integer, Project>, String> columnDescription;
 
-    public TableProjectsDesignerController() {
-        this.designerID = AllUsers.getCurrentUser();
-    }
 
 
     @FXML
@@ -92,8 +89,6 @@ public class TableProjectsDesignerController {
             }
         });
 
-
-
         columnID.setStyle("-fx-alignment: CENTER;");
 
 
@@ -102,23 +97,13 @@ public class TableProjectsDesignerController {
 
         columnTime.setCellFactory(cellFactory);
 
-
-        /** TODO Придется переписать время в DoubleProperty,
-         * т.к. в аккаунте админа значения больше 10, и сортировка тогда со строками не работает правильно
-         * */
-
         columnTime.setCellValueFactory(new Callback<TableColumn.CellDataFeatures<Map.Entry<Integer, Project>, String>, ObservableValue<String>>() {
             @Override
             public ObservableValue<String> call(TableColumn.CellDataFeatures<Map.Entry<Integer, Project>, String> param) {
+                // Для списка менеджера – просто все рабочее время
                 //return param.getValue().getValue().workSumProperty();
-                List<WorkTime> timeList = param.getValue().getValue().getWork();
-                int time = 0;
-                for (WorkTime wt : timeList) {
-                    if ((wt.getDesignerID() == designerID) && (AllData.parseDate(wt.getDateString()).equals(LocalDate.now()))) {
-                        time = wt.getTime();
-                        break;
-                    }
-                }
+
+                int time = param.getValue().getValue().getWorkSumForDesignerAndDate(AllUsers.getCurrentUser(), LocalDate.now());
                 StringProperty result = new SimpleStringProperty(String.valueOf(AllData.intToDouble(time)));
                 return result;
             }
@@ -133,12 +118,26 @@ public class TableProjectsDesignerController {
             }
         });
 
+        columnCompany.setCellFactory(new Callback<TableColumn<Map.Entry<Integer, Project>, String>, TableCell<Map.Entry<Integer, Project>, String>>() {
+            @Override
+            public TableCell<Map.Entry<Integer, Project>, String> call(TableColumn<Map.Entry<Integer, Project>, String> param) {
+                return getTableCell(columnCompany, TextAlignment.CENTER);
+            }
+        });
+
         columnCompany.setStyle("-fx-alignment: CENTER;");
 
         columnManager.setCellValueFactory(new Callback<TableColumn.CellDataFeatures<Map.Entry<Integer, Project>, String>, ObservableValue<String>>() {
             @Override
             public ObservableValue<String> call(TableColumn.CellDataFeatures<Map.Entry<Integer, Project>, String> param) {
                 return param.getValue().getValue().initiatorProperty();
+            }
+        });
+
+        columnManager.setCellFactory(new Callback<TableColumn<Map.Entry<Integer, Project>, String>, TableCell<Map.Entry<Integer, Project>, String>>() {
+            @Override
+            public TableCell<Map.Entry<Integer, Project>, String> call(TableColumn<Map.Entry<Integer, Project>, String> param) {
+                return getTableCell(columnManager, TextAlignment.CENTER);
             }
         });
 
@@ -154,29 +153,7 @@ public class TableProjectsDesignerController {
         columnDescription.setCellFactory(new Callback<TableColumn<Map.Entry<Integer, Project>, String>, TableCell<Map.Entry<Integer, Project>, String>>() {
             @Override
             public TableCell<Map.Entry<Integer, Project>, String> call(TableColumn<Map.Entry<Integer, Project>, String> param) {
-
-                return new TableCell<Map.Entry<Integer, Project>, String>() {
-                    private Text text;
-
-                    @Override
-                    protected void updateItem(String item, boolean empty) {
-                        super.updateItem(item, empty);
-                        if (!isEmpty()) {
-                            text = new Text(item.toString());
-                            text.setWrappingWidth(columnDescription.getWidth());
-                            this.setWrapText(true);
-                            setGraphic(text);
-                        }
-                    }
-                };
-
-                /*TableCell<Map.Entry<Integer, Project>, String> cell = new TableCell();
-                Text text = new Text();
-                cell.setGraphic(text);
-                cell.setPrefHeight(Control.USE_COMPUTED_SIZE);
-                text.wrappingWidthProperty().bind(cell.widthProperty());
-                text.textProperty().bind(cell.itemProperty());
-                return cell;*/
+                return getTableCell(columnDescription, TextAlignment.LEFT);
             }
         });
 
@@ -197,9 +174,9 @@ public class TableProjectsDesignerController {
                         String lowerCaseFilter = newValue.toLowerCase();
 
                         String workTimeInTable = "0.0";
-                        if (integerProjectEntry.getValue().containsWorkTime(designerID, LocalDate.now())) {
+                        if (integerProjectEntry.getValue().containsWorkTime(AllUsers.getCurrentUser(), LocalDate.now())) {
                             workTimeInTable = String.valueOf(AllData.intToDouble(integerProjectEntry.getValue().
-                                    getWorkTimeForDesignerAndDate(designerID, LocalDate.now())));
+                                    getWorkSumForDesignerAndDate(AllUsers.getCurrentUser(), LocalDate.now())));
                         }
 
                         if (String.valueOf(integerProjectEntry.getValue().getIdNumber()).contains(lowerCaseFilter)) {
@@ -225,13 +202,14 @@ public class TableProjectsDesignerController {
         });
 
 
+
         columnTime.setOnEditCommit(new EventHandler<TableColumn.CellEditEvent<Map.Entry<Integer, Project>, String>>() {
             @Override
             public void handle(TableColumn.CellEditEvent<Map.Entry<Integer, Project>, String> event) {
                 double newTimeDouble = Double.parseDouble(event.getNewValue());
 
                 Project project = (Project) event.getTableView().getItems().get(event.getTablePosition().getRow()).getValue();
-                AllData.addWorkTime(project.getIdNumber(), LocalDate.now(), designerID, newTimeDouble);
+                AllData.addWorkTime(project.getIdNumber(), LocalDate.now(), AllUsers.getCurrentUser(), newTimeDouble);
                 filterField.setText("---");
                 filterField.clear();
             }
@@ -243,6 +221,7 @@ public class TableProjectsDesignerController {
                 return compareTime(o1, o2);
             }
         });
+
 
         projectsTable.setItems(sortedList);
 
@@ -261,6 +240,70 @@ public class TableProjectsDesignerController {
                 return compareTime(o1, o2);
             }
         });
+    }
+
+    public void handleShowMyProjectsCheckBox() {
+        filterField.clear();
+        if (showMyProjectsCheckBox.isSelected()) {
+            tableProjects = FXCollections.observableArrayList(AllData.getActiveProjectsForDesigner(AllUsers.getCurrentUser()).entrySet());
+            initialize();
+        }
+        else {
+            tableProjects = FXCollections.observableArrayList(AllData.getActiveProjects().entrySet());
+            initialize();
+        }
+    }
+
+    private TableCell<Map.Entry<Integer, Project>, String> getTableCell(TableColumn column, TextAlignment textAlignment) {
+        TableCell<Map.Entry<Integer, Project>, String> cell = new TableCell<>();
+        Text text = new Text();
+        text.setTextAlignment(textAlignment);
+        text.setLineSpacing(5.0);
+        cell.setGraphic(text);
+        //cell.setPadding(new Insets(10, 10, 10, 10));
+        cell.setPrefHeight(Control.USE_COMPUTED_SIZE);
+        text.wrappingWidthProperty().bind(column.widthProperty());
+        text.textProperty().bind(cell.itemProperty());
+        return cell;
+
+        // Это тоже работающий вариант
+                /*return new TableCell<Map.Entry<Integer, Project>, String>() {
+                    private Text text;
+                    @Override
+                    protected void updateItem(String item, boolean empty) {
+                        super.updateItem(item, empty);
+                        if (!isEmpty()) {
+                            text = new Text(item.toString());
+                            text.setWrappingWidth(columnDescription.getWidth());
+                            this.setWrapText(true);
+                            setGraphic(text);
+                        }
+                    }
+                };*/
+    }
+
+    private int compareTime(Map.Entry<Integer, Project> o1, Map.Entry<Integer, Project> o2) {
+
+        List<WorkTime> timeList1 = o1.getValue().getWork();
+        List<WorkTime> timeList2 = o2.getValue().getWork();
+
+        int time1 = 0;
+        int time2 = 0;
+
+        for (WorkTime wt1 : timeList1) {
+            if ((wt1.getDesignerID() == AllUsers.getCurrentUser()) && (AllData.parseDate(wt1.getDateString()).equals(LocalDate.now()))) {
+                time1 = wt1.getTime();
+                break;
+            }
+        }
+
+        for (WorkTime wt2 : timeList2) {
+            if ((wt2.getDesignerID() == AllUsers.getCurrentUser()) && (AllData.parseDate(wt2.getDateString()).equals(LocalDate.now()))) {
+                time2 = wt2.getTime();
+                break;
+            }
+        }
+        return Integer.compare(time2, time1);
     }
 
 
@@ -293,8 +336,6 @@ public class TableProjectsDesignerController {
 
         @Override
         protected void updateItem(String item, boolean empty) {
-            /*System.out.println("inside updateItem()");
-            System.out.println("item is here ======== " + item);*/
 
             super.updateItem(item, empty);
             if (empty) {
@@ -370,31 +411,6 @@ public class TableProjectsDesignerController {
         private String getString() {
             return getItem() == null ? "" : getItem().toString();
         }
-    }
-
-
-    private int compareTime(Map.Entry<Integer, Project> o1, Map.Entry<Integer, Project> o2) {
-
-        List<WorkTime> timeList1 = o1.getValue().getWork();
-        List<WorkTime> timeList2 = o2.getValue().getWork();
-
-        int time1 = 0;
-        int time2 = 0;
-
-        for (WorkTime wt1 : timeList1) {
-            if ((wt1.getDesignerID() == designerID) && (AllData.parseDate(wt1.getDateString()).equals(LocalDate.now()))) {
-                time1 = wt1.getTime();
-                break;
-            }
-        }
-
-        for (WorkTime wt2 : timeList2) {
-            if ((wt2.getDesignerID() == designerID) && (AllData.parseDate(wt2.getDateString()).equals(LocalDate.now()))) {
-                time2 = wt2.getTime();
-                break;
-            }
-        }
-        return Integer.compare(time2, time1);
-    }
+    } // Конец класса EditingCell
 
 }

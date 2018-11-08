@@ -308,6 +308,25 @@ public class Project {
         return newTimeInt;
     }
 
+
+    public boolean containsWorkTime(int designerIDnumber) {
+        for (WorkTime wt5 : work) {
+            if (designerIDnumber == wt5.getDesignerID()) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public boolean containsWorkTime(LocalDate date) {
+        for (WorkTime wt2 : work) {
+            if (AllData.parseDate(wt2.getDateString()).equals(date)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     public boolean containsWorkTime(int designerID, LocalDate date) {
         for (WorkTime wt2 : work) {
             if ((designerID == wt2.getDesignerID()) && (AllData.parseDate(wt2.getDateString()).equals(date))) {
@@ -317,17 +336,17 @@ public class Project {
         return false;
     }
 
-    public int getWorkTimeForDesigner(int designerID) {
+    public int getWorkSumForDesigner(int designerIDnumber) {
         int result = 0;
         for (WorkTime wt : work) {
-            if (wt.getDesignerID() == designerID) {
+            if (wt.getDesignerID() == designerIDnumber) {
                 result += wt.getTime();
             }
         }
         return result;
     }
 
-    public int getWorkTimeForDate(LocalDate date) {
+    public int getWorkSumForDate(LocalDate date) {
         int result = 0;
         for (WorkTime wt : work) {
             if (wt.getDate().equals(date)) {
@@ -337,11 +356,41 @@ public class Project {
         return result;
     }
 
-    public int getWorkTimeForDesignerAndDate(int designerID, LocalDate date) {
+    public int getWorkSumForDesignerAndDate(int designerIDnumber, LocalDate date) {
         int result = 0;
         for (WorkTime wt : work) {
-            if (wt.getDesignerID() == designerID && wt.getDate().equals(date)) {
+            if (wt.getDesignerID() == designerIDnumber && wt.getDate().equals(date)) {
                 result += wt.getTime();
+            }
+        }
+        return result;
+    }
+
+    public List<WorkTime> getWorkTimeForDesigner(int designerIDnumber) {
+        List<WorkTime> result = new ArrayList<>();
+        for (WorkTime wt : work) {
+            if (wt.getDesignerID() == designerIDnumber) {
+                result.add(wt);
+            }
+        }
+        return result;
+    }
+
+    public List<WorkTime> getWorkTimeForDate(LocalDate date) {
+        List<WorkTime> result = new ArrayList<>();
+        for (WorkTime wt : work) {
+            if (wt.getDate().equals(date)) {
+                result.add(wt);
+            }
+        }
+        return result;
+    }
+
+    public List<WorkTime> getWorkTimeForDesignerAndDate(int designerIDnumber, LocalDate date) {
+        List<WorkTime> result = new ArrayList<>();
+        for (WorkTime wt : work) {
+            if (wt.getDesignerID() == designerIDnumber && wt.getDate().equals(date)) {
+                result.add(wt);
             }
         }
         return result;

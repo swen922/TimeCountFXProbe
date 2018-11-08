@@ -73,6 +73,16 @@ public class AllData {
         return activeProjects;
     }
 
+    public static Map<Integer, Project> getActiveProjectsForDesigner(int designerIDnumber) {
+        ObservableMap<Integer, Project> result = FXCollections.observableHashMap();
+        for (Project pr : activeProjects.values()) {
+            if (pr.containsWorkTime(designerIDnumber)) {
+                result.put(pr.getIdNumber(), pr);
+            }
+        }
+        return result;
+    }
+
     public static synchronized void setActiveProjects(ObservableMap<Integer, Project> newActiveProjects) {
         AllData.activeProjects = newActiveProjects;
     }

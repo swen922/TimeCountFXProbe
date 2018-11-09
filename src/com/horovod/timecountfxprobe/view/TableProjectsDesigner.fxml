@@ -19,7 +19,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane prefHeight="800.0" prefWidth="1200.0" xmlns="http://javafx.com/javafx/8.0.4" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.horovod.timecountfxprobe.view.TableProjectsDesignerController">
+<AnchorPane prefHeight="800.0" prefWidth="1200.0" xmlns="http://javafx.com/javafx/9.0.4" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.horovod.timecountfxprobe.view.TableProjectsDesignerController">
     <children>
         <TableView fx:id="projectsTable" editable="true" layoutX="93.0" layoutY="87.0" prefHeight="200.0" prefWidth="200.0" tableMenuButtonVisible="true" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="120.0">
             <columns>
@@ -35,7 +35,7 @@
         </TableView>
         <HBox alignment="CENTER_LEFT" prefHeight="100.0" prefWidth="200.0" spacing="10.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
             <children>
-                <VBox alignment="BOTTOM_CENTER" prefHeight="50.0" prefWidth="300.0" spacing="3.0">
+                <VBox alignment="BOTTOM_CENTER" prefHeight="50.0" prefWidth="400.0" spacing="3.0">
                     <children>
                         <HBox alignment="CENTER_LEFT" prefHeight="20.0" prefWidth="200.0" spacing="10.0">
                             <children>
@@ -49,8 +49,9 @@
                         <HBox alignment="CENTER_LEFT" prefHeight="50.0" prefWidth="200.0" spacing="10.0">
                             <children>
                                 <Label text="За период:" />
-                                <DatePicker prefWidth="90.0" promptText="c" />
-                                <DatePicker prefWidth="90.0" promptText="по" />
+                                <DatePicker fx:id="fromDatePicker" onAction="#handleDatePicker" prefWidth="125.0" promptText="c" />
+                                <DatePicker fx:id="tillDatePicker" onAction="#handleDatePicker" prefWidth="125.0" promptText="по" />
+                        <Button fx:id="clearDatePicker" mnemonicParsing="false" onAction="#handleDeleteDatePicker" text="X" />
                             </children>
                             <VBox.margin>
                                 <Insets bottom="3.0" top="1.0" />
@@ -59,7 +60,7 @@
                         <Separator prefWidth="200.0" />
                         <HBox alignment="CENTER" prefHeight="50.0" prefWidth="200.0" spacing="10.0">
                             <children>
-                                <TextField fx:id="filterField" prefHeight="26.0" prefWidth="250.0" promptText="Найти проект">
+                                <TextField fx:id="filterField" prefHeight="26.0" prefWidth="350.0" promptText="Найти проект">
                                     <opaqueInsets>
                                         <Insets right="2010.0" />
                                     </opaqueInsets>
@@ -78,7 +79,7 @@
                         <Insets />
                     </HBox.margin>
                 </VBox>
-                <LineChart alternativeColumnFillVisible="true" createSymbols="false" focusTraversable="true" legendVisible="false" maxHeight="100.0" minHeight="100.0" prefHeight="100.0" prefWidth="500.0">
+                <LineChart alternativeColumnFillVisible="true" createSymbols="false" focusTraversable="true" legendVisible="false" maxHeight="100.0" minHeight="100.0" prefHeight="100.0" prefWidth="400.0">
                     <xAxis>
                         <CategoryAxis side="BOTTOM" />
                     </xAxis>

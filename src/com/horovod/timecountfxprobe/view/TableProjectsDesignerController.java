@@ -35,8 +35,6 @@ import java.util.function.Predicate;
 public class TableProjectsDesignerController {
 
     private ObservableList<Map.Entry<Integer, Project>> tableProjects = FXCollections.observableArrayList(AllData.getActiveProjects().entrySet());
-    /*private ObservableList<Map.Entry<Integer, Project>> tableProjects =
-            FXCollections.observableArrayList(AllData.getActiveProjectsForDesigner(AllUsers.getCurrentUser()).entrySet());*/
     FilteredList<Map.Entry<Integer, Project>> filterData = new FilteredList<>(tableProjects, p -> true);
 
 
@@ -48,6 +46,15 @@ public class TableProjectsDesignerController {
 
     @FXML
     private CheckBox showMyProjectsCheckBox;
+
+    @FXML
+    private DatePicker fromDatePicker;
+
+    @FXML
+    private DatePicker tillDatePicker;
+
+    @FXML
+    private Button clearDatePicker;
 
 
     @FXML
@@ -74,13 +81,6 @@ public class TableProjectsDesignerController {
     private void initialize() {
 
         sortTableProjects();
-
-        /*columnID.setCellValueFactory(new Callback<TableColumn.CellDataFeatures<Map.Entry<Integer, Project>, String>, ObservableValue<String>>() {
-            @Override
-            public ObservableValue<String> call(TableColumn.CellDataFeatures<Map.Entry<Integer, Project>, String> param) {
-                return param.getValue().getValue().idNumberProperty();
-            }
-        });*/
 
         columnID.setCellValueFactory(new Callback<TableColumn.CellDataFeatures<Map.Entry<Integer, Project>, Integer>, ObservableValue<Integer>>() {
             @Override
@@ -159,12 +159,12 @@ public class TableProjectsDesignerController {
 
 
 
-        FilteredList<Map.Entry<Integer, Project>> filterData = new FilteredList<>(tableProjects, p -> true);
+        FilteredList<Map.Entry<Integer, Project>> filterDataWrapper = new FilteredList<>(filterData, p -> true);
 
         filterField.textProperty().addListener(new ChangeListener<String>() {
             @Override
             public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
-                filterData.setPredicate(new Predicate<Map.Entry<Integer, Project>>() {
+                filterDataWrapper.setPredicate(new Predicate<Map.Entry<Integer, Project>>() {
                     @Override
                     public boolean test(Map.Entry<Integer, Project> integerProjectEntry) {
                         if (newValue == null || newValue.isEmpty()) {
@@ -202,7 +202,6 @@ public class TableProjectsDesignerController {
         });
 
 
-
         columnTime.setOnEditCommit(new EventHandler<TableColumn.CellEditEvent<Map.Entry<Integer, Project>, String>>() {
             @Override
             public void handle(TableColumn.CellEditEvent<Map.Entry<Integer, Project>, String> event) {
@@ -210,15 +209,15 @@ public class TableProjectsDesignerController {
 
                 Project project = (Project) event.getTableView().getItems().get(event.getTablePosition().getRow()).getValue();
                 AllData.addWorkTime(project.getIdNumber(), LocalDate.now(), AllUsers.getCurrentUser(), newTimeDouble);
-                filterField.setText("---");
+                filterField.setText("-");
                 filterField.clear();
             }
         });
 
-        SortedList<Map.Entry<Integer, Project>> sortedList = new SortedList<>(filterData, new Comparator<Map.Entry<Integer, Project>>() {
+        SortedList<Map.Entry<Integer, Project>> sortedList = new SortedList<>(filterDataWrapper, new Comparator<Map.Entry<Integer, Project>>() {
             @Override
             public int compare(Map.Entry<Integer, Project> o1, Map.Entry<Integer, Project> o2) {
-                return compareTime(o1, o2);
+                return compareTime(o2, o1);
             }
         });
 
@@ -242,17 +241,59 @@ public class TableProjectsDesignerController {
         });
     }
 
+    /** TODO В методах про чекбокс и даты добавить логику учета взаимного включения */
+
     public void handleShowMyProjectsCheckBox() {
         filterField.clear();
         if (showMyProjectsCheckBox.isSelected()) {
-            tableProjects = FXCollections.observableArrayList(AllData.getActiveProjectsForDesigner(AllUsers.getCurrentUser()).entrySet());
+            filterData = new FilteredList<>(this.tableProjects, new Predicate<Map.Entry<Integer, Project>>() {
+                @Override
+                public boolean test(Map.Entry<Integer, Project> integerProjectEntry) {
+                    if (integerProjectEntry.getValue().containsWorkTime(AllUsers.getCurrentUser())) {
+                        return true;
+                    }
+                    return false;
+                }
+            });
             initialize();
         }
         else {
-            tableProjects = FXCollections.observableArrayList(AllData.getActiveProjects().entrySet());
+            filterData = new FilteredList<>(this.tableProjects, p -> true);
             initialize();
         }
     }
+
+    /** TODO В методах про чекбокс и даты добавить логику учета взаимного включения */
+
+    public void handleDatePicker() {
+        LocalDate fromDate = fromDatePicker.getValue();
+        LocalDate tillDate = tillDatePicker.getValue();
+        if (fromDate != null && tillDate != null) {
+            if (fromDate.compareTo(tillDate) > 0) {
+                handleDeleteDatePicker();
+            }
+            else {
+                filterData = new FilteredList<>(this.tableProjects, new Predicate<Map.Entry<Integer, Project>>() {
+                    @Override
+                    public boolean test(Map.Entry<Integer, Project> integerProjectEntry) {
+                        if (integerProjectEntry.getValue().containsWorkTime(AllUsers.getCurrentUser(), fromDate, tillDate)) {
+                            return true;
+                        }
+                        return false;
+                    }
+                });
+                initialize();
+            }
+        }
+    }
+
+    public void handleDeleteDatePicker() {
+        fromDatePicker.setValue(null);
+        tillDatePicker.setValue(null);
+        filterData = new FilteredList<>(this.tableProjects, p -> true);
+        initialize();
+    }
+
 
     private TableCell<Map.Entry<Integer, Project>, String> getTableCell(TableColumn column, TextAlignment textAlignment) {
         TableCell<Map.Entry<Integer, Project>, String> cell = new TableCell<>();

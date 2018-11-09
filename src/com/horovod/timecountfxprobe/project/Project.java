@@ -308,10 +308,11 @@ public class Project {
         return newTimeInt;
     }
 
+    /** Методы проверки наличия рабочего времени по разным параметрам */
 
     public boolean containsWorkTime(int designerIDnumber) {
-        for (WorkTime wt5 : work) {
-            if (designerIDnumber == wt5.getDesignerID()) {
+        for (WorkTime wt : work) {
+            if (designerIDnumber == wt.getDesignerID()) {
                 return true;
             }
         }
@@ -319,8 +320,8 @@ public class Project {
     }
 
     public boolean containsWorkTime(LocalDate date) {
-        for (WorkTime wt2 : work) {
-            if (AllData.parseDate(wt2.getDateString()).equals(date)) {
+        for (WorkTime wt : work) {
+            if (wt.getDate().equals(date)) {
                 return true;
             }
         }
@@ -328,13 +329,35 @@ public class Project {
     }
 
     public boolean containsWorkTime(int designerID, LocalDate date) {
-        for (WorkTime wt2 : work) {
-            if ((designerID == wt2.getDesignerID()) && (AllData.parseDate(wt2.getDateString()).equals(date))) {
+        for (WorkTime wt : work) {
+            if ((designerID == wt.getDesignerID()) && (wt.getDate().equals(date))) {
                 return true;
             }
         }
         return false;
     }
+
+    public boolean containsWorkTime(LocalDate fromDate, LocalDate tillDate) {
+        for (WorkTime wt : work) {
+            if ((wt.getDate().compareTo(fromDate) >= 0) && (wt.getDate().compareTo(tillDate) <= 0)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public boolean containsWorkTime(int designerID, LocalDate fromDate, LocalDate tillDate) {
+        for (WorkTime wt : work) {
+            if (designerID == wt.getDesignerID()) {
+                if ((wt.getDate().compareTo(fromDate) >= 0) && (wt.getDate().compareTo(tillDate) <= 0)) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    /** Методы получения суммы рабочего времени по разным параметрам */
 
     public int getWorkSumForDesigner(int designerIDnumber) {
         int result = 0;
@@ -366,6 +389,33 @@ public class Project {
         return result;
     }
 
+
+    public int getWorkSumForPeriod(LocalDate fromDate, LocalDate tillDate) {
+        int result = 0;
+        for (WorkTime wt : work) {
+            if ((wt.getDate().compareTo(fromDate) >= 0) && (wt.getDate().compareTo(tillDate) <= 0)) {
+                result += wt.getTime();
+            }
+        }
+        return result;
+    }
+
+    public int getWorkSumForDesignerAndPeriod(int designerIDnumber, LocalDate fromDate, LocalDate tillDate) {
+        int result = 0;
+        for (WorkTime wt : work) {
+            if (wt.getDesignerID() == designerIDnumber) {
+                if ((wt.getDate().compareTo(fromDate) >= 0) && (wt.getDate().compareTo(tillDate) <= 0)) {
+                    result += wt.getTime();
+                }
+            }
+        }
+        return result;
+    }
+
+
+
+    /** Методы получения всех экземпляров WorkTime по разным параметрам */
+
     public List<WorkTime> getWorkTimeForDesigner(int designerIDnumber) {
         List<WorkTime> result = new ArrayList<>();
         for (WorkTime wt : work) {
@@ -391,6 +441,29 @@ public class Project {
         for (WorkTime wt : work) {
             if (wt.getDesignerID() == designerIDnumber && wt.getDate().equals(date)) {
                 result.add(wt);
+            }
+        }
+        return result;
+    }
+
+
+    public List<WorkTime> getWorkTimeForPeriod(LocalDate fromDate, LocalDate tillDate) {
+        List<WorkTime> result = new ArrayList<>();
+        for (WorkTime wt : work) {
+            if ((wt.getDate().compareTo(fromDate) >= 0) && (wt.getDate().compareTo(tillDate) <= 0)) {
+                result.add(wt);
+            }
+        }
+        return result;
+    }
+
+    public List<WorkTime> getWorkTimeForDesignerAndPeriod(int designerIDnumber, LocalDate fromDate, LocalDate tillDate) {
+        List<WorkTime> result = new ArrayList<>();
+        for (WorkTime wt : work) {
+            if (wt.getDesignerID() == designerIDnumber) {
+                if ((wt.getDate().compareTo(fromDate) >= 0) && (wt.getDate().compareTo(tillDate) <= 0)) {
+                    result.add(wt);
+                }
             }
         }
         return result;

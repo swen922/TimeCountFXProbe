@@ -4,6 +4,7 @@ import com.horovod.timecountfxprobe.MainApp;
 import com.horovod.timecountfxprobe.project.AllData;
 import com.horovod.timecountfxprobe.project.Project;
 import com.horovod.timecountfxprobe.project.WorkTime;
+import com.horovod.timecountfxprobe.test.TestBackgroundUpdate01;
 import com.horovod.timecountfxprobe.user.AllUsers;
 import com.horovod.timecountfxprobe.user.Designer;
 import javafx.beans.property.SimpleStringProperty;
@@ -21,6 +22,9 @@ import javafx.fxml.FXML;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Cursor;
+import javafx.scene.Node;
+import javafx.scene.chart.CategoryAxis;
+import javafx.scene.chart.LineChart;
 import javafx.scene.control.*;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
@@ -55,6 +59,18 @@ public class TableProjectsDesignerController {
 
     @FXML
     private Button clearDatePicker;
+
+    @FXML
+    private LineChart decadeLineChart;
+
+    @FXML
+    private CategoryAxis xAxis;
+
+    @FXML
+    private Button testAddButton;
+
+    @FXML
+    private Button testDeleteButton;
 
 
     @FXML
@@ -217,7 +233,7 @@ public class TableProjectsDesignerController {
         SortedList<Map.Entry<Integer, Project>> sortedList = new SortedList<>(filterDataWrapper, new Comparator<Map.Entry<Integer, Project>>() {
             @Override
             public int compare(Map.Entry<Integer, Project> o1, Map.Entry<Integer, Project> o2) {
-                return compareTime(o2, o1);
+                return compareTime(o1, o2);
             }
         });
 
@@ -241,38 +257,61 @@ public class TableProjectsDesignerController {
         });
     }
 
-    /** TODO В методах про чекбокс и даты добавить логику учета взаимного включения */
+
+    /** Три метода для чекбокса и двух дейтпикеров
+     * сначала запрашивают проверку дат на валидность,
+     * затем передают дальнейшее действие методу handleFilters()
+     * который фильтрует filterData в зависимости от состояния
+     * чекбокса и дейтпикеров.
+     * */
+
 
     public void handleShowMyProjectsCheckBox() {
-        filterField.clear();
-        if (showMyProjectsCheckBox.isSelected()) {
-            filterData = new FilteredList<>(this.tableProjects, new Predicate<Map.Entry<Integer, Project>>() {
-                @Override
-                public boolean test(Map.Entry<Integer, Project> integerProjectEntry) {
-                    if (integerProjectEntry.getValue().containsWorkTime(AllUsers.getCurrentUser())) {
-                        return true;
-                    }
-                    return false;
+        checkDatePicker(showMyProjectsCheckBox);
+        handleFilters();
+    }
+
+    public void handleFromDatePicker() {
+        checkDatePicker(fromDatePicker);
+        handleFilters();
+    }
+
+    public void handleTillDatePicker() {
+        checkDatePicker(tillDatePicker);
+        handleFilters();
+    }
+
+    public void checkDatePicker(Node node) {
+        LocalDate fromDate = fromDatePicker.getValue();
+        LocalDate tillDate = tillDatePicker.getValue();
+
+        if (fromDate != null && tillDate != null) {
+
+            if (fromDate.compareTo(tillDate) > 0) {
+                if (node == showMyProjectsCheckBox) {
+                    fromDatePicker.setValue(null);
+                    tillDatePicker.setValue(null);
                 }
-            });
-            initialize();
-        }
-        else {
-            filterData = new FilteredList<>(this.tableProjects, p -> true);
-            initialize();
+                else if (node == fromDatePicker) {
+                    fromDatePicker.setValue(null);
+                }
+                else if (node == tillDatePicker) {
+                    tillDatePicker.setValue(null);
+                }
+            }
         }
     }
 
-    /** TODO В методах про чекбокс и даты добавить логику учета взаимного включения */
 
-    public void handleDatePicker() {
+    public void handleFilters() {
+
+        filterField.clear();
         LocalDate fromDate = fromDatePicker.getValue();
         LocalDate tillDate = tillDatePicker.getValue();
+
         if (fromDate != null && tillDate != null) {
-            if (fromDate.compareTo(tillDate) > 0) {
-                handleDeleteDatePicker();
-            }
-            else {
+
+            if (showMyProjectsCheckBox.isSelected()) {
                 filterData = new FilteredList<>(this.tableProjects, new Predicate<Map.Entry<Integer, Project>>() {
                     @Override
                     public boolean test(Map.Entry<Integer, Project> integerProjectEntry) {
@@ -284,16 +323,50 @@ public class TableProjectsDesignerController {
                 });
                 initialize();
             }
+            else {
+                filterData = new FilteredList<>(this.tableProjects, new Predicate<Map.Entry<Integer, Project>>() {
+                    @Override
+                    public boolean test(Map.Entry<Integer, Project> integerProjectEntry) {
+                        if (integerProjectEntry.getValue().containsWorkTime(fromDate, tillDate)) {
+                            return true;
+                        }
+                        return false;
+                    }
+                });
+                initialize();
+            }
+        }
+        else {
+            if (showMyProjectsCheckBox.isSelected()) {
+                filterData = new FilteredList<>(this.tableProjects, new Predicate<Map.Entry<Integer, Project>>() {
+                    @Override
+                    public boolean test(Map.Entry<Integer, Project> integerProjectEntry) {
+                        if (integerProjectEntry.getValue().containsWorkTime(AllUsers.getCurrentUser())) {
+                            return true;
+                        }
+                        return false;
+                    }
+                });
+                initialize();
+            }
+            else {
+                filterData = new FilteredList<>(this.tableProjects, p -> true);
+                initialize();
+            }
         }
     }
+
 
     public void handleDeleteDatePicker() {
         fromDatePicker.setValue(null);
         tillDatePicker.setValue(null);
-        filterData = new FilteredList<>(this.tableProjects, p -> true);
-        initialize();
+        handleFilters();
     }
 
+
+    /** Вытащенный в отдельный метод кусок кода из метода initialize()
+     * чтобы не повторять один и тот же код несколько раз
+     * */
 
     private TableCell<Map.Entry<Integer, Project>, String> getTableCell(TableColumn column, TextAlignment textAlignment) {
         TableCell<Map.Entry<Integer, Project>, String> cell = new TableCell<>();
@@ -346,6 +419,17 @@ public class TableProjectsDesignerController {
         }
         return Integer.compare(time2, time1);
     }
+
+    public void testAdd() {
+        TestBackgroundUpdate01 testBackgroundUpdate01 = new TestBackgroundUpdate01();
+        testBackgroundUpdate01.testBackgroundAddTime();
+    }
+
+    public void testDelete() {
+        TestBackgroundUpdate01 testBackgroundUpdate01 = new TestBackgroundUpdate01();
+        testBackgroundUpdate01.testBackgroundDeleteTime();
+    }
+
 
 
     class EditingCell extends TableCell<Map.Entry<Integer, Project>, String> {
@@ -412,6 +496,7 @@ public class TableProjectsDesignerController {
                         commitEdit(formatStringInput(oldText, textField.getText()));
                         EditingCell.this.getTableView().requestFocus();
                         EditingCell.this.getTableView().getSelectionModel().selectAll();
+                        initialize();
                     }
                 }
             });
@@ -422,6 +507,7 @@ public class TableProjectsDesignerController {
                         commitEdit(formatStringInput(oldText, textField.getText()));
                         EditingCell.this.getTableView().requestFocus();
                         EditingCell.this.getTableView().getSelectionModel().selectAll();
+                        initialize();
                     }
                 }
             });

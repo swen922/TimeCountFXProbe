@@ -320,6 +320,11 @@ public class Project {
     }
 
     public boolean containsWorkTime(LocalDate date) {
+
+        if (date == null) {
+            return false;
+        }
+
         for (WorkTime wt : work) {
             if (wt.getDate().equals(date)) {
                 return true;
@@ -328,9 +333,14 @@ public class Project {
         return false;
     }
 
-    public boolean containsWorkTime(int designerID, LocalDate date) {
+    public boolean containsWorkTime(int designerIDnumber, LocalDate date) {
+
+        if (date == null) {
+            return containsWorkTime(designerIDnumber);
+        }
+
         for (WorkTime wt : work) {
-            if ((designerID == wt.getDesignerID()) && (wt.getDate().equals(date))) {
+            if ((designerIDnumber == wt.getDesignerID()) && (wt.getDate().equals(date))) {
                 return true;
             }
         }
@@ -346,9 +356,14 @@ public class Project {
         return false;
     }
 
-    public boolean containsWorkTime(int designerID, LocalDate fromDate, LocalDate tillDate) {
+    public boolean containsWorkTime(int designerIDnumber, LocalDate fromDate, LocalDate tillDate) {
+
+        if (fromDate == null || tillDate == null) {
+            return containsWorkTime(designerIDnumber);
+        }
+
         for (WorkTime wt : work) {
-            if (designerID == wt.getDesignerID()) {
+            if (designerIDnumber == wt.getDesignerID()) {
                 if ((wt.getDate().compareTo(fromDate) >= 0) && (wt.getDate().compareTo(tillDate) <= 0)) {
                     return true;
                 }

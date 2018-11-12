@@ -49,8 +49,8 @@
                         <HBox alignment="CENTER_LEFT" prefHeight="50.0" prefWidth="200.0" spacing="10.0">
                             <children>
                                 <Label text="За период:" />
-                                <DatePicker fx:id="fromDatePicker" onAction="#handleDatePicker" prefWidth="125.0" promptText="c" />
-                                <DatePicker fx:id="tillDatePicker" onAction="#handleDatePicker" prefWidth="125.0" promptText="по" />
+                                <DatePicker fx:id="fromDatePicker" onAction="#handleFromDatePicker" prefWidth="125.0" promptText="c" />
+                                <DatePicker fx:id="tillDatePicker" onAction="#handleTillDatePicker" prefWidth="125.0" promptText="по" />
                         <Button fx:id="clearDatePicker" mnemonicParsing="false" onAction="#handleDeleteDatePicker" text="X" />
                             </children>
                             <VBox.margin>
@@ -79,12 +79,12 @@
                         <Insets />
                     </HBox.margin>
                 </VBox>
-                <LineChart alternativeColumnFillVisible="true" createSymbols="false" focusTraversable="true" legendVisible="false" maxHeight="100.0" minHeight="100.0" prefHeight="100.0" prefWidth="400.0">
+                <LineChart fx:id="decadeLineChart" alternativeColumnFillVisible="true" createSymbols="false" focusTraversable="true" legendVisible="false" maxHeight="100.0" minHeight="100.0" prefHeight="100.0" prefWidth="400.0">
                     <xAxis>
                         <CategoryAxis side="BOTTOM" />
                     </xAxis>
                     <yAxis>
-                        <NumberAxis side="LEFT" />
+                        <NumberAxis minorTickCount="50" minorTickVisible="false" side="LEFT" tickLabelFill="WHITE" tickMarkVisible="false" />
                     </yAxis>
                 </LineChart>
                 <AnchorPane prefHeight="100.0" prefWidth="100.0">
@@ -102,11 +102,17 @@
                         <InnerShadow choke="0.14" />
                     </effect>
                 </AnchorPane>
-                <ChoiceBox prefWidth="200.0">
-                    <padding>
+            <VBox prefHeight="200.0" prefWidth="200.0">
+               <children>
+                  <Button fx:id="testAddButton" mnemonicParsing="false" onAction="#testAdd" text="TestAdd" />
+                  <Button fx:id="testDeleteButton" mnemonicParsing="false" onAction="#testDelete" text="TestDelete" />
+                  <ChoiceBox prefWidth="200.0">
+                     <padding>
                         <Insets left="10.0" right="10.0" />
-                    </padding>
-                </ChoiceBox>
+                     </padding>
+                  </ChoiceBox>
+               </children>
+            </VBox>
             </children>
         </HBox>
     </children>

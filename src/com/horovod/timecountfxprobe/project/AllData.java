@@ -1,5 +1,6 @@
 package com.horovod.timecountfxprobe.project;
 
+import com.horovod.timecountfxprobe.view.TableProjectsDesignerController;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.collections.FXCollections;
@@ -24,8 +25,6 @@ public class AllData {
 
     private static volatile AtomicInteger workSumProjects = new AtomicInteger(0);
     private static volatile IntegerProperty workSumProjectsProperty = new SimpleIntegerProperty(workSumProjects.get());
-
-
 
 
 

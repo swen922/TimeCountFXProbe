@@ -1,5 +1,6 @@
 package com.horovod.timecountfxprobe;
 
+import com.horovod.timecountfxprobe.project.AllData;
 import com.horovod.timecountfxprobe.test.Generator;
 import com.horovod.timecountfxprobe.user.AllUsers;
 import com.horovod.timecountfxprobe.user.Designer;
@@ -88,6 +89,7 @@ public class MainApp extends Application {
             rootLayout.setCenter(tableDesigner);
 
             TableProjectsDesignerController controller = loader3.getController();
+            AllData.setTableProjectsDesignerController(controller);
         } catch (IOException e) {
             e.printStackTrace();
         }

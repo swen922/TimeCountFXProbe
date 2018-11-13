@@ -39,7 +39,7 @@ import java.util.function.Predicate;
 public class TableProjectsDesignerController {
 
     private ObservableList<Map.Entry<Integer, Project>> tableProjects = FXCollections.observableArrayList(AllData.getActiveProjects().entrySet());
-    FilteredList<Map.Entry<Integer, Project>> filterData = new FilteredList<>(tableProjects, p -> true);
+    private FilteredList<Map.Entry<Integer, Project>> filterData = new FilteredList<>(tableProjects, p -> true);
 
 
     @FXML
@@ -92,6 +92,9 @@ public class TableProjectsDesignerController {
     private TableColumn<Map.Entry<Integer, Project>, String> columnDescription;
 
 
+    public TextField getFilterField() {
+        return filterField;
+    }
 
     @FXML
     private void initialize() {

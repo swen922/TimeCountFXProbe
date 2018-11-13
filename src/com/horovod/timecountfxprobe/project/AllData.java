@@ -6,6 +6,7 @@ import javafx.beans.property.SimpleIntegerProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.ObservableMap;
+import javafx.application.Platform;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -25,6 +26,10 @@ public class AllData {
 
     private static volatile AtomicInteger workSumProjects = new AtomicInteger(0);
     private static volatile IntegerProperty workSumProjectsProperty = new SimpleIntegerProperty(workSumProjects.get());
+
+    /** TODO Решить, как быть с полем
+     * */
+    private static TableProjectsDesignerController tableProjectsDesignerController;
 
 
 
@@ -101,6 +106,14 @@ public class AllData {
 
     public static void setWorkSumProjectsProperty(int newWorkSumProjectsProperty) {
         AllData.workSumProjectsProperty.set(newWorkSumProjectsProperty);
+    }
+
+    public static TableProjectsDesignerController getTableProjectsDesignerController() {
+        return tableProjectsDesignerController;
+    }
+
+    public static void setTableProjectsDesignerController(TableProjectsDesignerController newTableProjectsDesignerController) {
+        AllData.tableProjectsDesignerController = newTableProjectsDesignerController;
     }
 
     /** Геттеры активного, неактивного и любого проекта из мапы
@@ -207,6 +220,12 @@ public class AllData {
 
             int difference = project.addWorkTime(correctDate, idUser, newTime);
             addWorkSumProjects(difference);
+            /*Platform.runLater(new Runnable() {
+                @Override
+                public void run() {
+                    tableProjectsDesignerController.sortTableProjects();
+                }
+            });*/
             return true;
         }
         return false;

@@ -58,7 +58,7 @@ public class Generator {
                 //month = (int) (Math.random() * 10 + 1);
                 month = 11;
                 //day = (int) (Math.random() * 27 + 1);
-                day = 12;
+                day = 13;
             }
             LocalDate date = LocalDate.of(year, month, day);
             String descr = new StringBuilder("project number ").append(j).append(" is of ").append(init).append(", and company is ").append(companyClient).toString();

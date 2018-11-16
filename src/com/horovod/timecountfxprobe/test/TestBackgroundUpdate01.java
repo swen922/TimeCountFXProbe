@@ -13,12 +13,11 @@ public class TestBackgroundUpdate01 {
         Runnable runnable = new Runnable() {
             @Override
             public void run() {
-                AllData.addWorkTime(50, LocalDate.now(),5, 21);
+                AllData.addWorkTime(10, LocalDate.now().minusDays(2),5, 21);
 
                 Platform.runLater(new Runnable() {
                     @Override public void run() {
-                        AllData.getTableProjectsDesignerController().getFilterField().setText("-");
-                        AllData.getTableProjectsDesignerController().getFilterField().clear();
+                        AllData.getTableProjectsDesignerController().initialize();
                     }
                 });
             }
@@ -34,12 +33,11 @@ public class TestBackgroundUpdate01 {
         Runnable runnable = new Runnable() {
             @Override
             public void run() {
-                AllData.addWorkTime(50, LocalDate.now(),5, 12);
+                AllData.addWorkTime(10, LocalDate.now().minusDays(2),5, 2);
 
                 Platform.runLater(new Runnable() {
                     @Override public void run() {
-                        AllData.getTableProjectsDesignerController().getFilterField().setText("-");
-                        AllData.getTableProjectsDesignerController().getFilterField().clear();
+                        AllData.getTableProjectsDesignerController().initialize();
                     }
                 });
             }

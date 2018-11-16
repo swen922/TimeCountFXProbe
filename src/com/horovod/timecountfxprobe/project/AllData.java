@@ -141,6 +141,39 @@ public class AllData {
         return null;
     }
 
+    public static List<Project> getActiveProjectsForPeriodCreation(LocalDate fromDate, LocalDate tillDate) {
+        List<Project> result = new ArrayList<>();
+        for (Project p : activeProjects.values()) {
+            LocalDate date = AllData.parseDate(p.getDateCreationString());
+            if ((date.compareTo(fromDate) >= 0) && (date.compareTo(tillDate) <= 0)) {
+                result.add(p);
+            }
+        }
+        return result;
+    }
+
+    public static List<Project> getActiveProjectsForPeriodWorking(LocalDate fromDate, LocalDate tillDate) {
+        List<Project> result = new ArrayList<>();
+        for (Project p : activeProjects.values()) {
+            if (p.containsWorkTime(fromDate, tillDate)) {
+                result.add(p);
+            }
+        }
+        return result;
+    }
+
+    public static List<Project> getActiveProjectsForDesignerAndPeriodWorking(int designerIDnumber, LocalDate fromDate, LocalDate tillDate) {
+        List<Project> result = new ArrayList<>();
+        for (Project p : activeProjects.values()) {
+            if (p.containsWorkTime(designerIDnumber, fromDate, tillDate)) {
+                result.add(p);
+            }
+        }
+        return result;
+    }
+
+
+
 
 
     /** Методы добавления, удаления проектов */

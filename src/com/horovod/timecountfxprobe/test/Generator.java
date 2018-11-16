@@ -58,7 +58,7 @@ public class Generator {
                 //month = (int) (Math.random() * 10 + 1);
                 month = 11;
                 //day = (int) (Math.random() * 27 + 1);
-                day = 13;
+                day = 16;
             }
             LocalDate date = LocalDate.of(year, month, day);
             String descr = new StringBuilder("project number ").append(j).append(" is of ").append(init).append(", and company is ").append(companyClient).toString();
@@ -82,5 +82,63 @@ public class Generator {
                 AllData.addWorkTime(project.getIdNumber(), date, ID, newtime);
             }
         }
+    }
+
+    public static void generate2() {
+        for (int i = 1; i <= 10; i++) {
+            AllUsers.createUser("des" + i, "pass", Role.DESIGNER);
+        }
+
+        for (int i = 1; i <= 2; i++) {
+            AllUsers.createUser("manager" + i, "pass", Role.MANAGER);
+        }
+
+        for (int i = 50; i >=1; i--) {
+            String descr = "project-" + i;
+            Project project = new Project("Nestle", "Ivanov", descr, LocalDate.now().minusDays(15));
+            AllData.addNewProject(project);
+
+            for (int j = 0; j <= 2; j++) {
+                int ID = (int) (Math.random() * 10 + 1);
+                int tmp = (int) ((Math.random() * 1000) / 30);
+                double newtime = AllData.intToDouble(tmp);
+                if (ID == 5) {
+                    System.out.println("it's designer ID = 5 ! and worktime = " + newtime + " projectID = " + project.getIdNumber() +
+                            "   and date is " + LocalDate.now().minusDays(j));
+                }
+                AllData.addWorkTime(project.getIdNumber(), LocalDate.now().minusDays(j * 2), ID, newtime);
+            }
+
+        }
+
+        /*for (int k = 1; k <=12; k+=3) {
+            int tmp2 = (int) ((Math.random() * 1000) / 30);
+            double newtime2 = AllData.intToDouble(tmp2);
+            AllData.addWorkTime(k, LocalDate.now(), 5, newtime2);
+        }*/
+    }
+
+
+    public static void generate3() {
+        for (int i = 1; i <= 12; i++) {
+            AllUsers.createUser("des" + i, "pass", Role.DESIGNER);
+        }
+
+        for (int i = 1; i <= 2; i++) {
+            AllUsers.createUser("manager" + i, "pass", Role.MANAGER);
+        }
+
+        for (int i = 12; i >=1; i--) {
+            String descr = "project-" + i;
+            Project project = new Project("Nestle", "Ivanov", descr, LocalDate.now().minusDays(i));
+            AllData.addNewProject(project);
+        }
+
+        for (int j = 1; j <=12; j++) {
+            int tmp = (int) ((Math.random() * 1000) / 30);
+            double newtime = AllData.intToDouble(tmp);
+            AllData.addWorkTime(j, LocalDate.now().minusDays(j), j, newtime);
+        }
+
     }
 }

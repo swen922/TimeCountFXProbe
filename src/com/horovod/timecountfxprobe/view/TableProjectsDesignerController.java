@@ -25,6 +25,7 @@ import javafx.scene.Cursor;
 import javafx.scene.Node;
 import javafx.scene.chart.CategoryAxis;
 import javafx.scene.chart.LineChart;
+import javafx.scene.chart.XYChart;
 import javafx.scene.control.*;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
@@ -40,6 +41,102 @@ public class TableProjectsDesignerController {
 
     private ObservableList<Map.Entry<Integer, Project>> tableProjects = FXCollections.observableArrayList(AllData.getActiveProjects().entrySet());
     private FilteredList<Map.Entry<Integer, Project>> filterData = new FilteredList<>(tableProjects, p -> true);
+
+    private ObservableList<String> datesForChart;
+    private ObservableList<XYChart.Data<String, Integer>> workTimeForChart;
+    private XYChart.Series<String, Integer> series;
+
+
+
+    private void initializeChart() {
+
+        LocalDate from = LocalDate.now().minusDays(12);
+        LocalDate till = LocalDate.now().minusDays(1);
+
+        if (datesForChart == null) {
+            datesForChart = FXCollections.observableArrayList();
+            xAxis.setCategories(datesForChart);
+        }
+
+        fillDatesChart(from, till);
+
+        if (workTimeForChart == null) {
+            workTimeForChart = FXCollections.observableArrayList();
+        }
+
+        if (series == null) {
+            series = new XYChart.Series<>();
+            series.setData(workTimeForChart);
+            decadeLineChart.getData().add(series);
+        }
+
+        fillXYChartSeries(from, till);
+    }
+
+
+    private void fillDatesChart(LocalDate from, LocalDate till) {
+
+        List<Project> decadeProjects = AllData.getActiveProjectsForPeriodWorking(from, till);
+
+        TreeSet<String> setForSorting = new TreeSet<>();
+        for (Project p : decadeProjects) {
+            for (WorkTime wt : p.getWork()) {
+                if (wt.getDate().compareTo(from) >= 0 && wt.getDate().compareTo(till) <= 0) {
+                    setForSorting.add(wt.getDateString());
+                }
+            }
+        }
+
+        datesForChart.clear();
+        datesForChart.addAll(setForSorting);
+
+    }
+
+
+    private void fillXYChartSeries(LocalDate from, LocalDate till) {
+
+        List<Project> myProjects = AllData.getActiveProjectsForDesignerAndPeriodWorking(AllUsers.getCurrentUser(), from, till);
+        Map<String, Integer> decadeWorkSums = new TreeMap<>();
+
+        for (Project p : myProjects) {
+            for (WorkTime wt : p.getWork()) {
+                if (wt.getDesignerID() == AllUsers.getCurrentUser()) {
+                    String dateWork = wt.getDateString();
+                    if (decadeWorkSums.containsKey(dateWork)) {
+                        int currentSum = decadeWorkSums.get(dateWork);
+                        decadeWorkSums.put(dateWork, (currentSum + wt.getTime()));
+                    }
+                    else {
+                        decadeWorkSums.put(dateWork, wt.getTime());
+                    }
+                }
+            }
+        }
+
+        workTimeForChart.clear();
+
+        for (String s : datesForChart) {
+            if (decadeWorkSums.containsKey(s)) {
+
+                System.out.println("date = " + s + " and time = " + decadeWorkSums.get(s));
+
+                workTimeForChart.add(new XYChart.Data<>(s, decadeWorkSums.get(s)));
+            }
+            else {
+                workTimeForChart.add(new XYChart.Data<>(s, 0));
+            }
+        }
+
+        decadeWorkSums.forEach((k,v) -> {
+            System.out.println(k + "  |  " + v);
+        });
+        System.out.println("-----");
+        System.out.println("");
+        System.out.println("");
+    }
+
+
+
 
 
     @FXML
@@ -97,7 +194,7 @@ public class TableProjectsDesignerController {
     }
 
     @FXML
-    private void initialize() {
+    public void initialize() {
 
         sortTableProjects();
 
@@ -245,7 +342,12 @@ public class TableProjectsDesignerController {
 
         sortedList.comparatorProperty().bind(projectsTable.comparatorProperty());
 
+        initializeChart();
+
     }
+
+
+
 
     public void handleDeleteSearch() {
         filterField.setText("");
@@ -325,6 +427,8 @@ public class TableProjectsDesignerController {
                     }
                 });
                 initialize();
+                //projectsTable.refresh();
+
             }
             else {
                 filterData = new FilteredList<>(this.tableProjects, new Predicate<Map.Entry<Integer, Project>>() {
@@ -337,6 +441,7 @@ public class TableProjectsDesignerController {
                     }
                 });
                 initialize();
+                //projectsTable.refresh();
             }
         }
         else {
@@ -500,6 +605,7 @@ public class TableProjectsDesignerController {
                         EditingCell.this.getTableView().requestFocus();
                         EditingCell.this.getTableView().getSelectionModel().selectAll();
                         initialize();
+                        //projectsTable.refresh();
                     }
                 }
             });
@@ -511,6 +617,7 @@ public class TableProjectsDesignerController {
                         EditingCell.this.getTableView().requestFocus();
                         EditingCell.this.getTableView().getSelectionModel().selectAll();
                         initialize();
+                        //projectsTable.refresh();
                     }
                 }
             });

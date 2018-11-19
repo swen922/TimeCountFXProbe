@@ -7,8 +7,7 @@ import com.horovod.timecountfxprobe.project.WorkTime;
 import com.horovod.timecountfxprobe.test.TestBackgroundUpdate01;
 import com.horovod.timecountfxprobe.user.AllUsers;
 import com.horovod.timecountfxprobe.user.Designer;
-import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.property.StringProperty;
+import javafx.beans.property.*;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
@@ -29,6 +28,7 @@ import javafx.scene.chart.XYChart;
 import javafx.scene.control.*;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
+import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextAlignment;
 import javafx.util.Callback;
@@ -46,97 +46,7 @@ public class TableProjectsDesignerController {
     private ObservableList<XYChart.Data<String, Integer>> workTimeForChart;
     private XYChart.Series<String, Integer> series;
 
-
-
-    private void initializeChart() {
-
-        LocalDate from = LocalDate.now().minusDays(12);
-        LocalDate till = LocalDate.now().minusDays(1);
-
-        if (datesForChart == null) {
-            datesForChart = FXCollections.observableArrayList();
-            xAxis.setCategories(datesForChart);
-        }
-
-        fillDatesChart(from, till);
-
-        if (workTimeForChart == null) {
-            workTimeForChart = FXCollections.observableArrayList();
-        }
-
-        if (series == null) {
-            series = new XYChart.Series<>();
-            series.setData(workTimeForChart);
-            decadeLineChart.getData().add(series);
-        }
-
-        fillXYChartSeries(from, till);
-    }
-
-
-    private void fillDatesChart(LocalDate from, LocalDate till) {
-
-        List<Project> decadeProjects = AllData.getActiveProjectsForPeriodWorking(from, till);
-
-        TreeSet<String> setForSorting = new TreeSet<>();
-        for (Project p : decadeProjects) {
-            for (WorkTime wt : p.getWork()) {
-                if (wt.getDate().compareTo(from) >= 0 && wt.getDate().compareTo(till) <= 0) {
-                    setForSorting.add(wt.getDateString());
-                }
-            }
-        }
-
-        datesForChart.clear();
-        datesForChart.addAll(setForSorting);
-
-    }
-
-
-    private void fillXYChartSeries(LocalDate from, LocalDate till) {
-
-        List<Project> myProjects = AllData.getActiveProjectsForDesignerAndPeriodWorking(AllUsers.getCurrentUser(), from, till);
-        Map<String, Integer> decadeWorkSums = new TreeMap<>();
-
-        for (Project p : myProjects) {
-            for (WorkTime wt : p.getWork()) {
-                if (wt.getDesignerID() == AllUsers.getCurrentUser()) {
-                    String dateWork = wt.getDateString();
-                    if (decadeWorkSums.containsKey(dateWork)) {
-                        int currentSum = decadeWorkSums.get(dateWork);
-                        decadeWorkSums.put(dateWork, (currentSum + wt.getTime()));
-                    }
-                    else {
-                        decadeWorkSums.put(dateWork, wt.getTime());
-                    }
-                }
-            }
-        }
-
-        workTimeForChart.clear();
-
-        for (String s : datesForChart) {
-            if (decadeWorkSums.containsKey(s)) {
-
-                System.out.println("date = " + s + " and time = " + decadeWorkSums.get(s));
-
-                workTimeForChart.add(new XYChart.Data<>(s, decadeWorkSums.get(s)));
-            }
-            else {
-                workTimeForChart.add(new XYChart.Data<>(s, 0));
-            }
-        }
-
-        decadeWorkSums.forEach((k,v) -> {
-            System.out.println(k + "  |  " + v);
-        });
-        System.out.println("-----");
-        System.out.println("");
-        System.out.println("");
-    }
-
-
-
+    //private DoubleProperty dayWorkSumProperty = new SimpleDoubleProperty(0);
 
 
     @FXML
@@ -164,11 +74,11 @@ public class TableProjectsDesignerController {
     private CategoryAxis xAxis;
 
     @FXML
-    private Button testAddButton;
+    private Label dayWorkSumLabel;
 
-    @FXML
-    private Button testDeleteButton;
 
+
+    /** Таблица и ее колонки */
 
     @FXML
     private TableView<Map.Entry<Integer, Project>> projectsTable;
@@ -187,6 +97,17 @@ public class TableProjectsDesignerController {
 
     @FXML
     private TableColumn<Map.Entry<Integer, Project>, String> columnDescription;
+
+
+    /** Временные кнопки под тестирование */
+
+    @FXML
+    private Button testAddButton;
+
+    @FXML
+    private Button testDeleteButton;
+
+
 
 
     public TextField getFilterField() {
@@ -224,6 +145,13 @@ public class TableProjectsDesignerController {
                 return result;
             }
         });
+
+        /*int old = AllData.doubleToInt(dayWorkSumProperty.get());
+        System.out.println("old = " + old);
+        int newSum = old + time;
+        System.out.println("newSum = " + newSum);
+        dayWorkSumProperty.set(AllData.intToDouble(newSum));
+        System.out.println("dayWorkSumProperty = " + dayWorkSumProperty);*/
 
         columnTime.setStyle("-fx-alignment: CENTER;");
 
@@ -287,7 +215,7 @@ public class TableProjectsDesignerController {
                             return true;
                         }
 
-                        String lowerCaseFilter = newValue.toLowerCase();
+                        String lowerCaseFilter = newValue.toLowerCase().trim();
 
                         String workTimeInTable = "0.0";
                         if (integerProjectEntry.getValue().containsWorkTime(AllUsers.getCurrentUser(), LocalDate.now())) {
@@ -342,8 +270,98 @@ public class TableProjectsDesignerController {
 
         sortedList.comparatorProperty().bind(projectsTable.comparatorProperty());
 
+        dayWorkSumLabel.textProperty().bind(AllData.dayWorkSumProperty().asString());
+
         initializeChart();
 
+    }
+
+
+    /** Три метода для инициализации / обновления лайнчарта
+     * Один метод – диспетчер, два других служебные для него */
+
+    private void initializeChart() {
+
+        xAxis.tickLabelFontProperty().set(Font.font(5.0));
+        xAxis.setLabel("");
+
+        LocalDate from = LocalDate.now().minusDays(15);
+        LocalDate till = LocalDate.now().minusDays(1);
+
+        if (datesForChart == null) {
+            datesForChart = FXCollections.observableArrayList();
+            xAxis.setCategories(datesForChart);
+        }
+
+        fillDatesChart(from, till);
+
+        if (workTimeForChart == null) {
+            workTimeForChart = FXCollections.observableArrayList();
+        }
+
+        if (series == null) {
+            series = new XYChart.Series<>();
+            series.setData(workTimeForChart);
+            series.setName(null);
+            decadeLineChart.getData().add(series);
+        }
+
+        fillXYChartSeries(from, till);
+
+    }
+
+    private void fillDatesChart(LocalDate from, LocalDate till) {
+
+        List<Project> decadeProjects = AllData.getActiveProjectsForPeriodWorking(from, till);
+
+        TreeSet<String> setForSorting = new TreeSet<>();
+        for (Project p : decadeProjects) {
+            for (WorkTime wt : p.getWork()) {
+                if (wt.getDate().compareTo(from) >= 0 && wt.getDate().compareTo(till) <= 0) {
+                    setForSorting.add(wt.getDateString());
+                }
+            }
+        }
+
+        datesForChart.clear();
+        datesForChart.addAll(setForSorting);
+
+    }
+
+
+    private void fillXYChartSeries(LocalDate from, LocalDate till) {
+
+        List<Project> myProjects = AllData.getActiveProjectsForDesignerAndPeriodWorking(AllUsers.getCurrentUser(), from, till);
+        Map<String, Integer> decadeWorkSums = new TreeMap<>();
+
+        for (Project p : myProjects) {
+            for (WorkTime wt : p.getWork()) {
+                if (wt.getDesignerID() == AllUsers.getCurrentUser()) {
+                    String dateWork = wt.getDateString();
+                    if (decadeWorkSums.containsKey(dateWork)) {
+                        int currentSum = decadeWorkSums.get(dateWork);
+                        decadeWorkSums.put(dateWork, (currentSum + wt.getTime()));
+                    }
+                    else {
+                        decadeWorkSums.put(dateWork, wt.getTime());
+                    }
+                }
+            }
+        }
+
+        workTimeForChart.clear();
+
+        for (String s : datesForChart) {
+            if (decadeWorkSums.containsKey(s)) {
+
+                System.out.println("date = " + s + " and time = " + decadeWorkSums.get(s));
+
+                workTimeForChart.add(new XYChart.Data<>(s, decadeWorkSums.get(s)));
+            }
+            else {
+                workTimeForChart.add(new XYChart.Data<>(s, 0));
+            }
+        }
     }
 
 

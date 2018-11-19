@@ -21,7 +21,7 @@
 
 <AnchorPane prefHeight="800.0" prefWidth="1200.0" xmlns="http://javafx.com/javafx/9.0.4" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.horovod.timecountfxprobe.view.TableProjectsDesignerController">
     <children>
-        <TableView fx:id="projectsTable" editable="true" layoutX="93.0" layoutY="87.0" prefHeight="200.0" prefWidth="200.0" tableMenuButtonVisible="true" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="150.0">
+        <TableView fx:id="projectsTable" editable="true" layoutX="93.0" layoutY="87.0" prefHeight="200.0" prefWidth="200.0" tableMenuButtonVisible="true" AnchorPane.bottomAnchor="30.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="150.0">
             <columns>
                 <TableColumn fx:id="columnID" maxWidth="1500.0" prefWidth="75.0" text="ID проекта" />
                 <TableColumn fx:id="columnTime" maxWidth="1500.0" prefWidth="75.0" text="Время" />
@@ -79,34 +79,56 @@
                         <Insets />
                     </HBox.margin>
                 </VBox>
-                <LineChart fx:id="decadeLineChart" alternativeRowFillVisible="false" createSymbols="false" focusTraversable="true" horizontalGridLinesVisible="false" horizontalZeroLineVisible="false" legendSide="RIGHT" legendVisible="false" prefHeight="100.0" titleSide="RIGHT" verticalGridLinesVisible="false" verticalZeroLineVisible="false">
+                <LineChart fx:id="decadeLineChart" accessibleHelp="График рабочего времени за 3 недели" focusTraversable="true" horizontalZeroLineVisible="false" legendSide="RIGHT" legendVisible="false" maxHeight="200.0" minHeight="150.0" prefHeight="150.0" titleSide="RIGHT" verticalZeroLineVisible="false">
                     <xAxis>
-                        <CategoryAxis side="BOTTOM" fx:id="xAxis" />
+                        <CategoryAxis autoRanging="false" side="BOTTOM" fx:id="xAxis" />
                     </xAxis>
                     <yAxis>
-                        <NumberAxis minorTickCount="50" minorTickVisible="false" side="LEFT" tickLabelFill="WHITE" tickLabelsVisible="false" tickMarkVisible="false" upperBound="200.0" />
+                        <NumberAxis autoRanging="false" forceZeroInRange="false" minorTickCount="10" minorTickVisible="false" side="LEFT" tickLabelGap="5.0" tickLabelsVisible="false" tickLength="10.0" tickMarkVisible="false" tickUnit="25.0">
+                     <tickLabelFont>
+                        <Font size="5.0" />
+                     </tickLabelFont></NumberAxis>
                     </yAxis>
                 </LineChart>
-                <AnchorPane prefHeight="100.0" prefWidth="100.0">
-                    <children>
-                        <Label alignment="CENTER" contentDisplay="CENTER" layoutX="60.0" layoutY="41.0" text="0" textAlignment="CENTER" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
-                            <font>
-                                <Font name="System Bold" size="36.0" />
-                            </font>
-                            <effect>
-                                <InnerShadow blurType="GAUSSIAN" choke="1.0" />
-                            </effect>
-                        </Label>
-                    </children>
-                    <effect>
-                        <InnerShadow choke="0.14" />
-                    </effect>
-                </AnchorPane>
-            <VBox prefHeight="200.0" prefWidth="200.0">
+            <VBox alignment="TOP_CENTER" prefHeight="200.0" prefWidth="100.0" spacing="10.0">
                <children>
-                  <Button fx:id="testAddButton" mnemonicParsing="false" onAction="#testAdd" text="TestAdd" />
-                  <Button fx:id="testDeleteButton" mnemonicParsing="false" onAction="#testDelete" text="TestDelete" />
-                  <ChoiceBox prefWidth="200.0">
+                  <Label alignment="CENTER" contentDisplay="CENTER" text="за сегодня:" textAlignment="CENTER">
+                     <font>
+                        <Font size="12.0" />
+                     </font>
+                     <effect>
+                        <InnerShadow blurType="GAUSSIAN" choke="1.0" />
+                     </effect>
+                  </Label>
+                        <Label fx:id="dayWorkSumLabel" alignment="CENTER" contentDisplay="CENTER" text="0" textAlignment="CENTER">
+                            <font>
+                                <Font name="System Bold" size="24.0" />
+                            </font>
+                        </Label>
+                  <Label alignment="CENTER" contentDisplay="CENTER" text="место в рейтинге:" textAlignment="CENTER">
+                     <font>
+                        <Font size="12.0" />
+                     </font>
+                     <effect>
+                        <InnerShadow blurType="GAUSSIAN" choke="1.0" />
+                     </effect>
+                     <VBox.margin>
+                        <Insets top="10.0" />
+                     </VBox.margin>
+                  </Label>
+                  <Label alignment="CENTER" contentDisplay="CENTER" text="0" textAlignment="CENTER">
+                     <font>
+                        <Font name="System Bold" size="24.0" />
+                     </font>
+                  </Label>
+               </children>
+               <padding>
+                  <Insets top="10.0" />
+               </padding>
+            </VBox>
+            <VBox prefHeight="200.0" prefWidth="150.0">
+               <children>
+                  <ChoiceBox prefWidth="150.0">
                      <padding>
                         <Insets left="10.0" right="10.0" />
                      </padding>
@@ -115,5 +137,11 @@
             </VBox>
             </children>
         </HBox>
+      <HBox layoutX="39.0" layoutY="736.0" prefHeight="30.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
+         <children>
+            <Button fx:id="testAddButton" mnemonicParsing="false" onAction="#testAdd" text="TestAdd" />
+            <Button fx:id="testDeleteButton" mnemonicParsing="false" onAction="#testDelete" text="TestDelete" />
+         </children>
+      </HBox>
     </children>
 </AnchorPane>

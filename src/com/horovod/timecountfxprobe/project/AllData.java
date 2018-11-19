@@ -1,7 +1,10 @@
 package com.horovod.timecountfxprobe.project;
 
+import com.horovod.timecountfxprobe.user.AllUsers;
 import com.horovod.timecountfxprobe.view.TableProjectsDesignerController;
+import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.IntegerProperty;
+import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -26,6 +29,7 @@ public class AllData {
 
     private static volatile AtomicInteger workSumProjects = new AtomicInteger(0);
     private static volatile IntegerProperty workSumProjectsProperty = new SimpleIntegerProperty(workSumProjects.get());
+    private static DoubleProperty dayWorkSumProperty = new SimpleDoubleProperty(0);
 
     /** TODO Решить, как быть с полем
      * */
@@ -115,6 +119,19 @@ public class AllData {
     public static void setTableProjectsDesignerController(TableProjectsDesignerController newTableProjectsDesignerController) {
         AllData.tableProjectsDesignerController = newTableProjectsDesignerController;
     }
+
+    public static double getDayWorkSumProperty() {
+        return dayWorkSumProperty.get();
+    }
+
+    public static DoubleProperty dayWorkSumProperty() {
+        return dayWorkSumProperty;
+    }
+
+    public synchronized static void setDayWorkSumProperty(double day) {
+        AllData.dayWorkSumProperty.set(day);
+    }
+
 
     /** Геттеры активного, неактивного и любого проекта из мапы
      * @return null
@@ -253,12 +270,15 @@ public class AllData {
 
             int difference = project.addWorkTime(correctDate, idUser, newTime);
             addWorkSumProjects(difference);
-            /*Platform.runLater(new Runnable() {
-                @Override
-                public void run() {
-                    tableProjectsDesignerController.sortTableProjects();
-                }
-            });*/
+
+
+            /** TODO переделать логику, чтобы было корректно */
+
+            if (idUser == AllUsers.getCurrentUser() && correctDate.equals(LocalDate.now())) {
+                dayWorkSumProperty.set(AllData.intToDouble(difference));
+                System.out.println(dayWorkSumProperty.get());
+            }
+
             return true;
         }
         return false;

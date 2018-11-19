@@ -120,7 +120,7 @@ public class Generator {
 
 
     public static void generate3() {
-        for (int i = 1; i <= 12; i++) {
+        for (int i = 1; i <= 7; i++) {
             AllUsers.createUser("des" + i, "pass", Role.DESIGNER);
         }
 
@@ -128,16 +128,30 @@ public class Generator {
             AllUsers.createUser("manager" + i, "pass", Role.MANAGER);
         }
 
-        for (int i = 12; i >=1; i--) {
+        for (int i = 20; i >=1; i--) {
             String descr = "project-" + i;
-            Project project = new Project("Nestle", "Ivanov", descr, LocalDate.now().minusDays(i));
+            Project project = new Project("Nestle", "Ivanov", descr, LocalDate.now().minusDays(25));
             AllData.addNewProject(project);
         }
 
-        for (int j = 1; j <=12; j++) {
+        /*for (int j = 1; j <=15; j++) {
             int tmp = (int) ((Math.random() * 1000) / 30);
             double newtime = AllData.intToDouble(tmp);
             AllData.addWorkTime(j, LocalDate.now().minusDays(j), j, newtime);
+        }*/
+
+        for (int j = 0; j <= 100; j++) {
+            int projectID = (int) (Math.random() * 20 + 1);
+            int minusDays = (int) (Math.random() * 15);
+            int ID = (int) (Math.random() * 6 + 1);
+            int tmp = (int) ((Math.random() * 1000) / 30);
+            double newtime = AllData.intToDouble(tmp);
+
+            if (ID == 5) {
+                System.out.println("project = " + projectID + " and des-number " + ID + " and time = " + newtime + " and date = " + LocalDate.now().minusDays(minusDays));
+            }
+
+            AllData.addWorkTime(projectID, LocalDate.now().minusDays(minusDays), ID, newtime);
         }
 
     }

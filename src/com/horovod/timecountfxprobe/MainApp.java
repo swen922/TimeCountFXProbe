@@ -27,7 +27,7 @@ public class MainApp extends Application {
         this.primaryStage.setTitle("Time Count System Probe FX -1");
 
         /** TODO убрать эту строчку в рабочем варианте */
-        Generator.generate3();
+        Generator.generateUsers();
 
         initRootLayut();
 

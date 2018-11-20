@@ -275,7 +275,11 @@ public class AllData {
             /** TODO переделать логику, чтобы было корректно */
 
             if (idUser == AllUsers.getCurrentUser() && correctDate.equals(LocalDate.now())) {
-                dayWorkSumProperty.set(AllData.intToDouble(difference));
+
+
+                int old = AllData.doubleToInt(dayWorkSumProperty.get());
+
+                dayWorkSumProperty.set(AllData.intToDouble(old + difference));
                 System.out.println(dayWorkSumProperty.get());
             }
 

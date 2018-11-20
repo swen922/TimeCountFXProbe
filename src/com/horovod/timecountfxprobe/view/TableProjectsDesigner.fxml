@@ -21,7 +21,7 @@
 
 <AnchorPane prefHeight="800.0" prefWidth="1200.0" xmlns="http://javafx.com/javafx/9.0.4" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.horovod.timecountfxprobe.view.TableProjectsDesignerController">
     <children>
-        <TableView fx:id="projectsTable" editable="true" layoutX="93.0" layoutY="87.0" prefHeight="200.0" prefWidth="200.0" tableMenuButtonVisible="true" AnchorPane.bottomAnchor="30.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="150.0">
+        <TableView fx:id="projectsTable" editable="true" layoutX="93.0" layoutY="87.0" prefHeight="200.0" prefWidth="200.0" tableMenuButtonVisible="true" AnchorPane.bottomAnchor="35.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="160.0">
             <columns>
                 <TableColumn fx:id="columnID" maxWidth="1500.0" prefWidth="75.0" text="ID проекта" />
                 <TableColumn fx:id="columnTime" maxWidth="1500.0" prefWidth="75.0" text="Время" />
@@ -33,11 +33,11 @@
                 <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
             </columnResizePolicy>
         </TableView>
-        <HBox alignment="CENTER_LEFT" prefHeight="100.0" prefWidth="200.0" spacing="10.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+        <HBox alignment="CENTER_LEFT" maxHeight="150.0" spacing="10.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
             <children>
-                <VBox alignment="BOTTOM_CENTER" prefHeight="50.0" prefWidth="450.0" spacing="3.0">
+                <VBox alignment="BOTTOM_CENTER" spacing="3.0">
                     <children>
-                        <HBox alignment="CENTER_LEFT" prefHeight="20.0" prefWidth="200.0" spacing="10.0">
+                        <HBox alignment="CENTER_LEFT" prefHeight="20.0" spacing="10.0">
                             <children>
                                 <CheckBox fx:id="showMyProjectsCheckBox" lineSpacing="10.0" mnemonicParsing="false" onAction="#handleShowMyProjectsCheckBox" text="Только мои проекты">
                                     <padding>
@@ -45,22 +45,22 @@
                                     </padding></CheckBox>
                             </children>
                         </HBox>
-                        <Separator prefWidth="200.0" />
-                        <HBox alignment="CENTER_LEFT" prefHeight="50.0" prefWidth="200.0" spacing="10.0">
+                        <Separator />
+                        <HBox alignment="CENTER_LEFT" minWidth="430.0" prefHeight="40.0" spacing="10.0">
                             <children>
                                 <Label text="За период:" />
-                                <DatePicker fx:id="fromDatePicker" onAction="#handleFromDatePicker" prefWidth="140.0" promptText="c" />
-                                <DatePicker fx:id="tillDatePicker" onAction="#handleTillDatePicker" prefWidth="140.0" promptText="по" />
+                                <DatePicker fx:id="fromDatePicker" onAction="#handleFromDatePicker" prefWidth="145.0" promptText="c" />
+                                <DatePicker fx:id="tillDatePicker" onAction="#handleTillDatePicker" prefWidth="145.0" promptText="по" />
                         <Button fx:id="clearDatePicker" mnemonicParsing="false" onAction="#handleDeleteDatePicker" text="X" />
                             </children>
                             <VBox.margin>
                                 <Insets bottom="3.0" top="1.0" />
                             </VBox.margin>
                         </HBox>
-                        <Separator prefWidth="200.0" />
-                        <HBox alignment="CENTER" prefHeight="50.0" prefWidth="200.0" spacing="10.0">
+                        <Separator />
+                        <HBox alignment="CENTER" minWidth="430.0" prefHeight="40.0" spacing="10.0">
                             <children>
-                                <TextField fx:id="filterField" prefHeight="26.0" prefWidth="400.0" promptText="Найти проект">
+                                <TextField fx:id="filterField" prefHeight="26.0" prefWidth="405.0" promptText="Найти проект">
                                     <opaqueInsets>
                                         <Insets right="2010.0" />
                                     </opaqueInsets>
@@ -73,7 +73,7 @@
                         </HBox>
                     </children>
                     <padding>
-                        <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+                        <Insets bottom="20.0" left="10.0" right="10.0" top="10.0" />
                     </padding>
                     <HBox.margin>
                         <Insets />
@@ -84,13 +84,13 @@
                         <CategoryAxis autoRanging="false" side="BOTTOM" fx:id="xAxis" />
                     </xAxis>
                     <yAxis>
-                        <NumberAxis autoRanging="false" forceZeroInRange="false" minorTickCount="10" minorTickVisible="false" side="LEFT" tickLabelGap="5.0" tickLabelsVisible="false" tickLength="10.0" tickMarkVisible="false" tickUnit="25.0">
+                        <NumberAxis minorTickCount="10" minorTickVisible="false" side="LEFT" tickLabelGap="5.0" tickLabelsVisible="false" tickLength="10.0" tickMarkVisible="false" tickUnit="25.0">
                      <tickLabelFont>
                         <Font size="5.0" />
                      </tickLabelFont></NumberAxis>
                     </yAxis>
                 </LineChart>
-            <VBox alignment="TOP_CENTER" prefHeight="200.0" prefWidth="100.0" spacing="10.0">
+            <VBox alignment="TOP_CENTER" prefWidth="100.0" spacing="5.0">
                <children>
                   <Label alignment="CENTER" contentDisplay="CENTER" text="за сегодня:" textAlignment="CENTER">
                      <font>
@@ -99,13 +99,20 @@
                      <effect>
                         <InnerShadow blurType="GAUSSIAN" choke="1.0" />
                      </effect>
+                     <VBox.margin>
+                        <Insets top="5.0" />
+                     </VBox.margin>
                   </Label>
-                        <Label fx:id="dayWorkSumLabel" alignment="CENTER" contentDisplay="CENTER" text="0" textAlignment="CENTER">
+                        <Label fx:id="dayWorkSumLabel" alignment="CENTER" contentDisplay="CENTER" text="0" textAlignment="CENTER" textFill="#f3622d">
                             <font>
-                                <Font name="System Bold" size="24.0" />
+                                <Font name="System Bold" size="36.0" />
                             </font>
+                     <VBox.margin>
+                        <Insets top="-5.0" />
+                     </VBox.margin>
                         </Label>
-                  <Label alignment="CENTER" contentDisplay="CENTER" text="место в рейтинге:" textAlignment="CENTER">
+                  <Separator />
+                  <Label alignment="CENTER" contentDisplay="CENTER" minHeight="30.0" text="место в рейтинге" textAlignment="CENTER" wrapText="true">
                      <font>
                         <Font size="12.0" />
                      </font>
@@ -113,35 +120,41 @@
                         <InnerShadow blurType="GAUSSIAN" choke="1.0" />
                      </effect>
                      <VBox.margin>
-                        <Insets top="10.0" />
+                        <Insets top="5.0" />
                      </VBox.margin>
                   </Label>
                   <Label alignment="CENTER" contentDisplay="CENTER" text="0" textAlignment="CENTER">
                      <font>
-                        <Font name="System Bold" size="24.0" />
+                        <Font name="System Bold" size="26.0" />
                      </font>
+                     <VBox.margin>
+                        <Insets top="-5.0" />
+                     </VBox.margin>
                   </Label>
                </children>
                <padding>
-                  <Insets top="10.0" />
+                  <Insets top="5.0" />
                </padding>
             </VBox>
-            <VBox prefHeight="200.0" prefWidth="150.0">
-               <children>
-                  <ChoiceBox prefWidth="150.0">
-                     <padding>
-                        <Insets left="10.0" right="10.0" />
-                     </padding>
-                  </ChoiceBox>
-               </children>
-            </VBox>
+            <VBox prefHeight="200.0" prefWidth="150.0" />
             </children>
+         <padding>
+            <Insets left="5.0" right="5.0" />
+         </padding>
         </HBox>
-      <HBox layoutX="39.0" layoutY="736.0" prefHeight="30.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
+      <HBox layoutX="39.0" layoutY="736.0" prefHeight="30.0" spacing="10.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="250.0">
          <children>
             <Button fx:id="testAddButton" mnemonicParsing="false" onAction="#testAdd" text="TestAdd" />
             <Button fx:id="testDeleteButton" mnemonicParsing="false" onAction="#testDelete" text="TestDelete" />
          </children>
+         <padding>
+            <Insets left="10.0" />
+         </padding>
       </HBox>
+      <ChoiceBox layoutX="1036.0" layoutY="773.0" prefWidth="200.0" AnchorPane.bottomAnchor="5.0" AnchorPane.rightAnchor="10.0">
+         <padding>
+            <Insets left="10.0" right="10.0" />
+         </padding>
+      </ChoiceBox>
     </children>
 </AnchorPane>

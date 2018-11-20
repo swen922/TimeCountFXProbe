@@ -119,7 +119,7 @@ public class Generator {
     }
 
 
-    public static void generate3() {
+    public static void generateUsers() {
         for (int i = 1; i <= 7; i++) {
             AllUsers.createUser("des" + i, "pass", Role.DESIGNER);
         }
@@ -127,6 +127,10 @@ public class Generator {
         for (int i = 1; i <= 2; i++) {
             AllUsers.createUser("manager" + i, "pass", Role.MANAGER);
         }
+    }
+
+
+    public static void generateProjects() {
 
         for (int i = 20; i >=1; i--) {
             String descr = "project-" + i;
@@ -134,13 +138,7 @@ public class Generator {
             AllData.addNewProject(project);
         }
 
-        /*for (int j = 1; j <=15; j++) {
-            int tmp = (int) ((Math.random() * 1000) / 30);
-            double newtime = AllData.intToDouble(tmp);
-            AllData.addWorkTime(j, LocalDate.now().minusDays(j), j, newtime);
-        }*/
-
-        for (int j = 0; j <= 100; j++) {
+        for (int j = 0; j <= 200; j++) {
             int projectID = (int) (Math.random() * 20 + 1);
             int minusDays = (int) (Math.random() * 15);
             int ID = (int) (Math.random() * 6 + 1);

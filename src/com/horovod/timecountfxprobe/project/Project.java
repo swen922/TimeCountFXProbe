@@ -282,30 +282,38 @@ public class Project {
 
         int newTimeInt = AllData.doubleToInt(newTimeDouble);
 
-        for (WorkTime wt : work) {
+        Iterator<WorkTime> iter = work.iterator();
+        while (iter.hasNext()) {
+            WorkTime wt = iter.next();
             // Проверяем наличие такого дня + дизайнера
             if ((AllData.parseDate(wt.getDateString()).equals(newDate)) && (wt.getDesignerID() == idUser)) {
                 // сначала правим суммарное рабочее время всего проекта
                 int diff = newTimeInt - wt.getTime();
                 int newWorkSumInt = getWorkSum() + diff;
-                setWorkSum(newWorkSumInt);
 
-                // теперь вносим время в список рабочего времени
+                setWorkSum(newWorkSumInt);
+                setWorkSumProperty(String.valueOf(AllData.intToDouble(newWorkSumInt)));
+
+                // удаляем экземпляр WorkTime, если время в нем стало равно 0
+                if (newTimeInt <= 0) {
+                    iter.remove();
+                    return diff;
+                }
+
+                // теперь вносим время в экземпляр рабочего времени
                 wt.setTime(newTimeInt);
-                this.workSumProperty.set(String.valueOf(AllData.intToDouble(newWorkSumInt)));
-                //this.workSumProperty.set(AllData.intToDouble(newWorkSumInt));
                 return diff;
             }
         }
 
         // Если существующего экземпляра WorkTime с такой же датой и дизайнером не обнаружено,
         // то создаем новый экземпляр WorkTime и кладем в список
-        int newWorkSumInt = getWorkSum() + newTimeInt;
         work.add(new WorkTime(newDate, idUser, newTimeDouble));
+        int newWorkSumInt = getWorkSum() + newTimeInt;
         setWorkSum(newWorkSumInt);
-        this.workSumProperty.set(String.valueOf(AllData.intToDouble(newWorkSumInt)));
-        //this.workSumProperty.set(AllData.intToDouble(newWorkSumInt));
+        setWorkSumProperty(String.valueOf(AllData.intToDouble(newWorkSumInt)));
         return newTimeInt;
+
     }
 
     /** Методы проверки наличия рабочего времени по разным параметрам */

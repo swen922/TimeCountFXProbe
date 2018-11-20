@@ -282,6 +282,8 @@ public class TableProjectsDesignerController {
 
     private void initializeChart() {
 
+        decadeLineChart.setStyle("-fx-font-size: " + 1 + "px;");
+
         xAxis.tickLabelFontProperty().set(Font.font(5.0));
         xAxis.setLabel("");
 

@@ -2,6 +2,7 @@ package com.horovod.timecountfxprobe.view;
 
 import com.horovod.timecountfxprobe.MainApp;
 import com.horovod.timecountfxprobe.project.AllData;
+import com.horovod.timecountfxprobe.test.Generator;
 import com.horovod.timecountfxprobe.user.AllUsers;
 import com.horovod.timecountfxprobe.user.Role;
 import com.horovod.timecountfxprobe.user.SecurePassword;
@@ -106,6 +107,8 @@ public class LoginWindowOnStartController {
                 Role role = user.getRole();
                 if (role.equals(Role.DESIGNER)) {
                     this.stage.close();
+                    /** TODO убрать эту строчку в рабочем варианте */
+                    Generator.generateProjects();
                     this.mainApp.showTableProjectsDesigner();
                     break;
                 }
@@ -115,6 +118,7 @@ public class LoginWindowOnStartController {
                     //this.mainApp.showTableProjectsDesigner();
                     break;
                 }
+
                 break;
             }
         }

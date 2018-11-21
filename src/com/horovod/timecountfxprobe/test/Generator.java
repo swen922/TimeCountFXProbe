@@ -122,10 +122,12 @@ public class Generator {
     public static void generateUsers() {
         for (int i = 1; i <= 7; i++) {
             AllUsers.createUser("des" + i, "pass", Role.DESIGNER);
+            AllUsers.getOneUser("des"+i).setFullName("Good Designer Number " + i);
         }
 
         for (int i = 1; i <= 2; i++) {
             AllUsers.createUser("manager" + i, "pass", Role.MANAGER);
+            AllUsers.getOneUser("manager"+i).setFullName("Good Manager Number " + i);
         }
     }
 

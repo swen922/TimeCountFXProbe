@@ -1,6 +1,9 @@
 package com.horovod.timecountfxprobe.user;
 
 
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -20,8 +23,11 @@ public class AllUsers {
 
     private static Map<Integer, SecurePassword> usersPass = new ConcurrentHashMap<>();
 
-    /** Это поле надо сохранять в XML, чтобы при загрузке утром сразу грузился нужный польззователь */
+    /** Это поле надо сохранять в XML, чтобы при загрузке утром сразу грузился нужный пользователь */
     private static int currentUser = 0;
+
+    /** Это поле надо сохранять в XML, чтобы при загрузке утром сразу грузился нужный пользователь */
+    private static ObservableList<String> usersLogged = FXCollections.observableArrayList();
 
 
 
@@ -71,6 +77,54 @@ public class AllUsers {
         AllUsers.currentUser = newCurrentUser;
     }
 
+    public static ObservableList<String> getUsersLogged() {
+        return usersLogged;
+    }
+
+    public static synchronized void setUsersLogged(ObservableList<String> newUsersLogged) {
+        AllUsers.usersLogged = newUsersLogged;
+    }
+
+    public static synchronized void addLoggedUserByIDnumber(int newLoggedUser) {
+        if (!usersLogged.contains(AllUsers.getOneUser(newLoggedUser).getFullName())) {
+            AllUsers.usersLogged.add(AllUsers.getOneUser(newLoggedUser).getFullName());
+        }
+    }
+
+    public static synchronized void addLoggedUser(String newLoggedUser) {
+        if (!usersLogged.contains(newLoggedUser)) {
+            AllUsers.usersLogged.add(newLoggedUser);
+        }
+    }
+
+    public static synchronized void deleteLoggedUserbyIDnumber(int deletedUser) {
+        String oldFullName = AllUsers.getOneUser(deletedUser).getFullName();
+        if (usersLogged.contains(oldFullName)) {
+            AllUsers.usersLogged.remove(oldFullName);
+        }
+    }
+
+    public static synchronized void deleteLoggedUser(String deletedUser) {
+        if (usersLogged.contains(deletedUser)) {
+            AllUsers.usersLogged.remove(deletedUser);
+        }
+    }
+
+    /** Метод нужен, чтобы добавлять в список произвольные тексты,
+     * например "Выйти в окно логина" */
+    public static synchronized void addStringToLoggedUsers(String newString) {
+        if (!usersLogged.contains(newString)) {
+            AllUsers.usersLogged.add(newString);
+        }
+    }
+
+
+
+    public static boolean isUsersLoggedContainsUser(int loggedUser) {
+        return AllUsers.usersLogged.contains(AllUsers.getOneUser(loggedUser).getFullName());
+    }
+
+
     /** Геттеры отдельных юзеров из мапы
      * @return null
      * */
@@ -88,6 +142,15 @@ public class AllUsers {
                 if (u.getNameLogin().equals(userNameLogin)) {
                     return u;
                 }
+            }
+        }
+        return null;
+    }
+
+    public static User getOneUserForFullName(String userFullName) {
+        for (User u : users.values()) {
+            if (u.getFullName().equals(userFullName)) {
+                return u;
             }
         }
         return null;
@@ -111,22 +174,23 @@ public class AllUsers {
         if (!isNameLoginExist(login)) {
             if (role.equals(Role.DESIGNER)) {
                 result = new Designer(login, password);
-                users.put(result.getIDNumber(), result);
-                SecurePassword sp = SecurePassword.getInstance(password);
-                if (sp == null) {
-                    return null;
-                }
-                usersPass.put(result.getIDNumber(), sp);
             }
             else if (role.equals(Role.MANAGER)) {
                 result = new Manager(login, password);
-                users.put(result.getIDNumber(), result);
-                SecurePassword sp = SecurePassword.getInstance(password);
-                if (sp == null) {
-                    return null;
-                }
-                usersPass.put(result.getIDNumber(), sp);
+
             }
+
+            if (result == null) {
+                return null;
+            }
+
+            users.put(result.getIDNumber(), result);
+
+            SecurePassword sp = SecurePassword.getInstance(password);
+            if (sp == null) {
+                return null;
+            }
+            usersPass.put(result.getIDNumber(), sp);
         }
         return result;
     }
@@ -214,10 +278,10 @@ public class AllUsers {
         boolean result;
         try {
             result = PasswordUtil.verifyUserPassword(password, securePass, salt);
-            return result;
         } catch (Error error) {
+            return false;
         }
-        return false;
+        return result;
     }
 
 }

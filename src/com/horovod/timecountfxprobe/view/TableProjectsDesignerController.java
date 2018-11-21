@@ -4,9 +4,12 @@ import com.horovod.timecountfxprobe.MainApp;
 import com.horovod.timecountfxprobe.project.AllData;
 import com.horovod.timecountfxprobe.project.Project;
 import com.horovod.timecountfxprobe.project.WorkTime;
+import com.horovod.timecountfxprobe.test.Generator;
 import com.horovod.timecountfxprobe.test.TestBackgroundUpdate01;
 import com.horovod.timecountfxprobe.user.AllUsers;
 import com.horovod.timecountfxprobe.user.Designer;
+import com.horovod.timecountfxprobe.user.Role;
+import com.horovod.timecountfxprobe.user.User;
 import javafx.beans.property.*;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -16,6 +19,7 @@ import javafx.collections.ObservableList;
 import javafx.collections.ObservableMap;
 import javafx.collections.transformation.FilteredList;
 import javafx.collections.transformation.SortedList;
+import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.geometry.Insets;
@@ -31,6 +35,7 @@ import javafx.scene.input.KeyEvent;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextAlignment;
+import javafx.stage.Stage;
 import javafx.util.Callback;
 
 import java.time.LocalDate;
@@ -38,6 +43,9 @@ import java.util.*;
 import java.util.function.Predicate;
 
 public class TableProjectsDesignerController {
+
+    private MainApp mainApp;
+    private Stage stage;
 
     private ObservableList<Map.Entry<Integer, Project>> tableProjects = FXCollections.observableArrayList(AllData.getActiveProjects().entrySet());
     private FilteredList<Map.Entry<Integer, Project>> filterData = new FilteredList<>(tableProjects, p -> true);
@@ -76,6 +84,9 @@ public class TableProjectsDesignerController {
     @FXML
     private Label dayWorkSumLabel;
 
+    @FXML
+    private ChoiceBox<String> usersLoggedChoiceBox;
+
 
 
     /** Таблица и ее колонки */
@@ -108,7 +119,21 @@ public class TableProjectsDesignerController {
     private Button testDeleteButton;
 
 
+    public MainApp getMainApp() {
+        return mainApp;
+    }
 
+    public void setMainApp(MainApp newMainApp) {
+        this.mainApp = newMainApp;
+    }
+
+    public Stage getStage() {
+        return stage;
+    }
+
+    public void setStage(Stage newStage) {
+        this.stage = newStage;
+    }
 
     public TextField getFilterField() {
         return filterField;
@@ -274,7 +299,74 @@ public class TableProjectsDesignerController {
 
         initializeChart();
 
+        initLoggedUsersChoiceBox();
+
     }
+
+    public void initLoggedUsersChoiceBox() {
+
+        String toLoginWindow = "Выйти в окно логина";
+
+        usersLoggedChoiceBox.setItems(AllUsers.getUsersLogged());
+        // Эта строчка нужна, не удалять
+        //AllUsers.addStringToLoggedUsers("Выйти в окно логина");
+
+        if (!usersLoggedChoiceBox.getItems().contains(toLoginWindow)) {
+            usersLoggedChoiceBox.getItems().add(toLoginWindow);
+        }
+
+        /** Удалить эти 2 строчки в рабочем варианте */
+        //AllUsers.addLoggedUserByIDnumber(2);
+        //AllUsers.addLoggedUserByIDnumber(3);
+
+        usersLoggedChoiceBox.setValue(AllUsers.getOneUser(AllUsers.getCurrentUser()).getFullName());
+
+        usersLoggedChoiceBox.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+
+                String selectUser = usersLoggedChoiceBox.getValue();
+
+                if (selectUser != null) {
+                    if (selectUser.equalsIgnoreCase(toLoginWindow)) {
+
+                        AllData.getRootLayout().setCenter(null);
+                        mainApp.showLoginWindow();
+                    }
+                    else if (!selectUser.equalsIgnoreCase(AllUsers.getOneUser(AllUsers.getCurrentUser()).getFullName())) {
+                        User user = AllUsers.getOneUserForFullName(selectUser);
+
+                        Role role = user.getRole();
+                        if (role.equals(Role.DESIGNER)) {
+                            AllUsers.setCurrentUser(user.getIDNumber());
+                            //initialize();
+                            // ПРидется тут заново грузить наверное
+                            AllData.rebuildDayWorkSumProperty();
+                            mainApp.showTableProjectsDesigner();
+                        }
+                        else if (role.equals(Role.MANAGER)) {
+                            //this.stage.close();
+                            // TODO аписать класс таблицы для менеджера
+                            //this.mainApp.showTableProjectsDesigner();
+                        }
+                    }
+                }
+            }
+        });
+    }
+
+    public void handleSelectLoggedUser() {
+        String selectUser = usersLoggedChoiceBox.getValue();
+        if (selectUser != null) {
+            mainApp.initRootLayut();
+        }
+
+        /*if (!selectUser.equalsIgnoreCase(AllUsers.getOneUser(AllUsers.getCurrentUser()))) {
+
+        }*/
+    }
+
+
 
 
     /** Три метода для инициализации / обновления лайнчарта
@@ -406,7 +498,7 @@ public class TableProjectsDesignerController {
         handleFilters();
     }
 
-    public void checkDatePicker(Node node) {
+    private void checkDatePicker(Node node) {
         LocalDate fromDate = fromDatePicker.getValue();
         LocalDate tillDate = tillDatePicker.getValue();
 
@@ -428,7 +520,7 @@ public class TableProjectsDesignerController {
     }
 
 
-    public void handleFilters() {
+    private void handleFilters() {
 
         filterField.clear();
         LocalDate fromDate = fromDatePicker.getValue();

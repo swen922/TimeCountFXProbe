@@ -48,7 +48,7 @@ public class MainApp extends Application {
         //showTableProjectsDesigner();
     }
 
-    private void initRootLayut() {
+    public void initRootLayut() {
         try {
             FXMLLoader loader = new FXMLLoader();
             loader.setLocation(MainApp.class.getResource("view/RootLayout.fxml"));
@@ -60,21 +60,7 @@ public class MainApp extends Application {
 
             RootLayoutController controller = loader.getController();
             controller.setMainApp(this);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    private void showTableProjects() {
-        try {
-            FXMLLoader loader2 = new FXMLLoader();
-            loader2.setLocation(MainApp.class.getResource("view/TableProjects.fxml"));
-            AnchorPane tableDesigner = (AnchorPane) loader2.load();
-
-            rootLayout.setCenter(tableDesigner);
-
-            TableProjectsController controller = loader2.getController();
-            controller.setMainApp(this);
+            AllData.setRootLayout(rootLayout);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -90,6 +76,8 @@ public class MainApp extends Application {
 
             TableProjectsDesignerController controller = loader3.getController();
             AllData.setTableProjectsDesignerController(controller);
+            AllData.setTableDesigner(tableDesigner);
+            controller.setMainApp(this);
         } catch (IOException e) {
             e.printStackTrace();
         }

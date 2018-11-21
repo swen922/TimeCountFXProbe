@@ -21,21 +21,9 @@
 
 <AnchorPane prefHeight="800.0" prefWidth="1200.0" xmlns="http://javafx.com/javafx/9.0.4" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.horovod.timecountfxprobe.view.TableProjectsDesignerController">
     <children>
-        <TableView fx:id="projectsTable" editable="true" layoutX="93.0" layoutY="87.0" prefHeight="200.0" prefWidth="200.0" tableMenuButtonVisible="true" AnchorPane.bottomAnchor="35.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="160.0">
-            <columns>
-                <TableColumn fx:id="columnID" maxWidth="1500.0" prefWidth="75.0" text="ID проекта" />
-                <TableColumn fx:id="columnTime" maxWidth="1500.0" prefWidth="75.0" text="Время" />
-                <TableColumn fx:id="columnCompany" maxWidth="2000.0" prefWidth="75.0" text="Компания" />
-                <TableColumn fx:id="columnManager" maxWidth="3000.0" prefWidth="75.0" text="Менеджер" />
-                <TableColumn fx:id="columnDescription" maxWidth="7000.0" prefWidth="75.0" text="Описание" />
-            </columns>
-            <columnResizePolicy>
-                <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
-            </columnResizePolicy>
-        </TableView>
         <HBox alignment="CENTER_LEFT" maxHeight="150.0" spacing="10.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
             <children>
-                <VBox alignment="BOTTOM_CENTER" spacing="3.0">
+                <VBox alignment="BOTTOM_CENTER" minWidth="450.0" prefWidth="450.0" spacing="3.0">
                     <children>
                         <HBox alignment="CENTER_LEFT" prefHeight="20.0" spacing="10.0">
                             <children>
@@ -48,9 +36,12 @@
                         <Separator />
                         <HBox alignment="CENTER_LEFT" minWidth="430.0" prefHeight="40.0" spacing="10.0">
                             <children>
-                                <Label text="За период:" />
-                                <DatePicker fx:id="fromDatePicker" onAction="#handleFromDatePicker" prefWidth="145.0" promptText="c" />
-                                <DatePicker fx:id="tillDatePicker" onAction="#handleTillDatePicker" prefWidth="145.0" promptText="по" />
+                                <Label text="За период:">
+                           <HBox.margin>
+                              <Insets right="2.0" />
+                           </HBox.margin></Label>
+                                <DatePicker fx:id="fromDatePicker" onAction="#handleFromDatePicker" prefWidth="150.0" promptText="c" />
+                                <DatePicker fx:id="tillDatePicker" onAction="#handleTillDatePicker" prefWidth="150.0" promptText="по" />
                         <Button fx:id="clearDatePicker" mnemonicParsing="false" onAction="#handleDeleteDatePicker" text="X" />
                             </children>
                             <VBox.margin>
@@ -60,7 +51,7 @@
                         <Separator />
                         <HBox alignment="CENTER" minWidth="430.0" prefHeight="40.0" spacing="10.0">
                             <children>
-                                <TextField fx:id="filterField" prefHeight="26.0" prefWidth="405.0" promptText="Найти проект">
+                                <TextField fx:id="filterField" prefHeight="26.0" prefWidth="400.0" promptText="Найти проект">
                                     <opaqueInsets>
                                         <Insets right="2010.0" />
                                     </opaqueInsets>
@@ -142,7 +133,19 @@
             <Insets left="5.0" right="5.0" />
          </padding>
         </HBox>
-      <HBox layoutX="39.0" layoutY="736.0" prefHeight="30.0" spacing="10.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="250.0">
+        <TableView fx:id="projectsTable" editable="true" layoutX="93.0" layoutY="87.0" prefHeight="200.0" prefWidth="200.0" tableMenuButtonVisible="true" AnchorPane.bottomAnchor="35.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="160.0">
+            <columns>
+                <TableColumn fx:id="columnID" maxWidth="1500.0" prefWidth="75.0" text="ID проекта" />
+                <TableColumn fx:id="columnTime" maxWidth="1500.0" prefWidth="75.0" text="Время" />
+                <TableColumn fx:id="columnCompany" maxWidth="2000.0" prefWidth="75.0" text="Компания" />
+                <TableColumn fx:id="columnManager" maxWidth="3000.0" prefWidth="75.0" text="Менеджер" />
+                <TableColumn fx:id="columnDescription" maxWidth="7000.0" prefWidth="75.0" text="Описание" />
+            </columns>
+            <columnResizePolicy>
+                <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
+            </columnResizePolicy>
+        </TableView>
+      <HBox layoutX="39.0" layoutY="736.0" prefHeight="30.0" spacing="10.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0">
          <children>
             <Button fx:id="testAddButton" mnemonicParsing="false" onAction="#testAdd" text="TestAdd" />
             <Button fx:id="testDeleteButton" mnemonicParsing="false" onAction="#testDelete" text="TestDelete" />
@@ -151,7 +154,7 @@
             <Insets left="10.0" />
          </padding>
       </HBox>
-      <ChoiceBox layoutX="1036.0" layoutY="773.0" prefWidth="200.0" AnchorPane.bottomAnchor="5.0" AnchorPane.rightAnchor="10.0">
+      <ChoiceBox fx:id="usersLoggedChoiceBox" layoutX="1036.0" layoutY="773.0" prefWidth="240.0" AnchorPane.bottomAnchor="5.0" AnchorPane.rightAnchor="10.0">
          <padding>
             <Insets left="10.0" right="10.0" />
          </padding>

@@ -104,19 +104,21 @@ public class LoginWindowOnStartController {
             }
             else {
                 AllUsers.setCurrentUser(user.getIDNumber());
+                if (!AllUsers.isUsersLoggedContainsUser(user.getIDNumber())) {
+                    AllUsers.addLoggedUserByIDnumber(user.getIDNumber());
+                }
+
                 Role role = user.getRole();
                 if (role.equals(Role.DESIGNER)) {
                     this.stage.close();
                     /** TODO убрать эту строчку в рабочем варианте */
                     Generator.generateProjects();
                     this.mainApp.showTableProjectsDesigner();
-                    break;
                 }
                 else if (role.equals(Role.MANAGER)) {
                     this.stage.close();
                     // TODO аписать класс таблицы для менеджера
                     //this.mainApp.showTableProjectsDesigner();
-                    break;
                 }
 
                 break;

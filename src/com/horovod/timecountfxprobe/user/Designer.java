@@ -1,5 +1,7 @@
 package com.horovod.timecountfxprobe.user;
 
+import com.horovod.timecountfxprobe.project.AllData;
+
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import java.util.Objects;
@@ -59,7 +61,14 @@ public class Designer implements User {
     }
 
     public void setFullName(String newFullName) {
+        String oldFullName = this.fullName;
+
         this.fullName = newFullName;
+
+        if (AllUsers.isUsersLoggedContainsUser(this.IDNumber)) {
+            AllUsers.deleteLoggedUser(oldFullName);
+            AllUsers.addLoggedUser(newFullName);
+        }
     }
 
     @XmlElement(name = "designeremail")

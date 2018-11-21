@@ -1,16 +1,16 @@
 package com.horovod.timecountfxprobe.view;
 
 import com.horovod.timecountfxprobe.MainApp;
+import com.horovod.timecountfxprobe.project.AllData;
+import com.horovod.timecountfxprobe.test.Generator;
 import com.horovod.timecountfxprobe.user.AllUsers;
 import com.horovod.timecountfxprobe.user.Role;
 import com.horovod.timecountfxprobe.user.SecurePassword;
 import com.horovod.timecountfxprobe.user.User;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.PasswordField;
-import javafx.scene.control.TextField;
+import javafx.scene.Node;
+import javafx.scene.control.*;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
@@ -53,7 +53,9 @@ public class LoginWindowController {
     private Button buttonCancel;
 
 
-    public void handlOK() {
+
+    @FXML
+    private void initialize() {
 
         loginField.setOnMouseClicked(new EventHandler<MouseEvent>() {
             @Override
@@ -61,6 +63,18 @@ public class LoginWindowController {
                 loginField.clear();
             }
         });
+
+        passField.setOnMouseClicked(new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent event) {
+                passField.clear();
+            }
+        });
+
+    }
+
+
+    public void handlOK() {
 
         while (true) {
             String login = loginField.getText();
@@ -90,18 +104,33 @@ public class LoginWindowController {
                 break;
             }
             else {
+                AllUsers.setCurrentUser(user.getIDNumber());
+                if (!AllUsers.isUsersLoggedContainsUser(user.getIDNumber())) {
+                    AllUsers.addLoggedUserByIDnumber(user.getIDNumber());
+                }
+
                 Role role = user.getRole();
                 if (role.equals(Role.DESIGNER)) {
-                    AllUsers.setCurrentUser(user.getIDNumber());
                     this.stage.close();
+                    /** TODO убрать эту строчку в рабочем варианте */
+                    Generator.generateProjects();
                     this.mainApp.showTableProjectsDesigner();
-                    break;
                 }
+                else if (role.equals(Role.MANAGER)) {
+                    this.stage.close();
+                    // TODO аписать класс таблицы для менеджера
+                    //this.mainApp.showTableProjectsDesigner();
+                }
+
                 break;
             }
         }
     }
 
-
-
+    public void handleCancel() {
+        //this.mainApp.closeApp();
+        this.stage.close();
+        AllData.getRootLayout().setCenter(AllData.getTableDesigner());
+        AllData.getTableProjectsDesignerController().initLoggedUsersChoiceBox();
+    }
 }

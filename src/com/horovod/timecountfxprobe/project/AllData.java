@@ -1,6 +1,7 @@
 package com.horovod.timecountfxprobe.project;
 
 import com.horovod.timecountfxprobe.user.AllUsers;
+import com.horovod.timecountfxprobe.view.RootLayoutController;
 import com.horovod.timecountfxprobe.view.TableProjectsDesignerController;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.IntegerProperty;
@@ -10,6 +11,8 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.ObservableMap;
 import javafx.application.Platform;
+import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.BorderPane;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -31,10 +34,12 @@ public class AllData {
     private static volatile IntegerProperty workSumProjectsProperty = new SimpleIntegerProperty(workSumProjects.get());
     private static DoubleProperty dayWorkSumProperty = new SimpleDoubleProperty(0);
 
-    /** TODO Решить, как быть с полем
+
+    /** Поле нужно, чтобы передавать его отдельным нитям (см. класс TestBackgroundUpdate01)
      * */
     private static TableProjectsDesignerController tableProjectsDesignerController;
-
+    private static BorderPane rootLayout;
+    private static AnchorPane tableDesigner;
 
 
     /** Стандартные геттеры и сеттеры */
@@ -112,13 +117,6 @@ public class AllData {
         AllData.workSumProjectsProperty.set(newWorkSumProjectsProperty);
     }
 
-    public static TableProjectsDesignerController getTableProjectsDesignerController() {
-        return tableProjectsDesignerController;
-    }
-
-    public static void setTableProjectsDesignerController(TableProjectsDesignerController newTableProjectsDesignerController) {
-        AllData.tableProjectsDesignerController = newTableProjectsDesignerController;
-    }
 
     public static double getDayWorkSumProperty() {
         return dayWorkSumProperty.get();
@@ -128,9 +126,46 @@ public class AllData {
         return dayWorkSumProperty;
     }
 
-    public synchronized static void setDayWorkSumProperty(double day) {
+    public static synchronized void setDayWorkSumProperty(double day) {
         AllData.dayWorkSumProperty.set(day);
     }
+
+    public static synchronized void rebuildDayWorkSumProperty() {
+        AllData.dayWorkSumProperty.set(0);
+        int counter = 0;
+        for (Project p : activeProjects.values()) {
+            if (p.containsWorkTime(AllUsers.getCurrentUser(), LocalDate.now())) {
+                counter += p.getWorkSumForDesignerAndDate(AllUsers.getCurrentUser(), LocalDate.now());
+            }
+        }
+        AllData.dayWorkSumProperty.set(AllData.intToDouble(counter));
+    }
+
+
+    public static TableProjectsDesignerController getTableProjectsDesignerController() {
+        return tableProjectsDesignerController;
+    }
+
+    public static void setTableProjectsDesignerController(TableProjectsDesignerController newTableProjectsDesignerController) {
+        AllData.tableProjectsDesignerController = newTableProjectsDesignerController;
+    }
+
+    public static BorderPane getRootLayout() {
+        return rootLayout;
+    }
+
+    public static void setRootLayout(BorderPane newRootLayout) {
+        AllData.rootLayout = newRootLayout;
+    }
+
+    public static AnchorPane getTableDesigner() {
+        return tableDesigner;
+    }
+
+    public static void setTableDesigner(AnchorPane newTableDesigner) {
+        AllData.tableDesigner = newTableDesigner;
+    }
+
 
 
     /** Геттеры активного, неактивного и любого проекта из мапы

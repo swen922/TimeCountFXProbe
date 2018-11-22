@@ -39,7 +39,6 @@ public class AllData {
      * */
     private static TableProjectsDesignerController tableProjectsDesignerController;
     private static BorderPane rootLayout;
-    private static AnchorPane tableDesigner;
 
 
     /** Стандартные геттеры и сеттеры */
@@ -158,15 +157,6 @@ public class AllData {
         AllData.rootLayout = newRootLayout;
     }
 
-    public static AnchorPane getTableDesigner() {
-        return tableDesigner;
-    }
-
-    public static void setTableDesigner(AnchorPane newTableDesigner) {
-        AllData.tableDesigner = newTableDesigner;
-    }
-
-
 
     /** Геттеры активного, неактивного и любого проекта из мапы
      * @return null
@@ -198,6 +188,17 @@ public class AllData {
         for (Project p : activeProjects.values()) {
             LocalDate date = AllData.parseDate(p.getDateCreationString());
             if ((date.compareTo(fromDate) >= 0) && (date.compareTo(tillDate) <= 0)) {
+                result.add(p);
+            }
+        }
+        return result;
+    }
+
+
+    public static List<Project> getActiveProjectsForDesignerAndDate(int designerIDnumber, LocalDate workDate) {
+        List<Project> result = new ArrayList<>();
+        for (Project p : activeProjects.values()) {
+            if (p.containsWorkTime(designerIDnumber, workDate)) {
                 result.add(p);
             }
         }
@@ -306,16 +307,11 @@ public class AllData {
             int difference = project.addWorkTime(correctDate, idUser, newTime);
             addWorkSumProjects(difference);
 
-
-            /** TODO переделать логику, чтобы было корректно */
-
             if (idUser == AllUsers.getCurrentUser() && correctDate.equals(LocalDate.now())) {
-
 
                 int old = AllData.doubleToInt(dayWorkSumProperty.get());
 
                 dayWorkSumProperty.set(AllData.intToDouble(old + difference));
-                System.out.println(dayWorkSumProperty.get());
             }
 
             return true;
@@ -368,6 +364,19 @@ public class AllData {
     }
 
 
+    public static void deleteZeroTime() {
+        for (Project p : activeProjects.values()) {
+            Iterator<WorkTime> iter = p.getWork().iterator();
+            while (iter.hasNext()) {
+                WorkTime wt = iter.next();
+                if (wt.getTime() == 0) {
+                    iter.remove();
+                }
+            }
+        }
+    }
+
+
 
     /** методы-утилиты */
 
@@ -387,6 +396,14 @@ public class AllData {
         result = result.setScale(1, RoundingMode.HALF_UP);
         return result.doubleValue();
     }
+
+    public static String formatWorkTime(Double timeDouble) {
+        String result = String.valueOf(timeDouble);
+        result = result.replaceAll("\\.", ",");
+        return result;
+    }
+
+
 
     /** Форматировщик даты.
      * @return null

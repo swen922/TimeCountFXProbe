@@ -129,6 +129,9 @@ public class Generator {
             AllUsers.createUser("manager" + i, "pass", Role.MANAGER);
             AllUsers.getOneUser("manager"+i).setFullName("Good Manager Number " + i);
         }
+
+        AllUsers.addLoggedUserByIDnumber(2);
+        AllUsers.addLoggedUserByIDnumber(3);
     }
 
 

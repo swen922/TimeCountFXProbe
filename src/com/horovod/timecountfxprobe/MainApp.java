@@ -76,7 +76,6 @@ public class MainApp extends Application {
 
             TableProjectsDesignerController controller = loader3.getController();
             AllData.setTableProjectsDesignerController(controller);
-            AllData.setTableDesigner(tableDesigner);
             controller.setMainApp(this);
         } catch (IOException e) {
             e.printStackTrace();
@@ -122,6 +121,27 @@ public class MainApp extends Application {
 
             loginWindowOnStartController.setStage(logWinStage);
             logWinStage.showAndWait();
+        } catch (IOException e) {
+
+        }
+    }
+
+    public void showStatisticWindow() {
+        try {
+            FXMLLoader loader = new FXMLLoader();
+            loader.setLocation(MainApp.class.getResource("view/StatisticWindow.fxml"));
+            AnchorPane statisticWindow = (AnchorPane) loader.load();
+
+            Stage statStage = new Stage();
+            statStage.initModality(Modality.NONE);
+            //statStage.initOwner(primaryStage);
+            Scene scene = new Scene(statisticWindow);
+            statStage.setScene(scene);
+            statStage.show();
+
+            StatisticWindowController controller = loader.getController();
+            controller.setMainApp(this);
+            controller.setStage(statStage);
         } catch (IOException e) {
 
         }

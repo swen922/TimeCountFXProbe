@@ -130,7 +130,8 @@ public class LoginWindowController {
     public void handleCancel() {
         //this.mainApp.closeApp();
         this.stage.close();
-        AllData.getRootLayout().setCenter(AllData.getTableDesigner());
-        AllData.getTableProjectsDesignerController().initLoggedUsersChoiceBox();
+        mainApp.showTableProjectsDesigner();
+        //AllData.getRootLayout().setCenter(AllData.getTableDesigner());
+        //AllData.getTableProjectsDesignerController().initLoggedUsersChoiceBox();
     }
 }

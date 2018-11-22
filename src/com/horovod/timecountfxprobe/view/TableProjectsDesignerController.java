@@ -22,16 +22,20 @@ import javafx.collections.transformation.SortedList;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Cursor;
 import javafx.scene.Node;
+import javafx.scene.Scene;
 import javafx.scene.chart.CategoryAxis;
 import javafx.scene.chart.LineChart;
 import javafx.scene.chart.XYChart;
 import javafx.scene.control.*;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
+import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.BorderPane;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextAlignment;
@@ -83,6 +87,15 @@ public class TableProjectsDesignerController {
 
     @FXML
     private Label dayWorkSumLabel;
+
+    @FXML
+    private Button buttonReload;
+
+    @FXML
+    private Button buttonStatistic;
+
+    @FXML
+    private Label aboutProgramLabel;
 
     @FXML
     private ChoiceBox<String> usersLoggedChoiceBox;
@@ -142,6 +155,8 @@ public class TableProjectsDesignerController {
     @FXML
     public void initialize() {
 
+        AllData.deleteZeroTime();
+
         sortTableProjects();
 
         columnID.setCellValueFactory(new Callback<TableColumn.CellDataFeatures<Map.Entry<Integer, Project>, Integer>, ObservableValue<Integer>>() {
@@ -170,13 +185,6 @@ public class TableProjectsDesignerController {
                 return result;
             }
         });
-
-        /*int old = AllData.doubleToInt(dayWorkSumProperty.get());
-        System.out.println("old = " + old);
-        int newSum = old + time;
-        System.out.println("newSum = " + newSum);
-        dayWorkSumProperty.set(AllData.intToDouble(newSum));
-        System.out.println("dayWorkSumProperty = " + dayWorkSumProperty);*/
 
         columnTime.setStyle("-fx-alignment: CENTER;");
 
@@ -308,16 +316,10 @@ public class TableProjectsDesignerController {
         String toLoginWindow = "Выйти в окно логина";
 
         usersLoggedChoiceBox.setItems(AllUsers.getUsersLogged());
-        // Эта строчка нужна, не удалять
-        //AllUsers.addStringToLoggedUsers("Выйти в окно логина");
 
         if (!usersLoggedChoiceBox.getItems().contains(toLoginWindow)) {
             usersLoggedChoiceBox.getItems().add(toLoginWindow);
         }
-
-        /** Удалить эти 2 строчки в рабочем варианте */
-        //AllUsers.addLoggedUserByIDnumber(2);
-        //AllUsers.addLoggedUserByIDnumber(3);
 
         usersLoggedChoiceBox.setValue(AllUsers.getOneUser(AllUsers.getCurrentUser()).getFullName());
 
@@ -354,18 +356,6 @@ public class TableProjectsDesignerController {
             }
         });
     }
-
-    public void handleSelectLoggedUser() {
-        String selectUser = usersLoggedChoiceBox.getValue();
-        if (selectUser != null) {
-            mainApp.initRootLayut();
-        }
-
-        /*if (!selectUser.equalsIgnoreCase(AllUsers.getOneUser(AllUsers.getCurrentUser()))) {
-
-        }*/
-    }
-
 
 
 
@@ -475,6 +465,7 @@ public class TableProjectsDesignerController {
     }
 
 
+
     /** Три метода для чекбокса и двух дейтпикеров
      * сначала запрашивают проверку дат на валидность,
      * затем передают дальнейшее действие методу handleFilters()
@@ -581,6 +572,14 @@ public class TableProjectsDesignerController {
         fromDatePicker.setValue(null);
         tillDatePicker.setValue(null);
         handleFilters();
+    }
+
+    public void handleReloadButton() {
+        initialize();
+    }
+
+    public void handleStatisticButton() {
+        mainApp.showStatisticWindow();
     }
 
 

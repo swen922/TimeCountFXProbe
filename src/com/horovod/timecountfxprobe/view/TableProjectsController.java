@@ -4,6 +4,7 @@ import com.horovod.timecountfxprobe.MainApp;
 import com.horovod.timecountfxprobe.project.AllData;
 import com.horovod.timecountfxprobe.project.Project;
 import com.horovod.timecountfxprobe.project.WorkTime;
+import com.horovod.timecountfxprobe.user.AllUsers;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
@@ -182,7 +183,7 @@ public class TableProjectsController {
             @Override
             public void handle(TableColumn.CellEditEvent<Project, String> event) {
                 double newTimeDouble = Double.parseDouble(event.getNewValue());
-                WorkTime newWorkTime = new WorkTime(LocalDate.now(), 5, newTimeDouble);
+                WorkTime newWorkTime = new WorkTime(AllUsers.getCurrentUser(), LocalDate.now(), 5, newTimeDouble);
                 List<WorkTime> newTimeList = new ArrayList<>();
                 newTimeList.addAll((List<WorkTime>) event.getTableView().getItems().get(event.getTablePosition().getRow()).getWork());
                 newTimeList.add(newWorkTime);

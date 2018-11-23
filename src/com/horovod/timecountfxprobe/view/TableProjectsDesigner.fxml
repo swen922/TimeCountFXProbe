@@ -14,6 +14,7 @@
 <?import javafx.scene.control.TableColumn?>
 <?import javafx.scene.control.TableView?>
 <?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.Tooltip?>
 <?import javafx.scene.effect.InnerShadow?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.HBox?>
@@ -31,7 +32,10 @@
                                 <CheckBox fx:id="showMyProjectsCheckBox" lineSpacing="10.0" mnemonicParsing="false" onAction="#handleShowMyProjectsCheckBox" text="Только мои проекты">
                                     <padding>
                                         <Insets bottom="5.0" />
-                                    </padding></CheckBox>
+                                    </padding>
+                           <tooltip>
+                              <Tooltip text="Включить для отображения только тех проектов, в которых есть твое рабочее время" />
+                           </tooltip></CheckBox>
                             </children>
                         </HBox>
                         <Separator />
@@ -41,9 +45,18 @@
                            <HBox.margin>
                               <Insets right="2.0" />
                            </HBox.margin></Label>
-                                <DatePicker fx:id="fromDatePicker" onAction="#handleFromDatePicker" prefWidth="150.0" promptText="c" />
-                                <DatePicker fx:id="tillDatePicker" onAction="#handleTillDatePicker" prefWidth="150.0" promptText="по" />
-                        <Button fx:id="clearDatePicker" mnemonicParsing="false" onAction="#handleDeleteDatePicker" text="X" />
+                                <DatePicker fx:id="fromDatePicker" onAction="#handleFromDatePicker" prefWidth="150.0" promptText="c">
+                           <tooltip>
+                              <Tooltip text="Выбери начальную дату периода" />
+                           </tooltip></DatePicker>
+                                <DatePicker fx:id="tillDatePicker" onAction="#handleTillDatePicker" prefWidth="150.0" promptText="по">
+                           <tooltip>
+                              <Tooltip text="Выбери конечную дату периода" />
+                           </tooltip></DatePicker>
+                        <Button fx:id="clearDatePicker" mnemonicParsing="false" onAction="#handleDeleteDatePicker" text="X">
+                           <tooltip>
+                              <Tooltip text="Очистить период" />
+                           </tooltip></Button>
                             </children>
                             <VBox.margin>
                                 <Insets bottom="3.0" top="1.0" />
@@ -56,8 +69,14 @@
                                     <opaqueInsets>
                                         <Insets right="2010.0" />
                                     </opaqueInsets>
+                           <tooltip>
+                              <Tooltip text="Набери номер проекта или кусок любого текста / имени / названия / бренда, который есть в этом проекте" />
+                           </tooltip>
                                 </TextField>
-                                <Button fx:id="deleteSearchTextButton" mnemonicParsing="false" onAction="#handleDeleteSearch" text="X" />
+                                <Button fx:id="deleteSearchTextButton" mnemonicParsing="false" onAction="#handleDeleteSearch" text="X">
+                           <tooltip>
+                              <Tooltip text="Очистить поле поиска" />
+                           </tooltip></Button>
                             </children>
                             <VBox.margin>
                                 <Insets bottom="-10.0" top="2.0" />
@@ -142,6 +161,9 @@
                      <font>
                         <Font size="12.0" />
                      </font>
+                     <tooltip>
+                        <Tooltip text="Нажми, чтобы заново считать все данные и отсортировать таблицу" />
+                     </tooltip>
                   </Button>
                   <Button fx:id="buttonStatistic" minHeight="40.0" minWidth="100.0" mnemonicParsing="false" onAction="#handleStatisticButton" text="Статистика" textAlignment="CENTER">
                      <VBox.margin>
@@ -150,6 +172,9 @@
                      <font>
                         <Font size="14.0" />
                      </font>
+                     <tooltip>
+                        <Tooltip text="Открыть окно с разной статистикой по твоему рабочему времени" />
+                     </tooltip>
                   </Button>
                   <Label fx:id="aboutProgramLabel" text="О программе" textFill="#f3622d" underline="true">
                      <VBox.margin>

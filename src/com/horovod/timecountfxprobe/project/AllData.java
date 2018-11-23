@@ -400,7 +400,21 @@ public class AllData {
     public static String formatWorkTime(Double timeDouble) {
         String result = String.valueOf(timeDouble);
         result = result.replaceAll("\\.", ",");
+        result = result.replaceAll(",0", "");
         return result;
+    }
+
+    public static String formatHours(String input) {
+        if (input.equals("1")) {
+            return "час";
+        }
+        else if (input.equals("2") || input.equals("3") || input.equals("4")) {
+            return "часа";
+        }
+        else if (!input.contains(",")) {
+            return "часов";
+        }
+        return "часа";
     }
 
 

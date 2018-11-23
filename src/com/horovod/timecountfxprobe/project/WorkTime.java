@@ -10,6 +10,7 @@ import java.util.Objects;
 @XmlRootElement(name = "worktimeinstance")
 public class WorkTime {
 
+    private int projectID;
     private String dateString;
     private int designerID;
     /**
@@ -18,13 +19,23 @@ public class WorkTime {
      */
     private volatile int time = 0;
 
-    public WorkTime(LocalDate date, int ID, double time) {
+    public WorkTime(int newProjectID, LocalDate date, int ID, double time) {
+        this.projectID = newProjectID;
         this.dateString = AllData.formatDate(date);
         this.designerID = ID;
         setTime(AllData.doubleToInt(time));
     }
 
     public WorkTime() {
+    }
+
+    @XmlElement(name = "projectidnumber")
+    public int getProjectID() {
+        return projectID;
+    }
+
+    public void setProjectID(int projectID) {
+        this.projectID = projectID;
     }
 
     @XmlElement(name = "datestring")
@@ -78,25 +89,25 @@ public class WorkTime {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         WorkTime workTime = (WorkTime) o;
-        return getDesignerID() == workTime.getDesignerID() &&
-                getTime() == workTime.getTime() &&
-                Objects.equals(getDateString(), workTime.getDateString());
+        return projectID == workTime.projectID &&
+                designerID == workTime.designerID &&
+                time == workTime.time &&
+                Objects.equals(dateString, workTime.dateString);
     }
 
     @Override
     public int hashCode() {
 
-        return Objects.hash(getDateString(), getDesignerID(), getTime());
+        return Objects.hash(projectID, dateString, designerID, time);
     }
 
     @Override
     public String toString() {
         return "WorkTime{" +
-                "date=" + dateString +
+                "projectID=" + projectID +
+                ", dateString='" + dateString + '\'' +
                 ", designerID=" + designerID +
-                ", time=" + AllData.intToDouble(time) +
+                ", time=" + time +
                 '}';
     }
-
-
 }

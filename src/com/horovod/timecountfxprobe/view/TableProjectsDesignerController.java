@@ -80,7 +80,7 @@ public class TableProjectsDesignerController {
     private Button clearDatePicker;
 
     @FXML
-    private LineChart decadeLineChart;
+    private LineChart<String, Integer> decadeLineChart;
 
     @FXML
     private CategoryAxis xAxis;

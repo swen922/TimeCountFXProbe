@@ -5,7 +5,10 @@ import com.horovod.timecountfxprobe.project.AllData;
 import com.horovod.timecountfxprobe.project.Project;
 import com.horovod.timecountfxprobe.project.WorkTime;
 import com.horovod.timecountfxprobe.user.AllUsers;
+import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
+import javafx.scene.chart.BarChart;
+import javafx.scene.chart.XYChart;
 import javafx.scene.control.Button;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.TextArea;
@@ -20,6 +23,11 @@ public class StatisticWindowController {
 
     private MainApp mainApp;
     private Stage stage;
+
+    private ObservableList<String> datesForBarChart;
+    private ObservableList<XYChart.Data<String, Double>> workTimeForBarChart;
+    private XYChart.Series<String, Double> seriesBars;
+
 
     @FXML
     private DatePicker selectDayDatePicker;
@@ -39,6 +47,8 @@ public class StatisticWindowController {
     @FXML
     private TextArea projectNumberTextArea;
 
+    @FXML
+    private BarChart<String, Double> allWorkSums;
 
 
 
@@ -62,6 +72,52 @@ public class StatisticWindowController {
     public void initialize() {
 
     }
+
+
+    private void fillDatesBarChart(FillChartMode mode, LocalDate from, LocalDate till) {
+
+        datesForBarChart.clear();
+        if (mode.equals(FillChartMode.DAILY)) {
+            for (int i = 1; i <=31; i++) {
+                datesForBarChart.add(String.valueOf(i));
+            }
+        }
+        else if (mode.equals(FillChartMode.MONTHLY)) {
+            datesForBarChart.addAll(Arrays.asList("Январь", "Февраль", "Март", "Апрель", "Май",
+                    "Июнь", "Июль", "Август", "Сентябрь", "Октябрь", "Ноябрь", "Декабрь"));
+        }
+    }
+
+
+
+    private void fillXYBarChartSeries(FillChartMode mode, LocalDate from, LocalDate till) {
+
+        Map<String, Double> workSums = new TreeMap<>();
+
+        if (mode.equals(FillChartMode.DAILY)) {
+            for (int i = 0; i <31; i++) {
+                LocalDate oneDay = from.plusDays(i);
+                if (oneDay.compareTo(till) <= 0) {
+                    List<Project> tmp = AllData.getActiveProjectsForDesignerAndDate(AllUsers.getCurrentUser(), oneDay);
+                    int sum = 0;
+                    for (Project p : tmp) {
+                        sum += p.getWorkSumForDesignerAndDate(AllUsers.getCurrentUser(), oneDay);
+                    }
+                    workSums.put(String.valueOf(i + 1), AllData.intToDouble(sum));
+                }
+            }
+        }
+
+
+        workTimeForBarChart.clear();
+
+        Iterator<Map.Entry<String, Double>> iter = workSums.entrySet().iterator();
+        while (iter.hasNext()) {
+            Map.Entry<String, Double> entry = iter.next();
+            workTimeForBarChart.add(new XYChart.Data<>(entry.getKey(), entry.getValue()));
+        }
+    }
+
 
 
     public void handleSelectDayDatePicker() {

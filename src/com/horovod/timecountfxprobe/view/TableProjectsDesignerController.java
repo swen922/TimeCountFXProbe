@@ -579,6 +579,7 @@ public class TableProjectsDesignerController {
     }
 
     public void handleStatisticButton() {
+
         mainApp.showStatisticWindow();
     }
 

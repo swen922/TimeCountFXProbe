@@ -17,6 +17,8 @@ import javafx.scene.layout.BorderPane;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDate;
+import java.time.Month;
+import java.time.Year;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -225,6 +227,18 @@ public class AllData {
         return result;
     }
 
+    public static List<Project> getActiveProjectsForDesignerAndMonth(int designerIDnumber, Year year, Month month) {
+        List<Project> result = new ArrayList<>();
+        LocalDate fromDate = LocalDate.of(year.getValue(), month.getValue(), 1);
+        LocalDate tillDate = LocalDate.of(year.getValue(), month.getValue(), month.length(year.isLeap()));
+        for (Project p : activeProjects.values()) {
+            if (p.containsWorkTime(designerIDnumber, fromDate, tillDate)) {
+                result.add(p);
+            }
+        }
+        return result;
+    }
+
 
 
 
@@ -405,10 +419,13 @@ public class AllData {
     }
 
     public static String formatHours(String input) {
-        if (input.equals("1")) {
+        if (input.endsWith("11") || input.endsWith("12") || input.endsWith("13") || input.endsWith("14")) {
+            return "часов";
+        }
+        if (input.endsWith("1")) {
             return "час";
         }
-        else if (input.equals("2") || input.equals("3") || input.equals("4")) {
+        else if (input.endsWith("2") || input.endsWith("3") || input.endsWith("4")) {
             return "часа";
         }
         else if (!input.contains(",")) {
@@ -442,6 +459,8 @@ public class AllData {
     public static boolean validDate(String dateString) {
         return parseDate(dateString) != null;
     }
+
+    private static final DateTimeFormatter MONTH_FORMATTER = DateTimeFormatter.ofPattern("MM", Locale.getDefault());
 
 
 }

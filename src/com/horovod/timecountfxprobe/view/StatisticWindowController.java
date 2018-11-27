@@ -5,17 +5,22 @@ import com.horovod.timecountfxprobe.project.AllData;
 import com.horovod.timecountfxprobe.project.Project;
 import com.horovod.timecountfxprobe.project.WorkTime;
 import com.horovod.timecountfxprobe.user.AllUsers;
+import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.chart.BarChart;
+import javafx.scene.chart.CategoryAxis;
 import javafx.scene.chart.XYChart;
-import javafx.scene.control.Button;
-import javafx.scene.control.DatePicker;
-import javafx.scene.control.TextArea;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.stage.Stage;
+import javafx.util.StringConverter;
 
 import java.time.LocalDate;
+import java.time.Month;
+import java.time.Year;
+import java.time.format.TextStyle;
 import java.time.temporal.WeekFields;
 import java.util.*;
 
@@ -27,6 +32,13 @@ public class StatisticWindowController {
     private ObservableList<String> datesForBarChart;
     private ObservableList<XYChart.Data<String, Double>> workTimeForBarChart;
     private XYChart.Series<String, Double> seriesBars;
+
+    private static final String daily = "По дням";
+    private static final String monthly = "По месяцам";
+
+    private ObservableList<String> listFillModes;
+    private ObservableList<Integer> yearsValues;
+    private ObservableList<Month> monthsValues;
 
 
     @FXML
@@ -48,7 +60,19 @@ public class StatisticWindowController {
     private TextArea projectNumberTextArea;
 
     @FXML
-    private BarChart<String, Double> allWorkSums;
+    private ChoiceBox<String> fillModeChoiceBox;
+
+    @FXML
+    private ChoiceBox<Integer> yearChoiceBox;
+
+    @FXML
+    private ChoiceBox<Month> monthChoiceBox;
+
+    @FXML
+    private BarChart<String, Double> workSumsBarChart;
+
+    @FXML
+    private CategoryAxis xAxis;
 
 
 
@@ -71,43 +95,229 @@ public class StatisticWindowController {
     @FXML
     public void initialize() {
 
+        initializeChoiceBoxes();
+
+        LocalDate now = LocalDate.now();
+        Year year = Year.from(now);
+        Month month = now.getMonth();
+
+        initializeBarChart(FillChartMode.DAILY, LocalDate.of(year.getValue(), month.getValue(), 1));
+
+    }
+
+    private void initializeChoiceBoxes() {
+
+        if (listFillModes == null) {
+            listFillModes = FXCollections.observableArrayList();
+            listFillModes.addAll(Arrays.asList(daily, monthly));
+            fillModeChoiceBox.setItems(listFillModes);
+        }
+
+        fillModeChoiceBox.setValue(listFillModes.get(0));
+
+        initializePeriodChoiceBoxes();
+
+        fillModeChoiceBox.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                String selectMode = fillModeChoiceBox.getValue();
+                if (selectMode != null) {
+                    LocalDate now = LocalDate.now();
+                    switch (selectMode) {
+                        case daily :
+                            monthChoiceBox.setDisable(false);
+                            Year year = Year.from(LocalDate.of(yearChoiceBox.getValue(), 1, 1));
+
+                            Month month = null;
+                            if (!monthChoiceBox.isDisabled()) {
+                                month = monthChoiceBox.getValue();
+                            }
+
+                            LocalDate fromDate1 = LocalDate.of(year.getValue(), month.getValue(), 1);
+                            initializeBarChart(FillChartMode.DAILY, fromDate1);
+                            initializePeriodChoiceBoxes();
+                            break;
+                        case monthly :
+                            monthChoiceBox.setDisable(true);
+                            LocalDate fromDate2 = LocalDate.of(now.getYear(), 1, 1);
+                            initializeBarChart(FillChartMode.MONTHLY, fromDate2);
+                            initializePeriodChoiceBoxes();
+                            break;
+                    }
+                }
+            }
+        });
+    }
+
+    private void initializePeriodChoiceBoxes() {
+
+        if (yearsValues == null) {
+            yearsValues = FXCollections.observableArrayList();
+            for (int i = 2013; i <= LocalDate.now().getYear(); i++) {
+                yearsValues.add(i);
+            }
+            yearChoiceBox.setItems(yearsValues);
+            yearChoiceBox.setValue(LocalDate.now().getYear());
+        }
+
+        if (monthsValues == null) {
+            monthsValues = FXCollections.observableArrayList();
+            monthChoiceBox.setConverter(new StringConverter<Month>() {
+                @Override
+                public String toString(Month object) {
+                    return object.getDisplayName(TextStyle.FULL_STANDALONE, Locale.getDefault());
+                }
+
+                @Override
+                public Month fromString(String string) {
+                    return null;
+                }
+            });
+            monthsValues.addAll(Arrays.asList(
+                    Month.JANUARY, Month.FEBRUARY, Month.MARCH, Month.APRIL, Month.MAY, Month.JUNE,
+                    Month.JULY, Month.AUGUST, Month.SEPTEMBER, Month.OCTOBER, Month.NOVEMBER, Month.DECEMBER
+            ));
+            monthChoiceBox.setItems(monthsValues);
+            monthChoiceBox.setValue(LocalDate.now().getMonth());
+        }
+
+
+        if (fillModeChoiceBox.getValue().equals(monthly)) {
+            monthChoiceBox.setDisable(true);
+        }
+        else {
+            monthChoiceBox.setDisable(false);
+        }
+
+
+        yearChoiceBox.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                Integer year = yearChoiceBox.getValue();
+                if (year != null) {
+                    String modeString = fillModeChoiceBox.getValue();
+                    FillChartMode mode = FillChartMode.DAILY;
+                    if (modeString.equals(daily)) {
+                        mode = FillChartMode.DAILY;
+                    }
+                    else {
+                        mode = FillChartMode.MONTHLY;
+                    }
+                    Month month = Month.JANUARY;
+                    if (!monthChoiceBox.isDisabled()) {
+                        month = monthChoiceBox.getValue();
+                    }
+                    LocalDate fromDate = LocalDate.of(year, month.getValue(), 1);
+                    initializeBarChart(mode, fromDate);
+                }
+            }
+        });
+
+        monthChoiceBox.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                Month month = monthChoiceBox.getValue();
+                if (month != null) {
+                    String modeString = fillModeChoiceBox.getValue();
+                    FillChartMode mode = FillChartMode.DAILY;
+                    if (modeString.equals(daily)) {
+                        mode = FillChartMode.DAILY;
+                    }
+                    else {
+                        mode = FillChartMode.MONTHLY;
+                    }
+                    Year year = Year.from(LocalDate.of(yearChoiceBox.getValue(), 1, 1));
+                    LocalDate fromDate = LocalDate.of(year.getValue(), month.getValue(), 1);
+                    initializeBarChart(mode, fromDate);
+                }
+            }
+        });
     }
 
 
-    private void fillDatesBarChart(FillChartMode mode, LocalDate from, LocalDate till) {
+    private void initializeBarChart(FillChartMode mode, LocalDate from) {
+
+        if (datesForBarChart == null) {
+            datesForBarChart = FXCollections.observableArrayList();
+            xAxis.setCategories(datesForBarChart);
+        }
+
+        fillDatesBarChart(mode, from);
+
+        if (workTimeForBarChart == null) {
+            workTimeForBarChart = FXCollections.observableArrayList();
+        }
+
+        if (seriesBars == null) {
+            seriesBars = new XYChart.Series<>();
+            seriesBars.setData(workTimeForBarChart);
+            workSumsBarChart.getData().add(seriesBars);
+        }
+
+        fillXYBarChartSeries(mode, from);
+    }
+
+
+    private void fillDatesBarChart(FillChartMode mode, LocalDate from) {
 
         datesForBarChart.clear();
+
         if (mode.equals(FillChartMode.DAILY)) {
-            for (int i = 1; i <=31; i++) {
+            int max = from.getMonth().length(Year.from(from).isLeap());
+            for (int i = 1; i <= max; i++) {
                 datesForBarChart.add(String.valueOf(i));
             }
         }
         else if (mode.equals(FillChartMode.MONTHLY)) {
-            datesForBarChart.addAll(Arrays.asList("Январь", "Февраль", "Март", "Апрель", "Май",
-                    "Июнь", "Июль", "Август", "Сентябрь", "Октябрь", "Ноябрь", "Декабрь"));
+            datesForBarChart.addAll(Arrays.asList(
+                    Month.JANUARY.getDisplayName(TextStyle.FULL_STANDALONE, Locale.getDefault()),
+                    Month.FEBRUARY.getDisplayName(TextStyle.FULL_STANDALONE, Locale.getDefault()),
+                    Month.MARCH.getDisplayName(TextStyle.FULL_STANDALONE, Locale.getDefault()),
+                    Month.APRIL.getDisplayName(TextStyle.FULL_STANDALONE, Locale.getDefault()),
+                    Month.MAY.getDisplayName(TextStyle.FULL_STANDALONE, Locale.getDefault()),
+                    Month.JUNE.getDisplayName(TextStyle.FULL_STANDALONE, Locale.getDefault()),
+                    Month.JULY.getDisplayName(TextStyle.FULL_STANDALONE, Locale.getDefault()),
+                    Month.AUGUST.getDisplayName(TextStyle.FULL_STANDALONE, Locale.getDefault()),
+                    Month.SEPTEMBER.getDisplayName(TextStyle.FULL_STANDALONE, Locale.getDefault()),
+                    Month.OCTOBER.getDisplayName(TextStyle.FULL_STANDALONE, Locale.getDefault()),
+                    Month.NOVEMBER.getDisplayName(TextStyle.FULL_STANDALONE, Locale.getDefault()),
+                    Month.DECEMBER.getDisplayName(TextStyle.FULL_STANDALONE, Locale.getDefault())
+                    ));
         }
     }
 
 
-
-    private void fillXYBarChartSeries(FillChartMode mode, LocalDate from, LocalDate till) {
+    private void fillXYBarChartSeries(FillChartMode mode, LocalDate from) {
 
         Map<String, Double> workSums = new TreeMap<>();
 
         if (mode.equals(FillChartMode.DAILY)) {
-            for (int i = 0; i <31; i++) {
+            for (int i = 0; i < from.getMonth().length(Year.from(from).isLeap()); i++) {
                 LocalDate oneDay = from.plusDays(i);
-                if (oneDay.compareTo(till) <= 0) {
-                    List<Project> tmp = AllData.getActiveProjectsForDesignerAndDate(AllUsers.getCurrentUser(), oneDay);
-                    int sum = 0;
-                    for (Project p : tmp) {
-                        sum += p.getWorkSumForDesignerAndDate(AllUsers.getCurrentUser(), oneDay);
-                    }
-                    workSums.put(String.valueOf(i + 1), AllData.intToDouble(sum));
+                List<Project> tmp = AllData.getActiveProjectsForDesignerAndDate(AllUsers.getCurrentUser(), oneDay);
+                int sum = 0;
+                for (Project p : tmp) {
+                    sum += p.getWorkSumForDesignerAndDate(AllUsers.getCurrentUser(), oneDay);
                 }
+                workSums.put(String.valueOf(i + 1), AllData.intToDouble(sum));
             }
         }
+        else if (mode.equals(FillChartMode.MONTHLY)) {
 
+            Year year = Year.from(from);
+
+            for (int i = 0; i < 12; i++) {
+                Month month = from.getMonth().plus(i);
+                List<Project> monthlyProjects = AllData.getActiveProjectsForDesignerAndMonth(AllUsers.getCurrentUser(), year, month);
+                int sum = 0;
+                for (Project p : monthlyProjects) {
+                    LocalDate fromdate = LocalDate.of(year.getValue(), month.getValue(), 1);
+                    LocalDate tillDate = LocalDate.of(year.getValue(), month.getValue(), month.length(year.isLeap()));
+                    sum += p.getWorkSumForDesignerAndPeriod(AllUsers.getCurrentUser(), fromdate, tillDate);
+                }
+                workSums.put(month.getDisplayName(TextStyle.FULL_STANDALONE, Locale.getDefault()), AllData.intToDouble(sum));
+            }
+        }
 
         workTimeForBarChart.clear();
 
@@ -220,15 +430,5 @@ public class StatisticWindowController {
         projectNumberTextField.setText("");
         projectNumberTextArea.clear();
     }
-
-    public void handleProjctBar() {
-        LocalDate date = LocalDate.now();
-        WeekFields weekFields = WeekFields.of(Locale.getDefault());
-    }
-
-
-
-
-
 
 }

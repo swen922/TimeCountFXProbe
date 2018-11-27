@@ -20,6 +20,9 @@ public class MainApp extends Application {
 
     private Stage primaryStage;
     private BorderPane rootLayout;
+    private AnchorPane statisticWindow;
+    private Stage statStage;
+    private StatisticWindowController controller;
 
     @Override
     public void start(Stage primaryStage) throws Exception {
@@ -127,22 +130,29 @@ public class MainApp extends Application {
     }
 
     public void showStatisticWindow() {
-        try {
-            FXMLLoader loader = new FXMLLoader();
-            loader.setLocation(MainApp.class.getResource("view/StatisticWindow.fxml"));
-            AnchorPane statisticWindow = (AnchorPane) loader.load();
 
-            Stage statStage = new Stage();
-            statStage.initModality(Modality.NONE);
-            //statStage.initOwner(primaryStage);
-            Scene scene = new Scene(statisticWindow);
-            statStage.setScene(scene);
-            statStage.show();
+        if (statisticWindow == null || statStage == null || controller == null) {
+            try {
+                FXMLLoader loader = new FXMLLoader();
+                loader.setLocation(MainApp.class.getResource("view/StatisticWindow.fxml"));
+                statisticWindow = (AnchorPane) loader.load();
+                statStage = new Stage();
+                statStage.initModality(Modality.NONE);
+                //statStage.initOwner(primaryStage);
+                Scene scene = new Scene(statisticWindow);
+                statStage.setScene(scene);
+                statStage.show();
 
-            StatisticWindowController controller = loader.getController();
-            controller.setMainApp(this);
-            controller.setStage(statStage);
-        } catch (IOException e) {
+                StatisticWindowController controller = loader.getController();
+                controller.setMainApp(this);
+                controller.setStage(statStage);
+            } catch (IOException e) {
+            }
+        }
+        else {
+            /*statStage.hide();
+            statStage.show();*/
+            controller.initialize();
 
         }
     }

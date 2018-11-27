@@ -1,9 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.geometry.Insets?>
 <?import javafx.scene.chart.BarChart?>
 <?import javafx.scene.chart.CategoryAxis?>
 <?import javafx.scene.chart.NumberAxis?>
 <?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ChoiceBox?>
 <?import javafx.scene.control.DatePicker?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.SplitPane?>
@@ -11,8 +13,10 @@
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.control.Tooltip?>
 <?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.text.Font?>
 
-<AnchorPane prefHeight="800.0" prefWidth="1000.0" xmlns="http://javafx.com/javafx/9.0.4" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.horovod.timecountfxprobe.view.StatisticWindowController">
+<AnchorPane prefHeight="700.0" prefWidth="1000.0" xmlns="http://javafx.com/javafx/9.0.4" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.horovod.timecountfxprobe.view.StatisticWindowController">
    <children>
       <AnchorPane layoutX="151.0" layoutY="54.0" prefHeight="300.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
          <children>
@@ -47,14 +51,29 @@
       <AnchorPane layoutX="194.0" layoutY="347.0" prefHeight="200.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="300.0">
          <children>
             <Label alignment="CENTER" text="Мое время за период времени" textAlignment="CENTER" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="10.0" />
-            <BarChart layoutX="63.0" layoutY="60.0" maxHeight="300.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="60.0">
+            <BarChart fx:id="workSumsBarChart" barGap="2.0" categoryGap="5.0" layoutX="63.0" layoutY="60.0" legendVisible="false" maxHeight="300.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="80.0">
               <xAxis>
-                <CategoryAxis side="BOTTOM" />
+                <CategoryAxis label="Дни или месяцы" side="BOTTOM" fx:id="xAxis" />
               </xAxis>
               <yAxis>
-                <NumberAxis side="LEFT" />
+                <NumberAxis label="Часы&#10;&#10;" minorTickVisible="false" side="LEFT" tickLength="5.0" upperBound="30.0">
+                     <opaqueInsets>
+                        <Insets />
+                     </opaqueInsets></NumberAxis>
               </yAxis>
             </BarChart>
+            <HBox alignment="CENTER" layoutX="400.0" prefWidth="400.0" spacing="20.0" AnchorPane.leftAnchor="200.0" AnchorPane.rightAnchor="200.0" AnchorPane.topAnchor="40.0">
+               <children>
+                  <ChoiceBox fx:id="fillModeChoiceBox" prefWidth="200.0" />
+                  <ChoiceBox fx:id="yearChoiceBox" prefWidth="150.0" />
+                  <ChoiceBox fx:id="monthChoiceBox" prefWidth="150.0" />
+               </children>
+            </HBox>
+            <Button contentDisplay="CENTER" layoutX="850.0" layoutY="40.0" mnemonicParsing="false" text="Обновить данные" textAlignment="CENTER" wrapText="true" AnchorPane.rightAnchor="10.0">
+               <font>
+                  <Font size="11.0" />
+               </font>
+            </Button>
          </children>
       </AnchorPane>
    </children>

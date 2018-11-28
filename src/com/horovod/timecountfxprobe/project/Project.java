@@ -7,6 +7,7 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 import java.time.LocalDate;
+import java.time.temporal.WeekFields;
 import java.util.*;
 
 @XmlRootElement(name = "project")
@@ -380,6 +381,70 @@ public class Project {
         return false;
     }
 
+
+    public boolean containsWorkTimeForWeek(int year, int weekNumber) {
+        for (WorkTime wt : work) {
+            if (year == wt.getYear() && weekNumber == wt.getWeekNumber()) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public boolean containsWorkTimeForMonth(int year, int month) {
+        for (WorkTime wt : work) {
+            if (year == wt.getYear() && month == wt.getMonth()) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public boolean containsWorkTimeForYear(int year) {
+        for (WorkTime wt : work) {
+            if (year == wt.getYear()) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+
+    public boolean containsWorkTimeForDesignerAndWeek(int designerIDnumber, int year, int weekNumber) {
+        for (WorkTime wt : work) {
+            if (designerIDnumber == wt.getDesignerID()) {
+                if (year == wt.getYear() && weekNumber == wt.getWeekNumber()) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    public boolean containsWorkTimeForDesignerAndMonth(int designerIDnumber, int year, int month) {
+        for (WorkTime wt : work) {
+            if (designerIDnumber == wt.getDesignerID()) {
+                if (year == wt.getYear() && month == wt.getMonth()) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    public boolean containsWorkTimeForDesignerAndYear(int designerIDnumber, int year) {
+        for (WorkTime wt : work) {
+            if (designerIDnumber == wt.getDesignerID()) {
+                if (year == wt.getYear()) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+
+
     /** Методы получения суммы рабочего времени по разным параметрам */
 
     public int getWorkSumForDesigner(int designerIDnumber) {
@@ -428,6 +493,74 @@ public class Project {
         for (WorkTime wt : work) {
             if (wt.getDesignerID() == designerIDnumber) {
                 if ((wt.getDate().compareTo(fromDate) >= 0) && (wt.getDate().compareTo(tillDate) <= 0)) {
+                    result += wt.getTime();
+                }
+            }
+        }
+        return result;
+    }
+
+
+    public int getWorkSumForWeek(int year, int week) {
+        int result = 0;
+        for (WorkTime wt : work) {
+            if (year == wt.getYear() && week == wt.getWeekNumber()) {
+                result += wt.getTime();
+            }
+        }
+        return result;
+    }
+
+    public int getWorkSumForMonth(int year, int month) {
+        int result = 0;
+        for (WorkTime wt : work) {
+            if (year == wt.getYear() && month == wt.getMonth()) {
+                result += wt.getTime();
+            }
+        }
+        return result;
+    }
+
+    public int getWorkSumForYear(int year) {
+        int result = 0;
+        for (WorkTime wt : work) {
+            if (year == wt.getYear()) {
+                result += wt.getTime();
+            }
+        }
+        return result;
+    }
+
+
+    public int getWorkSumForDesignerAndWeek(int designerIDnumber, int year, int week) {
+        int result = 0;
+        for (WorkTime wt : work) {
+            if (wt.getDesignerID() == designerIDnumber) {
+                if (year == wt.getYear() && week == wt.getWeekNumber()) {
+                    result += wt.getTime();
+                }
+            }
+        }
+        return result;
+    }
+
+    public int getWorkSumForDesignerAndMonth(int designerIDnumber, int year, int month) {
+        int result = 0;
+        for (WorkTime wt : work) {
+            if (wt.getDesignerID() == designerIDnumber) {
+                if (year == wt.getYear() && month == wt.getMonth()) {
+                    result += wt.getTime();
+                }
+            }
+        }
+        return result;
+    }
+
+    public int getWorkSumForDesignerAndYear(int designerIDnumber, int year) {
+        int result = 0;
+        for (WorkTime wt : work) {
+            if (wt.getDesignerID() == designerIDnumber) {
+                if (year == wt.getYear()) {
                     result += wt.getTime();
                 }
             }

@@ -5,6 +5,8 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 import java.time.LocalDate;
+import java.time.temporal.WeekFields;
+import java.util.Locale;
 import java.util.Objects;
 
 @XmlRootElement(name = "worktimeinstance")
@@ -13,6 +15,9 @@ public class WorkTime {
     private int projectID;
     private String dateString;
     private int designerID;
+    private int year;
+    private int month;
+    private int weekNumber;
     /**
      Время храним умноженное на 10, чтобы обойтись без double или BigDecimal,
      а при выводе на экран делим на 10 и выдаем double
@@ -22,6 +27,9 @@ public class WorkTime {
     public WorkTime(int newProjectID, LocalDate date, int ID, double time) {
         this.projectID = newProjectID;
         this.dateString = AllData.formatDate(date);
+        this.year = date.getYear();
+        this.month = date.getMonth().getValue();
+        this.weekNumber = date.get(WeekFields.of(Locale.getDefault()).weekOfWeekBasedYear());
         this.designerID = ID;
         setTime(AllData.doubleToInt(time));
     }
@@ -59,6 +67,33 @@ public class WorkTime {
 
     public void setDesignerID(int designerID) {
         this.designerID = designerID;
+    }
+
+    @XmlElement(name = "worktimeyear")
+    public int getYear() {
+        return year;
+    }
+
+    public void setYear(int year) {
+        this.year = year;
+    }
+
+    @XmlElement(name = "worktimemonth")
+    public int getMonth() {
+        return month;
+    }
+
+    public void setMonth(int month) {
+        this.month = month;
+    }
+
+    @XmlElement(name = "worktimeweek")
+    public int getWeekNumber() {
+        return weekNumber;
+    }
+
+    public void setWeekNumber(int weekNumber) {
+        this.weekNumber = weekNumber;
     }
 
     @XmlElement(name = "time")

@@ -43,6 +43,7 @@ import javafx.stage.Stage;
 import javafx.util.Callback;
 
 import java.time.LocalDate;
+import java.time.temporal.WeekFields;
 import java.util.*;
 import java.util.function.Predicate;
 
@@ -155,7 +156,14 @@ public class TableProjectsDesignerController {
     @FXML
     public void initialize() {
 
+        // Отработка методов данных
+        LocalDate today = LocalDate.now();
         AllData.deleteZeroTime();
+        AllData.rebuildDayWorkSumProperty();
+        AllData.rebuildDesignerWeekWorkSumProperty(today.getYear(), today.get(WeekFields.of(Locale.getDefault()).weekOfWeekBasedYear()));
+        AllData.rebuildDesignerMonthWorkSumProperty(today.getYear(), today.getMonth().getValue());
+        AllData.rebuildDesignerYearWorkSumProperty(today.getYear());
+
 
         sortTableProjects();
 
@@ -298,15 +306,12 @@ public class TableProjectsDesignerController {
             }
         });
 
-
         projectsTable.setItems(sortedList);
-
         sortedList.comparatorProperty().bind(projectsTable.comparatorProperty());
 
         dayWorkSumLabel.textProperty().bind(AllData.dayWorkSumProperty().asString());
 
         initializeChart();
-
         initLoggedUsersChoiceBox();
 
     }
@@ -579,7 +584,6 @@ public class TableProjectsDesignerController {
     }
 
     public void handleStatisticButton() {
-
         mainApp.showStatisticWindow();
     }
 

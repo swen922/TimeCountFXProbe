@@ -60,6 +60,16 @@ public class StatisticWindowController {
     private TextArea projectNumberTextArea;
 
     @FXML
+    private Label yearWorkSumLabel;
+
+    @FXML
+    private Label monthWorkSumLabel;
+
+    @FXML
+    private Label weekWorkSumLabel;
+
+
+    @FXML
     private ChoiceBox<String> fillModeChoiceBox;
 
     @FXML
@@ -67,6 +77,9 @@ public class StatisticWindowController {
 
     @FXML
     private ChoiceBox<Month> monthChoiceBox;
+
+    @FXML
+    private Button buttonReloadBarChart;
 
     @FXML
     private BarChart<String, Double> workSumsBarChart;
@@ -95,6 +108,11 @@ public class StatisticWindowController {
     @FXML
     public void initialize() {
 
+        /*selectDayDatePicker.setValue(null);
+        selectedDayTextArea.setText("");
+        projectNumberTextField.setText("");
+        projectNumberTextArea.setText("");*/
+
         initializeChoiceBoxes();
 
         LocalDate now = LocalDate.now();
@@ -103,6 +121,9 @@ public class StatisticWindowController {
 
         initializeBarChart(FillChartMode.DAILY, LocalDate.of(year.getValue(), month.getValue(), 1));
 
+        yearWorkSumLabel.textProperty().bind(AllData.designerYearWorkSumProperty().asString());
+        monthWorkSumLabel.textProperty().bind(AllData.designerMonthWorkSumProperty().asString());
+        weekWorkSumLabel.textProperty().bind(AllData.designerWeekWorkSumProperty().asString());
     }
 
     private void initializeChoiceBoxes() {
@@ -235,7 +256,7 @@ public class StatisticWindowController {
     }
 
 
-    private void initializeBarChart(FillChartMode mode, LocalDate from) {
+    public void initializeBarChart(FillChartMode mode, LocalDate from) {
 
         if (datesForBarChart == null) {
             datesForBarChart = FXCollections.observableArrayList();
@@ -429,6 +450,22 @@ public class StatisticWindowController {
     public void handleClearProjectNumberButton() {
         projectNumberTextField.setText("");
         projectNumberTextArea.clear();
+    }
+
+    public void handleButtonReloadBarChart() {
+        String modeString = fillModeChoiceBox.getValue();
+        int year = yearChoiceBox.getValue();
+        FillChartMode mode = null;
+        Month month = Month.JANUARY;
+        if (modeString.equals(daily)) {
+            mode = FillChartMode.DAILY;
+            month = monthChoiceBox.getValue();
+        }
+        else {
+            mode = FillChartMode.MONTHLY;
+        }
+        LocalDate date = LocalDate.of(year, month.getValue(), 1);
+        initializeBarChart(mode, date);
     }
 
 }

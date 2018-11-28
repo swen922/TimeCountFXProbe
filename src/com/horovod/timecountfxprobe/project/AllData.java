@@ -24,6 +24,9 @@ import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
+
+/** В чистовой версии вынести утилитные методы в отдельный класс */
+
 public class AllData {
 
     private static volatile AtomicInteger idNumber = new AtomicInteger(0);
@@ -35,6 +38,9 @@ public class AllData {
     private static volatile AtomicInteger workSumProjects = new AtomicInteger(0);
     private static volatile IntegerProperty workSumProjectsProperty = new SimpleIntegerProperty(workSumProjects.get());
     private static DoubleProperty dayWorkSumProperty = new SimpleDoubleProperty(0);
+    private static DoubleProperty designerWeekWorkSumProperty = new SimpleDoubleProperty(0);
+    private static DoubleProperty designerMonthWorkSumProperty = new SimpleDoubleProperty(0);
+    private static DoubleProperty designerYearWorkSumProperty = new SimpleDoubleProperty(0);
 
 
     /** Поле нужно, чтобы передавать его отдельным нитям (см. класс TestBackgroundUpdate01)
@@ -141,6 +147,77 @@ public class AllData {
         }
         AllData.dayWorkSumProperty.set(AllData.intToDouble(counter));
     }
+
+    public static double getDesignerWeekWorkSumProperty() {
+        return designerWeekWorkSumProperty.get();
+    }
+
+    public static DoubleProperty designerWeekWorkSumProperty() {
+        return designerWeekWorkSumProperty;
+    }
+
+    public static synchronized void setDesignerWeekWorkSumProperty(double newDesignerWeekWorkSumProperty) {
+        AllData.designerWeekWorkSumProperty.set(newDesignerWeekWorkSumProperty);
+    }
+
+    public static synchronized void rebuildDesignerWeekWorkSumProperty(int year, int week) {
+        AllData.designerWeekWorkSumProperty.set(0);
+        int counter = 0;
+        for (Project p : activeProjects.values()) {
+            if (p.containsWorkTimeForDesignerAndWeek(AllUsers.getCurrentUser(), year, week)) {
+                counter += p.getWorkSumForDesignerAndWeek(AllUsers.getCurrentUser(), year, week);
+            }
+        }
+        AllData.designerWeekWorkSumProperty.set(AllData.intToDouble(counter));
+    }
+
+
+    public static double getDesignerMonthWorkSumProperty() {
+        return designerMonthWorkSumProperty.get();
+    }
+
+    public static DoubleProperty designerMonthWorkSumProperty() {
+        return designerMonthWorkSumProperty;
+    }
+
+    public static synchronized void setDesignerMonthWorkSumProperty(double newDesignerMonthWorkSumProperty) {
+        AllData.designerMonthWorkSumProperty.set(newDesignerMonthWorkSumProperty);
+    }
+
+    public static synchronized void rebuildDesignerMonthWorkSumProperty(int year, int month) {
+        AllData.designerMonthWorkSumProperty().set(0);
+        int counter = 0;
+        for (Project p : activeProjects.values()) {
+            if (p.containsWorkTimeForDesignerAndMonth(AllUsers.getCurrentUser(), year, month)) {
+                counter += p.getWorkSumForDesignerAndMonth(AllUsers.getCurrentUser(), year, month);
+            }
+        }
+        AllData.designerMonthWorkSumProperty.set(AllData.intToDouble(counter));
+    }
+
+    public static double getDesignerYearWorkSumProperty() {
+        return designerYearWorkSumProperty.get();
+    }
+
+    public static DoubleProperty designerYearWorkSumProperty() {
+        return designerYearWorkSumProperty;
+    }
+
+    public static void setDesignerYearWorkSumProperty(double newDesignerYearWorkSumProperty) {
+        AllData.designerYearWorkSumProperty.set(newDesignerYearWorkSumProperty);
+    }
+
+    public static synchronized void rebuildDesignerYearWorkSumProperty(int year) {
+        AllData.designerYearWorkSumProperty().set(0);
+        int counter = 0;
+        for (Project p : activeProjects.values()) {
+            if (p.containsWorkTimeForDesignerAndYear(AllUsers.getCurrentUser(), year)) {
+                counter += p.getWorkSumForDesignerAndYear(AllUsers.getCurrentUser(), year);
+            }
+        }
+        AllData.designerYearWorkSumProperty.set(AllData.intToDouble(counter));
+    }
+
 
 
     public static TableProjectsDesignerController getTableProjectsDesignerController() {

@@ -15,6 +15,7 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 
 import java.io.IOException;
+import java.time.LocalDate;
 
 public class MainApp extends Application {
 
@@ -22,7 +23,7 @@ public class MainApp extends Application {
     private BorderPane rootLayout;
     private AnchorPane statisticWindow;
     private Stage statStage;
-    private StatisticWindowController controller;
+    private StatisticWindowController statisticWindowController;
 
     @Override
     public void start(Stage primaryStage) throws Exception {
@@ -131,7 +132,7 @@ public class MainApp extends Application {
 
     public void showStatisticWindow() {
 
-        if (statisticWindow == null || statStage == null || controller == null) {
+        if (statisticWindow == null || statStage == null || statisticWindowController == null) {
             try {
                 FXMLLoader loader = new FXMLLoader();
                 loader.setLocation(MainApp.class.getResource("view/StatisticWindow.fxml"));
@@ -143,17 +144,20 @@ public class MainApp extends Application {
                 statStage.setScene(scene);
                 statStage.show();
 
-                StatisticWindowController controller = loader.getController();
-                controller.setMainApp(this);
-                controller.setStage(statStage);
+                statisticWindowController = loader.getController();
+                statisticWindowController.setMainApp(this);
+                statisticWindowController.setStage(statStage);
             } catch (IOException e) {
             }
         }
         else {
-            /*statStage.hide();
-            statStage.show();*/
-            controller.initialize();
-
+            statStage.hide();
+            statStage.show();
+            statisticWindowController.initialize();
+            /*LocalDate today = LocalDate.now();
+            int y = today.getYear();
+            int m = today.getMonthValue();
+            statisticWindowController.initializeBarChart(FillChartMode.DAILY, LocalDate.of(y, m, 1) );*/
         }
     }
 

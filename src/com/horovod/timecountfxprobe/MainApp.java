@@ -154,10 +154,10 @@ public class MainApp extends Application {
             statStage.hide();
             statStage.show();
             statisticWindowController.initialize();
-            /*LocalDate today = LocalDate.now();
+            LocalDate today = LocalDate.now();
             int y = today.getYear();
             int m = today.getMonthValue();
-            statisticWindowController.initializeBarChart(FillChartMode.DAILY, LocalDate.of(y, m, 1) );*/
+            statisticWindowController.initializeBarChart(FillChartMode.DAILY, LocalDate.of(y, m, 1) );
         }
     }
 

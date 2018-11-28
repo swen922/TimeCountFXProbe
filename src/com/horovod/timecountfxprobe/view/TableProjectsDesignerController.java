@@ -346,10 +346,9 @@ public class TableProjectsDesignerController {
                         Role role = user.getRole();
                         if (role.equals(Role.DESIGNER)) {
                             AllUsers.setCurrentUser(user.getIDNumber());
-                            //initialize();
-                            // ПРидется тут заново грузить наверное
-                            AllData.rebuildDayWorkSumProperty();
+                            initialize();
                             mainApp.showTableProjectsDesigner();
+                            mainApp.showStatisticWindow();
                         }
                         else if (role.equals(Role.MANAGER)) {
                             //this.stage.close();

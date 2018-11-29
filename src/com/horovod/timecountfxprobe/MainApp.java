@@ -7,6 +7,8 @@ import com.horovod.timecountfxprobe.user.Designer;
 import com.horovod.timecountfxprobe.user.Role;
 import com.horovod.timecountfxprobe.view.*;
 import javafx.application.Application;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.layout.AnchorPane;
@@ -23,6 +25,7 @@ public class MainApp extends Application {
     private BorderPane rootLayout;
     private AnchorPane statisticWindow;
     private Stage statStage;
+    private TableProjectsDesignerController tableProjectsDesignerController;
     private StatisticWindowController statisticWindowController;
 
     @Override
@@ -72,15 +75,15 @@ public class MainApp extends Application {
 
     public void showTableProjectsDesigner() {
         try {
-            FXMLLoader loader3 = new FXMLLoader();
-            loader3.setLocation(MainApp.class.getResource("view/TableProjectsDesigner.fxml"));
-            AnchorPane tableDesigner = (AnchorPane) loader3.load();
+            FXMLLoader loader = new FXMLLoader();
+            loader.setLocation(MainApp.class.getResource("view/TableProjectsDesigner.fxml"));
+            AnchorPane tableDesigner = (AnchorPane) loader.load();
 
             rootLayout.setCenter(tableDesigner);
 
-            TableProjectsDesignerController controller = loader3.getController();
-            AllData.setTableProjectsDesignerController(controller);
-            controller.setMainApp(this);
+            tableProjectsDesignerController = loader.getController();
+            AllData.setTableProjectsDesignerController(tableProjectsDesignerController);
+            tableProjectsDesignerController.setMainApp(this);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -147,6 +150,9 @@ public class MainApp extends Application {
                 statisticWindowController = loader.getController();
                 statisticWindowController.setMainApp(this);
                 statisticWindowController.setStage(statStage);
+                AllData.setStatisticWindowController(statisticWindowController);
+                AllData.setStatStage(statStage);
+
             } catch (IOException e) {
             }
         }
@@ -165,4 +171,34 @@ public class MainApp extends Application {
         primaryStage.close();
         System.exit(0);
     }
+
+    public void showAboutWindow() {
+        try {
+            FXMLLoader loader = new FXMLLoader();
+            loader.setLocation(MainApp.class.getResource("view/AboutWindow.fxml"));
+            AnchorPane aboutWindow = (AnchorPane) loader.load();
+
+            Stage aboutStage = new Stage();
+            aboutStage.setTitle("О программе");
+            aboutStage.initModality(Modality.APPLICATION_MODAL);
+            aboutStage.initOwner(primaryStage);
+            Scene scene = new Scene(aboutWindow);
+            aboutStage.setScene(scene);
+            AboutWindowController aboutWindowController = loader.getController();
+            aboutWindowController.getJavaRushHyperlink().setOnAction(new EventHandler<ActionEvent>() {
+                @Override
+                public void handle(ActionEvent event) {
+                    getHostServices().showDocument("https://javarush.ru");
+                    aboutWindowController.getJavaRushHyperlink().setVisited(false);
+                }
+            });
+            aboutWindowController.getJavaRushHyperlink().setVisited(false);
+            aboutWindowController.setAboutStage(aboutStage);
+
+            aboutStage.showAndWait();
+        } catch (IOException e) {
+
+        }
+    }
+
 }

@@ -1,4 +1,42 @@
 package com.horovod.timecountfxprobe.view;
 
-public class AboutWindowController {
+import javafx.application.Application;
+import javafx.application.HostServices;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
+import javafx.fxml.FXML;
+import javafx.scene.control.Button;
+import javafx.scene.control.Hyperlink;
+import javafx.stage.Stage;
+
+public class AboutWindowController  {
+
+    private Stage aboutStage;
+
+    @FXML
+    private Hyperlink javaRushHyperlink;
+
+    @FXML
+    private Button closeButton;
+
+    public Stage getAboutStage() {
+        return aboutStage;
+    }
+
+    public void setAboutStage(Stage aboutStage) {
+        this.aboutStage = aboutStage;
+    }
+
+    public Hyperlink getJavaRushHyperlink() {
+        return javaRushHyperlink;
+    }
+
+    public void setJavaRushHyperlink(Hyperlink javaRushHyperlink) {
+        this.javaRushHyperlink = javaRushHyperlink;
+    }
+
+    public void handleCloseButton() {
+        this.aboutStage.close();
+    }
+
 }

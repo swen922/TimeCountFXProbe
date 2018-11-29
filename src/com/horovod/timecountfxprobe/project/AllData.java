@@ -1,7 +1,10 @@
 package com.horovod.timecountfxprobe.project;
 
 import com.horovod.timecountfxprobe.user.AllUsers;
+import com.horovod.timecountfxprobe.user.Role;
+import com.horovod.timecountfxprobe.user.User;
 import com.horovod.timecountfxprobe.view.RootLayoutController;
+import com.horovod.timecountfxprobe.view.StatisticWindowController;
 import com.horovod.timecountfxprobe.view.TableProjectsDesignerController;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.IntegerProperty;
@@ -13,6 +16,7 @@ import javafx.collections.ObservableMap;
 import javafx.application.Platform;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
+import javafx.stage.Stage;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -38,15 +42,21 @@ public class AllData {
     private static volatile AtomicInteger workSumProjects = new AtomicInteger(0);
     private static volatile IntegerProperty workSumProjectsProperty = new SimpleIntegerProperty(workSumProjects.get());
     private static DoubleProperty dayWorkSumProperty = new SimpleDoubleProperty(0);
+    private static IntegerProperty designerRatingPosition = new SimpleIntegerProperty(0);
+
     private static DoubleProperty designerWeekWorkSumProperty = new SimpleDoubleProperty(0);
     private static DoubleProperty designerMonthWorkSumProperty = new SimpleDoubleProperty(0);
     private static DoubleProperty designerYearWorkSumProperty = new SimpleDoubleProperty(0);
 
 
+
     /** Поле нужно, чтобы передавать его отдельным нитям (см. класс TestBackgroundUpdate01)
      * */
     private static TableProjectsDesignerController tableProjectsDesignerController;
+    private static StatisticWindowController statisticWindowController;
     private static BorderPane rootLayout;
+    private static Stage statStage;
+
 
 
     /** Стандартные геттеры и сеттеры */
@@ -218,24 +228,75 @@ public class AllData {
         AllData.designerYearWorkSumProperty.set(AllData.intToDouble(counter));
     }
 
+    public static int getDesignerRatingPosition() {
+        return designerRatingPosition.get();
+    }
+
+    public static IntegerProperty designerRatingPositionProperty() {
+        return designerRatingPosition;
+    }
+
+    public static synchronized void setDesignerRatingPosition(int newDesignerRatingPosition) {
+        AllData.designerRatingPosition.set(newDesignerRatingPosition);
+    }
+
+    public static void rebuildDesignerRatingPosition() {
+
+        designerRatingPosition.set(0);
+        Map<Integer, Integer> places = new TreeMap<>(Collections.reverseOrder());
+
+        for (User u : AllUsers.getUsers().values()) {
+            int sum = 0;
+            if(u.getRole().equals(Role.DESIGNER)) {
+                for (Project p : activeProjects.values()) {
+                    sum += p.getWorkSumForDesignerAndPeriod(u.getIDNumber(), LocalDate.now().minusDays(31), LocalDate.now().minusDays(1));
+                }
+                places.put(sum, u.getIDNumber());
+            }
+
+        }
+
+        System.out.println(places);
+
+        List<Integer> listPlaces = new ArrayList<>(places.values());
+        int result = listPlaces.indexOf(AllUsers.getCurrentUser());
+
+        designerRatingPosition.set(result + 1);
+    }
+
 
 
     public static TableProjectsDesignerController getTableProjectsDesignerController() {
         return tableProjectsDesignerController;
     }
 
-    public static void setTableProjectsDesignerController(TableProjectsDesignerController newTableProjectsDesignerController) {
+    public static synchronized void setTableProjectsDesignerController(TableProjectsDesignerController newTableProjectsDesignerController) {
         AllData.tableProjectsDesignerController = newTableProjectsDesignerController;
+    }
+
+    public static StatisticWindowController getStatisticWindowController() {
+        return statisticWindowController;
+    }
+
+    public static void setStatisticWindowController(StatisticWindowController statisticWindowController) {
+        AllData.statisticWindowController = statisticWindowController;
     }
 
     public static BorderPane getRootLayout() {
         return rootLayout;
     }
 
-    public static void setRootLayout(BorderPane newRootLayout) {
+    public static synchronized void setRootLayout(BorderPane newRootLayout) {
         AllData.rootLayout = newRootLayout;
     }
 
+    public static Stage getStatStage() {
+        return statStage;
+    }
+
+    public static void setStatStage(Stage statStage) {
+        AllData.statStage = statStage;
+    }
 
     /** Геттеры активного, неактивного и любого проекта из мапы
      * @return null
@@ -435,8 +496,7 @@ public class AllData {
     public static synchronized int computeWorkSum() {
         int result = 0;
 
-        Collection<Project> values = allProjects.values();
-        for (Project p : values) {
+        for (Project p : allProjects.values()) {
             result += p.getWorkSum();
         }
         workSumProjects.set(result);

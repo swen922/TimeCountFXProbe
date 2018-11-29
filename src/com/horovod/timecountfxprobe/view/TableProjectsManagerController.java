@@ -4,38 +4,29 @@ import com.horovod.timecountfxprobe.MainApp;
 import com.horovod.timecountfxprobe.project.AllData;
 import com.horovod.timecountfxprobe.project.Project;
 import com.horovod.timecountfxprobe.project.WorkTime;
-import com.horovod.timecountfxprobe.test.Generator;
-import com.horovod.timecountfxprobe.test.TestBackgroundUpdate01;
 import com.horovod.timecountfxprobe.user.AllUsers;
-import com.horovod.timecountfxprobe.user.Designer;
 import com.horovod.timecountfxprobe.user.Role;
 import com.horovod.timecountfxprobe.user.User;
-import javafx.beans.property.*;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
-import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
-import javafx.collections.ObservableMap;
 import javafx.collections.transformation.FilteredList;
 import javafx.collections.transformation.SortedList;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
-import javafx.geometry.Insets;
 import javafx.geometry.Pos;
-import javafx.scene.Cursor;
 import javafx.scene.Node;
-import javafx.scene.Scene;
 import javafx.scene.chart.CategoryAxis;
 import javafx.scene.chart.LineChart;
 import javafx.scene.chart.XYChart;
 import javafx.scene.control.*;
+import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
-import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.BorderPane;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextAlignment;
@@ -47,7 +38,7 @@ import java.time.temporal.WeekFields;
 import java.util.*;
 import java.util.function.Predicate;
 
-public class TableProjectsDesignerController {
+public class TableProjectsManagerController {
 
     private MainApp mainApp;
     private Stage stage;
@@ -116,6 +107,9 @@ public class TableProjectsDesignerController {
     private TableView<Map.Entry<Integer, Project>> projectsTable;
 
     @FXML
+    private TableColumn columnAction;
+
+    @FXML
     private TableColumn<Map.Entry<Integer, Project>, Integer> columnID;
 
     @FXML
@@ -181,8 +175,11 @@ public class TableProjectsDesignerController {
         AllData.rebuildDesignerMonthWorkSumProperty(today.getYear(), today.getMonth().getValue());
         AllData.rebuildDesignerYearWorkSumProperty(today.getYear());
 
-
         sortTableProjects();
+
+
+        columnAction.setCellValueFactory(new PropertyValueFactory<>(""));
+
 
         columnID.setCellValueFactory(new Callback<TableColumn.CellDataFeatures<Map.Entry<Integer, Project>, Integer>, ObservableValue<Integer>>() {
             @Override
@@ -195,7 +192,7 @@ public class TableProjectsDesignerController {
 
 
         Callback<TableColumn<Map.Entry<Integer, Project>, String>, TableCell<Map.Entry<Integer, Project>, String>> cellFactory =
-                (TableColumn<Map.Entry<Integer, Project>, String> p) -> new TableProjectsDesignerController.EditingCell();
+                (TableColumn<Map.Entry<Integer, Project>, String> p) -> new TableProjectsManagerController.EditingCell();
 
         columnTime.setCellFactory(cellFactory);
 
@@ -205,7 +202,7 @@ public class TableProjectsDesignerController {
                 // Для списка менеджера – просто все рабочее время
                 //return param.getValue().getValue().workSumProperty();
 
-                int time = param.getValue().getValue().getWorkSumForDesignerAndDate(AllUsers.getCurrentUser(), LocalDate.now());
+                int time = param.getValue().getValue().getWorkSumForDate(LocalDate.now());
                 StringProperty result = new SimpleStringProperty(String.valueOf(AllData.intToDouble(time)));
                 return result;
             }
@@ -751,8 +748,8 @@ public class TableProjectsDesignerController {
                     KeyCode keyCode = event.getCode();
                     if (keyCode == KeyCode.ENTER) {
                         commitEdit(formatStringInput(oldText, textField.getText()));
-                        EditingCell.this.getTableView().requestFocus();
-                        EditingCell.this.getTableView().getSelectionModel().selectAll();
+                        TableProjectsManagerController.EditingCell.this.getTableView().requestFocus();
+                        TableProjectsManagerController.EditingCell.this.getTableView().getSelectionModel().selectAll();
                         initialize();
                         //projectsTable.refresh();
                     }
@@ -763,14 +760,14 @@ public class TableProjectsDesignerController {
                 public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
                     if (!newValue) {
                         commitEdit(formatStringInput(oldText, textField.getText()));
-                        EditingCell.this.getTableView().requestFocus();
-                        EditingCell.this.getTableView().getSelectionModel().selectAll();
+                        TableProjectsManagerController.EditingCell.this.getTableView().requestFocus();
+                        TableProjectsManagerController.EditingCell.this.getTableView().getSelectionModel().selectAll();
                         initialize();
                         //projectsTable.refresh();
                     }
                 }
             });
-            EditingCell.this.textField.selectAll();
+            TableProjectsManagerController.EditingCell.this.textField.selectAll();
 
         }
 

@@ -6,6 +6,7 @@ import com.horovod.timecountfxprobe.user.User;
 import com.horovod.timecountfxprobe.view.RootLayoutController;
 import com.horovod.timecountfxprobe.view.StatisticWindowController;
 import com.horovod.timecountfxprobe.view.TableProjectsDesignerController;
+import com.horovod.timecountfxprobe.view.TableProjectsManagerController;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleDoubleProperty;
@@ -52,10 +53,18 @@ public class AllData {
 
     /** Поле нужно, чтобы передавать его отдельным нитям (см. класс TestBackgroundUpdate01)
      * */
+
+    /** !!!!!! В чистовой версии загнать сюда ВСЕ статические экземпляры котнтролеров и нодов!
+     * А из MainApp убрать их !!!!!
+     * И решить по всем единообразно: либо через геттеры-сеттеры доступ, либо public сделать (второе экономней по коду)
+     * !!!!!!!!*/
+
     private static TableProjectsDesignerController tableProjectsDesignerController;
     private static StatisticWindowController statisticWindowController;
     private static BorderPane rootLayout;
     private static Stage statStage;
+
+    public static TableProjectsManagerController tableProjectsManagerController;
 
 
 
@@ -297,6 +306,8 @@ public class AllData {
     public static void setStatStage(Stage statStage) {
         AllData.statStage = statStage;
     }
+
+
 
     /** Геттеры активного, неактивного и любого проекта из мапы
      * @return null

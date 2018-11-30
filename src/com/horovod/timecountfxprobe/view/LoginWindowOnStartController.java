@@ -117,8 +117,9 @@ public class LoginWindowOnStartController {
                 }
                 else if (role.equals(Role.MANAGER)) {
                     this.stage.close();
-                    // TODO аписать класс таблицы для менеджера
-                    //this.mainApp.showTableProjectsDesigner();
+                    /** TODO убрать эту строчку в рабочем варианте */
+                    Generator.generateProjects2();
+                    this.mainApp.showTableProjectsManager();
                 }
 
                 break;

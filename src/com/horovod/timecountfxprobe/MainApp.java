@@ -28,6 +28,7 @@ public class MainApp extends Application {
     private TableProjectsDesignerController tableProjectsDesignerController;
     private StatisticWindowController statisticWindowController;
 
+
     @Override
     public void start(Stage primaryStage) throws Exception {
         this.primaryStage = primaryStage;
@@ -84,6 +85,22 @@ public class MainApp extends Application {
             tableProjectsDesignerController = loader.getController();
             AllData.setTableProjectsDesignerController(tableProjectsDesignerController);
             tableProjectsDesignerController.setMainApp(this);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+
+    public void showTableProjectsManager() {
+        try {
+            FXMLLoader loader = new FXMLLoader();
+            loader.setLocation(MainApp.class.getResource("view/TableProjectsManager.fxml"));
+            AnchorPane tableManager = (AnchorPane) loader.load();
+
+            rootLayout.setCenter(tableManager);
+
+            AllData.tableProjectsManagerController = loader.getController();
+            AllData.tableProjectsManagerController.setMainApp(this);
         } catch (IOException e) {
             e.printStackTrace();
         }

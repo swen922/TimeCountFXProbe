@@ -27,6 +27,7 @@ import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
+import javafx.scene.layout.HBox;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextAlignment;
@@ -107,7 +108,7 @@ public class TableProjectsManagerController {
     private TableView<Map.Entry<Integer, Project>> projectsTable;
 
     @FXML
-    private TableColumn columnAction;
+    private TableColumn<Map.Entry<Integer, Project>, Map.Entry<Integer, Project>> columnAction;
 
     @FXML
     private TableColumn<Map.Entry<Integer, Project>, Integer> columnID;
@@ -163,6 +164,123 @@ public class TableProjectsManagerController {
     }
 
 
+    class ManagerCell extends TableCell<Map.Entry<Integer, Project>, Map.Entry<Integer, Project>> {
+        private final Button manageButton = new Button("Инфо");
+        private final CheckBox archiveCheckBox = new CheckBox("Архивный");
+        private final Button deleteButton = new Button("X");
+
+        @Override
+        protected void updateItem(Map.Entry<Integer, Project> item, boolean empty) {
+            if (empty) {
+                setGraphic(null);
+            }
+            else {
+
+                archiveCheckBox.setOnAction(new EventHandler<ActionEvent>() {
+                    @Override
+                    public void handle(ActionEvent event) {
+                        if (archiveCheckBox.isSelected()) {
+                            Map.Entry<Integer, Project> entry = getTableView().getItems().get(getIndex());
+                            if (archiveCheckBox.isSelected()) {
+                                entry.getValue().setArchive(true);
+                                initialize();
+                            }
+                            else {
+                                entry.getValue().setArchive(false);
+                                initialize();
+                            }
+                        }
+                    }
+                });
+
+                HBox hbox = new HBox();
+                hbox.getChildren().addAll(manageButton, archiveCheckBox, deleteButton);
+                hbox.setAlignment(Pos.CENTER);
+                hbox.setSpacing(10);
+                setGraphic(hbox);
+            }
+
+        }
+
+        /*@Override
+        protected void updateItem(Void item, boolean empty) {
+
+            int index = projectsTable.getSelectionModel().getSelectedIndex();
+
+            //super.updateItem(item, empty);
+            if (empty) {
+                setGraphic(null);
+            }
+            else {
+
+                archiveCheckBox.setOnAction(new EventHandler<ActionEvent>() {
+                    @Override
+                    public void handle(ActionEvent event) {
+                        System.out.println("It's CheckBox!");
+
+                        projectsTable.requestFocus();
+
+                        System.out.println(index);
+                        projectsTable.getSelectionModel().select(index);
+                        projectsTable.getFocusModel().focus(index);
+                        System.out.println(projectsTable.getSelectionModel().getSelectedItem());
+                    }
+                });
+
+                HBox hbox = new HBox();
+                hbox.getChildren().addAll(manageButton, archiveCheckBox, deleteButton);
+                hbox.setAlignment(Pos.CENTER);
+                hbox.setSpacing(10);
+                setGraphic(hbox);
+            }
+        }*/
+
+        {
+            manageButton.setOnAction(new EventHandler<ActionEvent>() {
+                @Override
+                public void handle(ActionEvent event) {
+                    System.out.println("it's Manage button!");
+                }
+            });
+            manageButton.setMinHeight(20);
+            manageButton.setMaxHeight(20);
+            manageButton.setStyle("-fx-font-size:10");
+
+            archiveCheckBox.setSelected(false);
+
+            archiveCheckBox.setStyle("-fx-font-size:10");
+
+            deleteButton.setOnAction(new EventHandler<ActionEvent>() {
+                @Override
+                public void handle(ActionEvent event) {
+                    System.out.println("It's Delete Button!");
+                }
+            });
+            deleteButton.setMinHeight(20);
+            deleteButton.setMaxHeight(20);
+            deleteButton.setStyle("-fx-font-size:10");
+        }
+
+    }
+
+
+    class ArchiveRow extends TableRow<Map.Entry<Integer, Project>> {
+
+        @Override
+        protected void updateItem(Map.Entry<Integer, Project> item, boolean empty) {
+            if (item == null) {
+                return;
+            }
+            if (item.getValue().isArchive()) {
+                setStyle("-fx-background-color: linear-gradient(#99ccff 0%, #77acff 100%, #e0e0e0 100%);");
+            }
+            else {
+                setStyle(null);
+            }
+        }
+    }
+
+
 
     @FXML
     public void initialize() {
@@ -177,8 +295,45 @@ public class TableProjectsManagerController {
 
         sortTableProjects();
 
+        projectsTable.setRowFactory(new Callback<TableView<Map.Entry<Integer, Project>>, TableRow<Map.Entry<Integer, Project>>>() {
+            @Override
+            public TableRow<Map.Entry<Integer, Project>> call(TableView<Map.Entry<Integer, Project>> param) {
+                return new ArchiveRow();
+            }
+        });
+
+
+        /*projectsTable.setRowFactory(param -> new TableRow<Map.Entry<Integer, Project>>() {
+
+                    @Override
+                    protected void updateItem(Map.Entry<Integer, Project> item, boolean empty) {
+                        //super.updateItem(item, empty);
+                        String keyString = "project-99";
+                        if (projectsTable.getSelectionModel().getSelectedItem().getValue().getDescription().contains(keyString)) {
+                            param.setStyle("-fx-background-color: linear-gradient(#95caff 0%, #77acff 90%, #e0e0e0 90%);");
+                        }
+                    }
+                }
+        );*/
+
 
         columnAction.setCellValueFactory(new PropertyValueFactory<>(""));
+
+        /*columnAction.setCellFactory(new Callback<TableColumn<Map.Entry<Integer, Project>, Void>, TableCell<Map.Entry<Integer, Project>, Void>>() {
+            @Override
+            public TableCell<Map.Entry<Integer, Project>, Void> call(TableColumn<Map.Entry<Integer, Project>, Void> param) {
+                ManagerCell cell = new ManagerCell();
+                return cell;
+            }
+        });*/
+
+        columnAction.setCellFactory(new Callback<TableColumn<Map.Entry<Integer, Project>, Map.Entry<Integer, Project>>, TableCell<Map.Entry<Integer, Project>, Map.Entry<Integer, Project>>>() {
+            @Override
+            public TableCell<Map.Entry<Integer, Project>, Map.Entry<Integer, Project>> call(TableColumn<Map.Entry<Integer, Project>, Map.Entry<Integer, Project>> param) {
+                ManagerCell cell = new ManagerCell();
+                return cell;
+            }
+        });
 
 
         columnID.setCellValueFactory(new Callback<TableColumn.CellDataFeatures<Map.Entry<Integer, Project>, Integer>, ObservableValue<Integer>>() {
@@ -255,6 +410,7 @@ public class TableProjectsManagerController {
                 return getTableCell(columnDescription, TextAlignment.LEFT);
             }
         });
+
 
 
 

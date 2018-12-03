@@ -29,7 +29,7 @@
                     <children>
                         <HBox alignment="CENTER_LEFT" prefHeight="20.0" spacing="10.0">
                             <children>
-                                <CheckBox fx:id="showMyProjectsCheckBox" lineSpacing="10.0" mnemonicParsing="false" onAction="#handleShowMyProjectsCheckBox" text="Показывать архивные проекты">
+                                <CheckBox fx:id="showArchiveProjectsCheckBox" lineSpacing="10.0" mnemonicParsing="false" onAction="#handleShowArchiveProjectsCheckBox" text="Показывать архивные проекты">
                                     <padding>
                                         <Insets bottom="5.0" />
                                     </padding>

@@ -45,8 +45,13 @@ public class TableProjectsManagerController {
     private Stage stage;
     private StatisticWindowController statisticWindowController;
 
-    private ObservableList<Map.Entry<Integer, Project>> tableProjects = FXCollections.observableArrayList(AllData.getActiveProjects().entrySet());
-    private FilteredList<Map.Entry<Integer, Project>> filterData = new FilteredList<>(tableProjects, p -> true);
+    private ObservableList<Map.Entry<Integer, Project>> activeProjects = FXCollections.observableArrayList(AllData.getActiveProjects().entrySet());
+    private ObservableList<Map.Entry<Integer, Project>> allProjects = FXCollections.observableArrayList(AllData.getAllProjects().entrySet());
+
+    private FilteredList<Map.Entry<Integer, Project>> filterData = new FilteredList<>(activeProjects, p -> true);
+    private FilteredList<Map.Entry<Integer, Project>> filterDataWrapper = new FilteredList<>(filterData, p -> true);
+    private ChangeListener<String> filterListener;
+    private Predicate<Map.Entry<Integer, Project>> filterPredicate;
 
     private ObservableList<String> datesForChart;
     private ObservableList<XYChart.Data<String, Integer>> workTimeForChart;
@@ -62,7 +67,7 @@ public class TableProjectsManagerController {
     private Button deleteSearchTextButton;
 
     @FXML
-    private CheckBox showMyProjectsCheckBox;
+    private CheckBox showArchiveProjectsCheckBox;
 
     @FXML
     private DatePicker fromDatePicker;
@@ -176,19 +181,36 @@ public class TableProjectsManagerController {
             }
             else {
 
+                Map.Entry<Integer, Project> entry = getTableView().getItems().get(getIndex());
+
+                //System.out.println("entry.getValue().isArchive() = " + entry.getValue().isArchive());
+
+                if (entry.getValue().isArchive()) {
+                    archiveCheckBox.setSelected(true);
+                }
+                else {
+                    archiveCheckBox.setSelected(false);
+                }
+
                 archiveCheckBox.setOnAction(new EventHandler<ActionEvent>() {
                     @Override
                     public void handle(ActionEvent event) {
+
                         if (archiveCheckBox.isSelected()) {
-                            Map.Entry<Integer, Project> entry = getTableView().getItems().get(getIndex());
-                            if (archiveCheckBox.isSelected()) {
-                                entry.getValue().setArchive(true);
-                                initialize();
-                            }
-                            else {
-                                entry.getValue().setArchive(false);
-                                initialize();
-                            }
+                            AllData.changeProjectArchiveStatus(entry.getValue().getIdNumber(), true);
+                            // Прямое обращение к методу setArchive() в классе Project – только для тестирования!!!
+                            //entry.getValue().setArchive(true);
+                            System.out.println("project id-" + entry.getValue().getIdNumber() + ", archive status = " + entry.getValue().isArchive());
+                            handleFilters();
+                            initialize();
+                        }
+                        else {
+                            AllData.changeProjectArchiveStatus(entry.getValue().getIdNumber(), false);
+                            // Прямое обращение к методу setArchive() в классе Project – только для тестирования!!!
+                            //entry.getValue().setArchive(false);
+                            System.out.println("project id-" + entry.getValue().getIdNumber() + ", archive status = " + entry.getValue().isArchive());
+                            handleFilters();
+                            initialize();
                         }
                     }
                 });
@@ -199,43 +221,11 @@ public class TableProjectsManagerController {
                 hbox.setSpacing(10);
                 setGraphic(hbox);
             }
-
         }
 
-        /*@Override
-        protected void updateItem(Void item, boolean empty) {
-
-            int index = projectsTable.getSelectionModel().getSelectedIndex();
-
-            //super.updateItem(item, empty);
-            if (empty) {
-                setGraphic(null);
-            }
-            else {
-
-                archiveCheckBox.setOnAction(new EventHandler<ActionEvent>() {
-                    @Override
-                    public void handle(ActionEvent event) {
-                        System.out.println("It's CheckBox!");
-
-                        projectsTable.requestFocus();
-
-                        System.out.println(index);
-                        projectsTable.getSelectionModel().select(index);
-                        projectsTable.getFocusModel().focus(index);
-                        System.out.println(projectsTable.getSelectionModel().getSelectedItem());
-                    }
-                });
-
-                HBox hbox = new HBox();
-                hbox.getChildren().addAll(manageButton, archiveCheckBox, deleteButton);
-                hbox.setAlignment(Pos.CENTER);
-                hbox.setSpacing(10);
-                setGraphic(hbox);
-            }
-        }*/
 
         {
+
             manageButton.setOnAction(new EventHandler<ActionEvent>() {
                 @Override
                 public void handle(ActionEvent event) {
@@ -246,7 +236,7 @@ public class TableProjectsManagerController {
             manageButton.setMaxHeight(20);
             manageButton.setStyle("-fx-font-size:10");
 
-            archiveCheckBox.setSelected(false);
+
 
             archiveCheckBox.setStyle("-fx-font-size:10");
 
@@ -269,21 +259,38 @@ public class TableProjectsManagerController {
         @Override
         protected void updateItem(Map.Entry<Integer, Project> item, boolean empty) {
             if (item == null) {
+                //setStyle("-fx-background-color: transparent;");
+                setStyle(null);
                 return;
             }
             if (item.getValue().isArchive()) {
                 setStyle("-fx-background-color: linear-gradient(#99ccff 0%, #77acff 100%, #e0e0e0 100%);");
             }
             else {
+                //setStyle("-fx-background-color: transparent;");
                 setStyle(null);
             }
         }
+    }
+
+    private void initializeTableRows() {
+
+        System.out.println("iniside initializeTableRows()");
+
+        projectsTable.setRowFactory(new Callback<TableView<Map.Entry<Integer, Project>>, TableRow<Map.Entry<Integer, Project>>>() {
+            @Override
+            public TableRow<Map.Entry<Integer, Project>> call(TableView<Map.Entry<Integer, Project>> param) {
+                return new ArchiveRow();
+            }
+        });
     }
 
 
 
     @FXML
     public void initialize() {
+
+        System.out.println("iniside initialize()");
 
         // Отработка методов данных
         LocalDate today = LocalDate.now();
@@ -293,6 +300,11 @@ public class TableProjectsManagerController {
         AllData.rebuildDesignerMonthWorkSumProperty(today.getYear(), today.getMonth().getValue());
         AllData.rebuildDesignerYearWorkSumProperty(today.getYear());
 
+        //setFilterField();
+
+        handleFilters();
+
+
         sortTableProjects();
 
         projectsTable.setRowFactory(new Callback<TableView<Map.Entry<Integer, Project>>, TableRow<Map.Entry<Integer, Project>>>() {
@@ -301,21 +313,6 @@ public class TableProjectsManagerController {
                 return new ArchiveRow();
             }
         });
-
-
-        /*projectsTable.setRowFactory(param -> new TableRow<Map.Entry<Integer, Project>>() {
-
-                    @Override
-                    protected void updateItem(Map.Entry<Integer, Project> item, boolean empty) {
-                        //super.updateItem(item, empty);
-                        String keyString = "project-99";
-                        if (projectsTable.getSelectionModel().getSelectedItem().getValue().getDescription().contains(keyString)) {
-                            param.setStyle("-fx-background-color: linear-gradient(#95caff 0%, #77acff 90%, #e0e0e0 90%);");
-                        }
-                    }
-                }
-        );*/
-
 
         columnAction.setCellValueFactory(new PropertyValueFactory<>(""));
 
@@ -330,8 +327,7 @@ public class TableProjectsManagerController {
         columnAction.setCellFactory(new Callback<TableColumn<Map.Entry<Integer, Project>, Map.Entry<Integer, Project>>, TableCell<Map.Entry<Integer, Project>, Map.Entry<Integer, Project>>>() {
             @Override
             public TableCell<Map.Entry<Integer, Project>, Map.Entry<Integer, Project>> call(TableColumn<Map.Entry<Integer, Project>, Map.Entry<Integer, Project>> param) {
-                ManagerCell cell = new ManagerCell();
-                return cell;
+                return new ManagerCell();
             }
         });
 
@@ -357,7 +353,7 @@ public class TableProjectsManagerController {
                 // Для списка менеджера – просто все рабочее время
                 //return param.getValue().getValue().workSumProperty();
 
-                int time = param.getValue().getValue().getWorkSumForDate(LocalDate.now());
+                int time = param.getValue().getValue().getWorkSum();
                 StringProperty result = new SimpleStringProperty(String.valueOf(AllData.intToDouble(time)));
                 return result;
             }
@@ -412,13 +408,134 @@ public class TableProjectsManagerController {
         });
 
 
+        //FilteredList<Map.Entry<Integer, Project>> filterDataWrapper = new FilteredList<>(filterData, p -> true);
 
 
-        FilteredList<Map.Entry<Integer, Project>> filterDataWrapper = new FilteredList<>(filterData, p -> true);
+        /*if (filterPredicate == null) {
 
-        filterField.textProperty().addListener(new ChangeListener<String>() {
+            filterPredicate = new Predicate<Map.Entry<Integer, Project>>() {
+                @Override
+                public boolean test(Map.Entry<Integer, Project> integerProjectEntry) {
+
+                    System.out.println("inside test()");
+
+                    String newValue = filterField.getText();
+
+                    System.out.println(newValue);
+
+                    if (newValue == null || newValue.isEmpty()) {
+                        return true;
+                    }
+
+                    String lowerCaseFilter = newValue.toLowerCase().trim();
+
+                    String workTimeInTable = "0.0";
+                    if (integerProjectEntry.getValue().containsWorkTime()) {
+                        workTimeInTable = String.valueOf(AllData.intToDouble(integerProjectEntry.getValue().getWorkSum()));
+                    }
+
+                    if (String.valueOf(integerProjectEntry.getValue().getIdNumber()).contains(lowerCaseFilter)) {
+                        return true;
+                    }
+                    else if (workTimeInTable.contains(lowerCaseFilter)) {
+                        return true;
+                    }
+                    else if (integerProjectEntry.getValue().getCompany().toLowerCase().contains(lowerCaseFilter)) {
+                        return true;
+                    }
+                    else if (integerProjectEntry.getValue().getInitiator().toLowerCase().contains(lowerCaseFilter)) {
+                        return true;
+                    }
+                    else if (integerProjectEntry.getValue().getDescription().toLowerCase().contains(lowerCaseFilter)) {
+                        return true;
+                    }
+                    return false;
+                }
+            };
+        }*/
+
+
+        if (filterListener == null) {
+
+            filterListener = new ChangeListener<String>() {
+
+                @Override
+                public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
+
+                    System.out.println("inside changed");
+                    //filterDataWrapper.setPredicate(filterPredicate);
+
+                    filterDataWrapper.setPredicate(new Predicate<Map.Entry<Integer, Project>>() {
+                        @Override
+                        public boolean test(Map.Entry<Integer, Project> integerProjectEntry) {
+
+                            String newValue = filterField.getText();
+
+                            if (newValue == null || newValue.isEmpty()) {
+                                return true;
+                            }
+
+                            String lowerCaseFilter = newValue.toLowerCase().trim();
+
+                            String workTimeInTable = "0.0";
+                            if (integerProjectEntry.getValue().containsWorkTime()) {
+                                //System.out.println(AllData.intToDouble(integerProjectEntry.getValue().getWorkSum()));
+                                workTimeInTable = String.valueOf(AllData.intToDouble(integerProjectEntry.getValue().getWorkSum()));
+                            }
+
+                            if (String.valueOf(integerProjectEntry.getValue().getIdNumber()).contains(lowerCaseFilter)) {
+                                System.out.println("if-1");
+                                System.out.println(String.valueOf(integerProjectEntry.getValue().getIdNumber()));
+                                System.out.println();
+                                return true;
+                            }
+                            else if (workTimeInTable.contains(lowerCaseFilter)) {
+                                System.out.println("if-2");
+                                System.out.println(workTimeInTable);
+                                System.out.println();
+                                return true;
+                            }
+                            else if (integerProjectEntry.getValue().getCompany().toLowerCase().contains(lowerCaseFilter)) {
+                                System.out.println("if-3");
+                                System.out.println(integerProjectEntry.getValue().getCompany());
+                                System.out.println();
+                                return true;
+                            }
+                            else if (integerProjectEntry.getValue().getInitiator().toLowerCase().contains(lowerCaseFilter)) {
+                                System.out.println("if-4");
+                                System.out.println(integerProjectEntry.getValue().getInitiator());
+                                System.out.println();
+                                return true;
+                            }
+                            else if (integerProjectEntry.getValue().getDescription().toLowerCase().contains(lowerCaseFilter)) {
+                                System.out.println("if-5");
+                                System.out.println(integerProjectEntry.getValue().getDescription());
+                                System.out.println();
+                                return true;
+                            }
+                            return false;
+                        }
+                    });
+
+                    sortTableProjects();
+                }
+            };
+
+
+        }
+
+        filterField.textProperty().addListener(filterListener);
+
+
+
+
+        //filterField.textProperty().addListener(filterListener);
+
+
+        /*filterField.textProperty().addListener(new ChangeListener<String>() {
             @Override
             public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
+
                 filterDataWrapper.setPredicate(new Predicate<Map.Entry<Integer, Project>>() {
                     @Override
                     public boolean test(Map.Entry<Integer, Project> integerProjectEntry) {
@@ -429,9 +546,9 @@ public class TableProjectsManagerController {
                         String lowerCaseFilter = newValue.toLowerCase().trim();
 
                         String workTimeInTable = "0.0";
-                        if (integerProjectEntry.getValue().containsWorkTime(AllUsers.getCurrentUser(), LocalDate.now())) {
+                        if (integerProjectEntry.getValue().containsWorkTime(LocalDate.now())) {
                             workTimeInTable = String.valueOf(AllData.intToDouble(integerProjectEntry.getValue().
-                                    getWorkSumForDesignerAndDate(AllUsers.getCurrentUser(), LocalDate.now())));
+                                    getWorkSumForDate(LocalDate.now())));
                         }
 
                         if (String.valueOf(integerProjectEntry.getValue().getIdNumber()).contains(lowerCaseFilter)) {
@@ -452,9 +569,18 @@ public class TableProjectsManagerController {
                         return false;
                     }
                 });
-                sortTableProjects();
+                //initializeTableRows();
+                //sortTableProjects();
+                initialize();
+                //projectsTable.getRowFactory().call(projectsTable);
+                *//*projectsTable.setRowFactory(new Callback<TableView<Map.Entry<Integer, Project>>, TableRow<Map.Entry<Integer, Project>>>() {
+                    @Override
+                    public TableRow<Map.Entry<Integer, Project>> call(TableView<Map.Entry<Integer, Project>> param) {
+                        return new ArchiveRow();
+                    }
+                });*//*
             }
-        });
+        });*/
 
 
         columnTime.setOnEditCommit(new EventHandler<TableColumn.CellEditEvent<Map.Entry<Integer, Project>, String>>() {
@@ -487,6 +613,49 @@ public class TableProjectsManagerController {
         initLoggedUsersChoiceBox();
 
     }
+
+
+    /*private void setFilterField() {
+
+        String newValue = filterField.getText();
+
+        System.out.println("inside setFilterField()");
+
+        filterDataWrapper.setPredicate(new Predicate<Map.Entry<Integer, Project>>() {
+            @Override
+            public boolean test(Map.Entry<Integer, Project> integerProjectEntry) {
+                if (newValue == null || newValue.isEmpty()) {
+                    return true;
+                }
+
+                String lowerCaseFilter = newValue.toLowerCase().trim();
+
+                String workTimeInTable = "0.0";
+                if (integerProjectEntry.getValue().containsWorkTime()) {
+                    workTimeInTable = String.valueOf(AllData.intToDouble(integerProjectEntry.getValue().getWorkSum()));
+                }
+
+                if (String.valueOf(integerProjectEntry.getValue().getIdNumber()).contains(lowerCaseFilter)) {
+                    return true;
+                }
+                else if (workTimeInTable.contains(lowerCaseFilter)) {
+                    return true;
+                }
+                else if (integerProjectEntry.getValue().getCompany().toLowerCase().contains(lowerCaseFilter)) {
+                    return true;
+                }
+                else if (integerProjectEntry.getValue().getInitiator().toLowerCase().contains(lowerCaseFilter)) {
+                    return true;
+                }
+                else if (integerProjectEntry.getValue().getDescription().toLowerCase().contains(lowerCaseFilter)) {
+                    return true;
+                }
+                return false;
+            }
+        });
+    }*/
+
+
 
     public void initLoggedUsersChoiceBox() {
 
@@ -617,8 +786,6 @@ public class TableProjectsManagerController {
         for (String s : datesForChart) {
             if (decadeWorkSums.containsKey(s)) {
 
-                System.out.println("date = " + s + " and time = " + decadeWorkSums.get(s));
-
                 workTimeForChart.add(new XYChart.Data<>(s, decadeWorkSums.get(s)));
             }
             else {
@@ -629,18 +796,30 @@ public class TableProjectsManagerController {
 
 
 
-
     public void handleDeleteSearch() {
         filterField.setText("");
+        initialize();
     }
 
+
     public void sortTableProjects() {
-        tableProjects.sort(new Comparator<Map.Entry<Integer, Project>>() {
-            @Override
-            public int compare(Map.Entry<Integer, Project> o1, Map.Entry<Integer, Project> o2) {
-                return compareTime(o1, o2);
-            }
-        });
+
+        if (showArchiveProjectsCheckBox.isSelected()) {
+            allProjects.sort(new Comparator<Map.Entry<Integer, Project>>() {
+                @Override
+                public int compare(Map.Entry<Integer, Project> o1, Map.Entry<Integer, Project> o2) {
+                    return compareTime(o1, o2);
+                }
+            });
+        }
+        else {
+            activeProjects.sort(new Comparator<Map.Entry<Integer, Project>>() {
+                @Override
+                public int compare(Map.Entry<Integer, Project> o1, Map.Entry<Integer, Project> o2) {
+                    return compareTime(o1, o2);
+                }
+            });
+        }
     }
 
 
@@ -653,19 +832,21 @@ public class TableProjectsManagerController {
      * */
 
 
-    public void handleShowMyProjectsCheckBox() {
-        checkDatePicker(showMyProjectsCheckBox);
+    public void handleShowArchiveProjectsCheckBox() {
         handleFilters();
+        initialize();
     }
 
     public void handleFromDatePicker() {
         checkDatePicker(fromDatePicker);
         handleFilters();
+        initialize();
     }
 
     public void handleTillDatePicker() {
         checkDatePicker(tillDatePicker);
         handleFilters();
+        initialize();
     }
 
     private void checkDatePicker(Node node) {
@@ -675,14 +856,10 @@ public class TableProjectsManagerController {
         if (fromDate != null && tillDate != null) {
 
             if (fromDate.compareTo(tillDate) > 0) {
-                if (node == showMyProjectsCheckBox) {
-                    fromDatePicker.setValue(null);
-                    tillDatePicker.setValue(null);
-                }
-                else if (node == fromDatePicker) {
+                if (node == fromDatePicker) {
                     fromDatePicker.setValue(null);
                 }
-                else if (node == tillDatePicker) {
+                else {
                     tillDatePicker.setValue(null);
                 }
             }
@@ -692,28 +869,15 @@ public class TableProjectsManagerController {
 
     private void handleFilters() {
 
-        filterField.clear();
+        //filterField.clear();
+        filterData = null;
         LocalDate fromDate = fromDatePicker.getValue();
         LocalDate tillDate = tillDatePicker.getValue();
 
         if (fromDate != null && tillDate != null) {
 
-            if (showMyProjectsCheckBox.isSelected()) {
-                filterData = new FilteredList<>(this.tableProjects, new Predicate<Map.Entry<Integer, Project>>() {
-                    @Override
-                    public boolean test(Map.Entry<Integer, Project> integerProjectEntry) {
-                        if (integerProjectEntry.getValue().containsWorkTime(AllUsers.getCurrentUser(), fromDate, tillDate)) {
-                            return true;
-                        }
-                        return false;
-                    }
-                });
-                initialize();
-                //projectsTable.refresh();
-
-            }
-            else {
-                filterData = new FilteredList<>(this.tableProjects, new Predicate<Map.Entry<Integer, Project>>() {
+            if (showArchiveProjectsCheckBox.isSelected()) {
+                filterData = new FilteredList<>(this.allProjects, new Predicate<Map.Entry<Integer, Project>>() {
                     @Override
                     public boolean test(Map.Entry<Integer, Project> integerProjectEntry) {
                         if (integerProjectEntry.getValue().containsWorkTime(fromDate, tillDate)) {
@@ -722,35 +886,44 @@ public class TableProjectsManagerController {
                         return false;
                     }
                 });
-                initialize();
-                //projectsTable.refresh();
+                //initialize();
             }
-        }
-        else {
-            if (showMyProjectsCheckBox.isSelected()) {
-                filterData = new FilteredList<>(this.tableProjects, new Predicate<Map.Entry<Integer, Project>>() {
+            else {
+                filterData = new FilteredList<>(this.activeProjects, new Predicate<Map.Entry<Integer, Project>>() {
                     @Override
                     public boolean test(Map.Entry<Integer, Project> integerProjectEntry) {
-                        if (integerProjectEntry.getValue().containsWorkTime(AllUsers.getCurrentUser())) {
+                        if (integerProjectEntry.getValue().containsWorkTime(fromDate, tillDate)) {
                             return true;
                         }
                         return false;
                     }
                 });
-                initialize();
+                //initialize();
+            }
+        }
+        else {
+            if (showArchiveProjectsCheckBox.isSelected()) {
+                allProjects = FXCollections.observableArrayList(AllData.getAllProjects().entrySet());
+                filterData = new FilteredList<>(this.allProjects, p -> true);
+                filterDataWrapper = new FilteredList<>(filterData, p -> true);
+                //initialize();
             }
             else {
-                filterData = new FilteredList<>(this.tableProjects, p -> true);
-                initialize();
+                activeProjects = FXCollections.observableArrayList(AllData.getActiveProjects().entrySet());
+                filterData = new FilteredList<>(this.activeProjects, p -> true);
+                filterDataWrapper = new FilteredList<>(filterData, p -> true);
+                //initialize();
             }
         }
     }
+
 
 
     public void handleDeleteDatePicker() {
         fromDatePicker.setValue(null);
         tillDatePicker.setValue(null);
         handleFilters();
+        initialize();
     }
 
     public void handleReloadButton() {

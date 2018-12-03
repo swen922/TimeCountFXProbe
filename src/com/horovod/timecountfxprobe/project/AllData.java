@@ -265,8 +265,6 @@ public class AllData {
 
         }
 
-        System.out.println(places);
-
         List<Integer> listPlaces = new ArrayList<>(places.values());
         int result = listPlaces.indexOf(AllUsers.getCurrentUser());
 
@@ -433,10 +431,10 @@ public class AllData {
             Project chProject = allProjects.get(changedProject);
             chProject.setArchive(projectIsArchive);
 
-            if (projectIsArchive == true) {
+            if (projectIsArchive) {
                 activeProjects.remove(changedProject);
             }
-            else if (projectIsArchive == false) {
+            else if (!projectIsArchive) {
                 activeProjects.put(changedProject, chProject);
             }
         }

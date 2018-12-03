@@ -189,6 +189,9 @@ public class Project {
         return isArchive;
     }
 
+    /** Этот метод использовать ТОЛЬКО через метод
+     * changeProjectArchiveStatus(int changedProject, boolean projectIsArchive)
+     * в классе AllData !!!*/
     public synchronized void setArchive(boolean archive) {
         isArchive = archive;
     }
@@ -318,6 +321,12 @@ public class Project {
     }
 
     /** Методы проверки наличия рабочего времени по разным параметрам */
+
+
+    public boolean containsWorkTime() {
+        return !work.isEmpty();
+    }
+
 
     public boolean containsWorkTime(int designerIDnumber) {
         for (WorkTime wt : work) {

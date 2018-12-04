@@ -45,13 +45,17 @@ public class TableProjectsManagerController {
     private Stage stage;
     private StatisticWindowController statisticWindowController;
 
-    private ObservableList<Map.Entry<Integer, Project>> activeProjects = FXCollections.observableArrayList(AllData.getActiveProjects().entrySet());
-    private ObservableList<Map.Entry<Integer, Project>> allProjects = FXCollections.observableArrayList(AllData.getAllProjects().entrySet());
+    private ObservableList<Map.Entry<Integer, Project>> showProjects = FXCollections.observableArrayList(AllData.getActiveProjects().entrySet());
+    //private ObservableList<Map.Entry<Integer, Project>> allProjects = FXCollections.observableArrayList(AllData.getAllProjects().entrySet());
 
-    private FilteredList<Map.Entry<Integer, Project>> filterData = new FilteredList<>(activeProjects, p -> true);
-    private FilteredList<Map.Entry<Integer, Project>> filterDataWrapper = new FilteredList<>(filterData, p -> true);
-    private ChangeListener<String> filterListener;
-    private Predicate<Map.Entry<Integer, Project>> filterPredicate;
+    private FilteredList<Map.Entry<Integer, Project>> filterData = new FilteredList<>(showProjects, p -> true);
+    private Predicate<Map.Entry<Integer, Project>> filterPredicate = new Predicate<Map.Entry<Integer, Project>>() {
+        @Override
+        public boolean test(Map.Entry<Integer, Project> integerProjectEntry) {
+            return true;
+        }
+    };
+    private FilteredList<Map.Entry<Integer, Project>> filterDataWrapper = new FilteredList<>(filterData, filterPredicate);
 
     private ObservableList<String> datesForChart;
     private ObservableList<XYChart.Data<String, Integer>> workTimeForChart;
@@ -85,10 +89,10 @@ public class TableProjectsManagerController {
     private CategoryAxis xAxis;
 
     @FXML
-    private Label dayWorkSumLabel;
+    private Label todayWorkSumLabel;
 
     @FXML
-    private Label ratingPositionLabel;
+    private Label yesterdayWorkSumLabel;
 
     @FXML
     private Button buttonReload;
@@ -113,7 +117,7 @@ public class TableProjectsManagerController {
     private TableView<Map.Entry<Integer, Project>> projectsTable;
 
     @FXML
-    private TableColumn<Map.Entry<Integer, Project>, Map.Entry<Integer, Project>> columnAction;
+    private TableColumn<Map.Entry<Integer, Project>, Void> columnAction;
 
     @FXML
     private TableColumn<Map.Entry<Integer, Project>, Integer> columnID;
@@ -169,13 +173,13 @@ public class TableProjectsManagerController {
     }
 
 
-    class ManagerCell extends TableCell<Map.Entry<Integer, Project>, Map.Entry<Integer, Project>> {
+    class ManagerCell extends TableCell<Map.Entry<Integer, Project>, Void> {
         private final Button manageButton = new Button("Инфо");
         private final CheckBox archiveCheckBox = new CheckBox("Архивный");
         private final Button deleteButton = new Button("X");
 
         @Override
-        protected void updateItem(Map.Entry<Integer, Project> item, boolean empty) {
+        protected void updateItem(Void item, boolean empty) {
             if (empty) {
                 setGraphic(null);
             }
@@ -187,31 +191,67 @@ public class TableProjectsManagerController {
 
                 if (entry.getValue().isArchive()) {
                     archiveCheckBox.setSelected(true);
+                    setStyle("-fx-background-color: linear-gradient(#99ccff 0%, #77acff 100%, #e0e0e0 100%);");
                 }
                 else {
                     archiveCheckBox.setSelected(false);
+                    setStyle(null);
                 }
 
                 archiveCheckBox.setOnAction(new EventHandler<ActionEvent>() {
                     @Override
                     public void handle(ActionEvent event) {
 
+
                         if (archiveCheckBox.isSelected()) {
-                            AllData.changeProjectArchiveStatus(entry.getValue().getIdNumber(), true);
-                            // Прямое обращение к методу setArchive() в классе Project – только для тестирования!!!
-                            //entry.getValue().setArchive(true);
-                            System.out.println("project id-" + entry.getValue().getIdNumber() + ", archive status = " + entry.getValue().isArchive());
+
+                            Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+                            alert.setTitle("Подтверждение перевода в архив");
+                            alert.setHeaderText("Перевести проект id-" + entry.getKey() + " в архив?");
+
+                            Optional<ButtonType> option = alert.showAndWait();
+
+                            if (option.get() == ButtonType.OK) {
+                                AllData.changeProjectArchiveStatus(entry.getKey(), true);
+                                setStyle("-fx-background-color: linear-gradient(#99ccff 0%, #77acff 100%, #e0e0e0 100%);");
+                            }
+                            else {
+                                AllData.changeProjectArchiveStatus(entry.getKey(), false);
+                                setStyle(null);
+                            }
+
+
+                            /*AllData.changeProjectArchiveStatus(entry.getKey(), true);
+                            setStyle("-fx-background-color: linear-gradient(#99ccff 0%, #77acff 100%, #e0e0e0 100%);");
                             handleFilters();
-                            initialize();
+                            initialize();*/
                         }
                         else {
-                            AllData.changeProjectArchiveStatus(entry.getValue().getIdNumber(), false);
-                            // Прямое обращение к методу setArchive() в классе Project – только для тестирования!!!
-                            //entry.getValue().setArchive(false);
-                            System.out.println("project id-" + entry.getValue().getIdNumber() + ", archive status = " + entry.getValue().isArchive());
+
+
+                            Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+                            alert.setTitle("Подтверждение перевода в архив");
+                            alert.setHeaderText("Вывести проект id-" + entry.getKey() + " из архива?");
+
+                            Optional<ButtonType> option = alert.showAndWait();
+
+                            if (option.get() == ButtonType.OK) {
+                                AllData.changeProjectArchiveStatus(entry.getKey(), false);
+                                setStyle(null);
+                            }
+                            else if (option.get() == ButtonType.CANCEL) {
+                                AllData.changeProjectArchiveStatus(entry.getKey(), true);
+                                setStyle("-fx-background-color: linear-gradient(#99ccff 0%, #77acff 100%, #e0e0e0 100%);");
+                            }
+
+
+                            /*AllData.changeProjectArchiveStatus(entry.getKey(), false);
+                            setStyle(null);
                             handleFilters();
-                            initialize();
+                            initialize();*/
                         }
+                        handleFilters();
+                        initialize();
                     }
                 });
 
@@ -254,7 +294,7 @@ public class TableProjectsManagerController {
     }
 
 
-    class ArchiveRow extends TableRow<Map.Entry<Integer, Project>> {
+    /*class ArchiveRow extends TableRow<Map.Entry<Integer, Project>> {
 
         @Override
         protected void updateItem(Map.Entry<Integer, Project> item, boolean empty) {
@@ -271,66 +311,35 @@ public class TableProjectsManagerController {
                 setStyle(null);
             }
         }
-    }
+    }*/
 
-    private void initializeTableRows() {
 
-        System.out.println("iniside initializeTableRows()");
-
-        projectsTable.setRowFactory(new Callback<TableView<Map.Entry<Integer, Project>>, TableRow<Map.Entry<Integer, Project>>>() {
-            @Override
-            public TableRow<Map.Entry<Integer, Project>> call(TableView<Map.Entry<Integer, Project>> param) {
-                return new ArchiveRow();
-            }
-        });
-    }
 
 
 
     @FXML
     public void initialize() {
 
-        System.out.println("iniside initialize()");
-
         // Отработка методов данных
-        LocalDate today = LocalDate.now();
         AllData.deleteZeroTime();
-        AllData.rebuildDayWorkSumProperty();
-        AllData.rebuildDesignerWeekWorkSumProperty(today.getYear(), today.get(WeekFields.of(Locale.getDefault()).weekOfWeekBasedYear()));
-        AllData.rebuildDesignerMonthWorkSumProperty(today.getYear(), today.getMonth().getValue());
-        AllData.rebuildDesignerYearWorkSumProperty(today.getYear());
-
-        //setFilterField();
+        AllData.rebuildTodayWorkSumProperty();
+        AllData.rebuildYesterdayWorkSumProperty();
+        //AllData.rebuildDesignerWeekWorkSumProperty(today.getYear(), today.get(WeekFields.of(Locale.getDefault()).weekOfWeekBasedYear()));
+        //AllData.rebuildDesignerMonthWorkSumProperty(today.getYear(), today.getMonth().getValue());
+        //AllData.rebuildDesignerYearWorkSumProperty(today.getYear());
 
         handleFilters();
 
-
         sortTableProjects();
-
-        projectsTable.setRowFactory(new Callback<TableView<Map.Entry<Integer, Project>>, TableRow<Map.Entry<Integer, Project>>>() {
-            @Override
-            public TableRow<Map.Entry<Integer, Project>> call(TableView<Map.Entry<Integer, Project>> param) {
-                return new ArchiveRow();
-            }
-        });
 
         columnAction.setCellValueFactory(new PropertyValueFactory<>(""));
 
-        /*columnAction.setCellFactory(new Callback<TableColumn<Map.Entry<Integer, Project>, Void>, TableCell<Map.Entry<Integer, Project>, Void>>() {
+        columnAction.setCellFactory(new Callback<TableColumn<Map.Entry<Integer, Project>, Void>, TableCell<Map.Entry<Integer, Project>, Void>>() {
             @Override
             public TableCell<Map.Entry<Integer, Project>, Void> call(TableColumn<Map.Entry<Integer, Project>, Void> param) {
-                ManagerCell cell = new ManagerCell();
-                return cell;
-            }
-        });*/
-
-        columnAction.setCellFactory(new Callback<TableColumn<Map.Entry<Integer, Project>, Map.Entry<Integer, Project>>, TableCell<Map.Entry<Integer, Project>, Map.Entry<Integer, Project>>>() {
-            @Override
-            public TableCell<Map.Entry<Integer, Project>, Map.Entry<Integer, Project>> call(TableColumn<Map.Entry<Integer, Project>, Map.Entry<Integer, Project>> param) {
                 return new ManagerCell();
             }
         });
-
 
         columnID.setCellValueFactory(new Callback<TableColumn.CellDataFeatures<Map.Entry<Integer, Project>, Integer>, ObservableValue<Integer>>() {
             @Override
@@ -340,12 +349,6 @@ public class TableProjectsManagerController {
         });
 
         columnID.setStyle("-fx-alignment: CENTER;");
-
-
-        Callback<TableColumn<Map.Entry<Integer, Project>, String>, TableCell<Map.Entry<Integer, Project>, String>> cellFactory =
-                (TableColumn<Map.Entry<Integer, Project>, String> p) -> new TableProjectsManagerController.EditingCell();
-
-        columnTime.setCellFactory(cellFactory);
 
         columnTime.setCellValueFactory(new Callback<TableColumn.CellDataFeatures<Map.Entry<Integer, Project>, String>, ObservableValue<String>>() {
             @Override
@@ -408,205 +411,21 @@ public class TableProjectsManagerController {
         });
 
 
-        //FilteredList<Map.Entry<Integer, Project>> filterDataWrapper = new FilteredList<>(filterData, p -> true);
-
-
-        /*if (filterPredicate == null) {
-
-            filterPredicate = new Predicate<Map.Entry<Integer, Project>>() {
-                @Override
-                public boolean test(Map.Entry<Integer, Project> integerProjectEntry) {
-
-                    System.out.println("inside test()");
-
-                    String newValue = filterField.getText();
-
-                    System.out.println(newValue);
-
-                    if (newValue == null || newValue.isEmpty()) {
-                        return true;
-                    }
-
-                    String lowerCaseFilter = newValue.toLowerCase().trim();
-
-                    String workTimeInTable = "0.0";
-                    if (integerProjectEntry.getValue().containsWorkTime()) {
-                        workTimeInTable = String.valueOf(AllData.intToDouble(integerProjectEntry.getValue().getWorkSum()));
-                    }
-
-                    if (String.valueOf(integerProjectEntry.getValue().getIdNumber()).contains(lowerCaseFilter)) {
-                        return true;
-                    }
-                    else if (workTimeInTable.contains(lowerCaseFilter)) {
-                        return true;
-                    }
-                    else if (integerProjectEntry.getValue().getCompany().toLowerCase().contains(lowerCaseFilter)) {
-                        return true;
-                    }
-                    else if (integerProjectEntry.getValue().getInitiator().toLowerCase().contains(lowerCaseFilter)) {
-                        return true;
-                    }
-                    else if (integerProjectEntry.getValue().getDescription().toLowerCase().contains(lowerCaseFilter)) {
-                        return true;
-                    }
-                    return false;
-                }
-            };
-        }*/
-
-
-        if (filterListener == null) {
-
-            filterListener = new ChangeListener<String>() {
-
-                @Override
-                public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
-
-                    System.out.println("inside changed");
-                    //filterDataWrapper.setPredicate(filterPredicate);
-
-                    filterDataWrapper.setPredicate(new Predicate<Map.Entry<Integer, Project>>() {
-                        @Override
-                        public boolean test(Map.Entry<Integer, Project> integerProjectEntry) {
-
-                            String newValue = filterField.getText();
-
-                            if (newValue == null || newValue.isEmpty()) {
-                                return true;
-                            }
-
-                            String lowerCaseFilter = newValue.toLowerCase().trim();
-
-                            String workTimeInTable = "0.0";
-                            if (integerProjectEntry.getValue().containsWorkTime()) {
-                                //System.out.println(AllData.intToDouble(integerProjectEntry.getValue().getWorkSum()));
-                                workTimeInTable = String.valueOf(AllData.intToDouble(integerProjectEntry.getValue().getWorkSum()));
-                            }
-
-                            if (String.valueOf(integerProjectEntry.getValue().getIdNumber()).contains(lowerCaseFilter)) {
-                                System.out.println("if-1");
-                                System.out.println(String.valueOf(integerProjectEntry.getValue().getIdNumber()));
-                                System.out.println();
-                                return true;
-                            }
-                            else if (workTimeInTable.contains(lowerCaseFilter)) {
-                                System.out.println("if-2");
-                                System.out.println(workTimeInTable);
-                                System.out.println();
-                                return true;
-                            }
-                            else if (integerProjectEntry.getValue().getCompany().toLowerCase().contains(lowerCaseFilter)) {
-                                System.out.println("if-3");
-                                System.out.println(integerProjectEntry.getValue().getCompany());
-                                System.out.println();
-                                return true;
-                            }
-                            else if (integerProjectEntry.getValue().getInitiator().toLowerCase().contains(lowerCaseFilter)) {
-                                System.out.println("if-4");
-                                System.out.println(integerProjectEntry.getValue().getInitiator());
-                                System.out.println();
-                                return true;
-                            }
-                            else if (integerProjectEntry.getValue().getDescription().toLowerCase().contains(lowerCaseFilter)) {
-                                System.out.println("if-5");
-                                System.out.println(integerProjectEntry.getValue().getDescription());
-                                System.out.println();
-                                return true;
-                            }
-                            return false;
-                        }
-                    });
-
-                    sortTableProjects();
-                }
-            };
-
-
-        }
-
-        filterField.textProperty().addListener(filterListener);
-
-
-
-
-        //filterField.textProperty().addListener(filterListener);
-
-
-        /*filterField.textProperty().addListener(new ChangeListener<String>() {
-            @Override
-            public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
-
-                filterDataWrapper.setPredicate(new Predicate<Map.Entry<Integer, Project>>() {
-                    @Override
-                    public boolean test(Map.Entry<Integer, Project> integerProjectEntry) {
-                        if (newValue == null || newValue.isEmpty()) {
-                            return true;
-                        }
-
-                        String lowerCaseFilter = newValue.toLowerCase().trim();
-
-                        String workTimeInTable = "0.0";
-                        if (integerProjectEntry.getValue().containsWorkTime(LocalDate.now())) {
-                            workTimeInTable = String.valueOf(AllData.intToDouble(integerProjectEntry.getValue().
-                                    getWorkSumForDate(LocalDate.now())));
-                        }
-
-                        if (String.valueOf(integerProjectEntry.getValue().getIdNumber()).contains(lowerCaseFilter)) {
-                            return true;
-                        }
-                        else if (workTimeInTable.contains(lowerCaseFilter)) {
-                            return true;
-                        }
-                        else if (integerProjectEntry.getValue().getCompany().toLowerCase().contains(lowerCaseFilter)) {
-                            return true;
-                        }
-                        else if (integerProjectEntry.getValue().getInitiator().toLowerCase().contains(lowerCaseFilter)) {
-                            return true;
-                        }
-                        else if (integerProjectEntry.getValue().getDescription().toLowerCase().contains(lowerCaseFilter)) {
-                            return true;
-                        }
-                        return false;
-                    }
-                });
-                //initializeTableRows();
-                //sortTableProjects();
-                initialize();
-                //projectsTable.getRowFactory().call(projectsTable);
-                *//*projectsTable.setRowFactory(new Callback<TableView<Map.Entry<Integer, Project>>, TableRow<Map.Entry<Integer, Project>>>() {
-                    @Override
-                    public TableRow<Map.Entry<Integer, Project>> call(TableView<Map.Entry<Integer, Project>> param) {
-                        return new ArchiveRow();
-                    }
-                });*//*
-            }
-        });*/
-
-
-        columnTime.setOnEditCommit(new EventHandler<TableColumn.CellEditEvent<Map.Entry<Integer, Project>, String>>() {
-            @Override
-            public void handle(TableColumn.CellEditEvent<Map.Entry<Integer, Project>, String> event) {
-                double newTimeDouble = Double.parseDouble(event.getNewValue());
-
-                Project project = (Project) event.getTableView().getItems().get(event.getTablePosition().getRow()).getValue();
-                AllData.addWorkTime(project.getIdNumber(), LocalDate.now(), AllUsers.getCurrentUser(), newTimeDouble);
-                filterField.setText("-");
-                filterField.clear();
-            }
-        });
+        filterDataWrapper.setPredicate(filterPredicate);
 
         SortedList<Map.Entry<Integer, Project>> sortedList = new SortedList<>(filterDataWrapper, new Comparator<Map.Entry<Integer, Project>>() {
             @Override
             public int compare(Map.Entry<Integer, Project> o1, Map.Entry<Integer, Project> o2) {
-                return compareTime(o1, o2);
+                //return compareTime(o1, o2);
+                return Integer.compare(o1.getKey(), o2.getKey());
             }
         });
 
         projectsTable.setItems(sortedList);
         sortedList.comparatorProperty().bind(projectsTable.comparatorProperty());
 
-        dayWorkSumLabel.textProperty().bind(AllData.dayWorkSumProperty().asString());
-        ratingPositionLabel.textProperty().bind(AllData.designerRatingPositionProperty().asString());
+        todayWorkSumLabel.textProperty().bind(AllData.todayWorkSumProperty().asString());
+        yesterdayWorkSumLabel.textProperty().bind(AllData.yesterdayWorkSumProperty().asString());
         AllData.rebuildDesignerRatingPosition();
 
         initializeChart();
@@ -615,15 +434,14 @@ public class TableProjectsManagerController {
     }
 
 
-    /*private void setFilterField() {
+    public void addPredicateToFilter() {
 
-        String newValue = filterField.getText();
-
-        System.out.println("inside setFilterField()");
-
-        filterDataWrapper.setPredicate(new Predicate<Map.Entry<Integer, Project>>() {
+        filterPredicate = new Predicate<Map.Entry<Integer, Project>>() {
             @Override
             public boolean test(Map.Entry<Integer, Project> integerProjectEntry) {
+
+                String newValue = filterField.getText();
+
                 if (newValue == null || newValue.isEmpty()) {
                     return true;
                 }
@@ -651,12 +469,15 @@ public class TableProjectsManagerController {
                     return true;
                 }
                 return false;
+
             }
-        });
-    }*/
+        };
+
+        initialize();
+    }
 
 
-
+    // Может, перенести весь метод в AllData или в другой общий класс?
     public void initLoggedUsersChoiceBox() {
 
         String toLoginWindow = "Выйти в окно логина";
@@ -686,18 +507,28 @@ public class TableProjectsManagerController {
 
                         Role role = user.getRole();
                         if (role.equals(Role.DESIGNER)) {
+                            AllData.getRootLayout().setCenter(null);
                             AllUsers.setCurrentUser(user.getIDNumber());
                             initialize();
                             mainApp.showTableProjectsDesigner();
-                            if (AllData.getStatStage().isShowing()) {
-                                mainApp.showStatisticWindow();
+                            if (AllData.getStatStage() != null) {
+                                if (AllData.getStatStage().isShowing()) {
+                                    mainApp.showStatisticWindow();
+                                }
                             }
-
                         }
                         else if (role.equals(Role.MANAGER)) {
-                            //this.stage.close();
-                            // TODO аписать класс таблицы для менеджера
-                            //this.mainApp.showTableProjectsDesigner();
+                            AllData.getRootLayout().setCenter(null);
+                            AllUsers.setCurrentUser(user.getIDNumber());
+                            initialize();
+                            mainApp.showTableProjectsManager();
+
+                            // Переписать для окна статистики менеджера
+                            if (AllData.getStatStage() != null) {
+                                if (AllData.getStatStage().isShowing()) {
+                                    mainApp.showStatisticWindow();
+                                }
+                            }
                         }
                     }
                 }
@@ -744,7 +575,7 @@ public class TableProjectsManagerController {
 
     private void fillDatesChart(LocalDate from, LocalDate till) {
 
-        List<Project> decadeProjects = AllData.getActiveProjectsForPeriodWorking(from, till);
+        List<Project> decadeProjects = AllData.getAllProjectsForPeriodWorking(from, till);
 
         TreeSet<String> setForSorting = new TreeSet<>();
         for (Project p : decadeProjects) {
@@ -763,20 +594,19 @@ public class TableProjectsManagerController {
 
     private void fillXYChartSeries(LocalDate from, LocalDate till) {
 
-        List<Project> myProjects = AllData.getActiveProjectsForDesignerAndPeriodWorking(AllUsers.getCurrentUser(), from, till);
+        List<Project> myProjects = AllData.getAllProjectsForPeriodWorking(from, till);
         Map<String, Integer> decadeWorkSums = new TreeMap<>();
 
         for (Project p : myProjects) {
+
             for (WorkTime wt : p.getWork()) {
-                if (wt.getDesignerID() == AllUsers.getCurrentUser()) {
-                    String dateWork = wt.getDateString();
-                    if (decadeWorkSums.containsKey(dateWork)) {
-                        int currentSum = decadeWorkSums.get(dateWork);
-                        decadeWorkSums.put(dateWork, (currentSum + wt.getTime()));
-                    }
-                    else {
-                        decadeWorkSums.put(dateWork, wt.getTime());
-                    }
+                String dateWork = wt.getDateString();
+                if (decadeWorkSums.containsKey(dateWork)) {
+                    int currentSum = decadeWorkSums.get(dateWork);
+                    decadeWorkSums.put(dateWork, (currentSum + wt.getTime()));
+                }
+                else {
+                    decadeWorkSums.put(dateWork, wt.getTime());
                 }
             }
         }
@@ -784,13 +614,7 @@ public class TableProjectsManagerController {
         workTimeForChart.clear();
 
         for (String s : datesForChart) {
-            if (decadeWorkSums.containsKey(s)) {
-
-                workTimeForChart.add(new XYChart.Data<>(s, decadeWorkSums.get(s)));
-            }
-            else {
-                workTimeForChart.add(new XYChart.Data<>(s, 0));
-            }
+            workTimeForChart.add(new XYChart.Data<>(s, decadeWorkSums.get(s)));
         }
     }
 
@@ -804,22 +628,13 @@ public class TableProjectsManagerController {
 
     public void sortTableProjects() {
 
-        if (showArchiveProjectsCheckBox.isSelected()) {
-            allProjects.sort(new Comparator<Map.Entry<Integer, Project>>() {
-                @Override
-                public int compare(Map.Entry<Integer, Project> o1, Map.Entry<Integer, Project> o2) {
-                    return compareTime(o1, o2);
-                }
-            });
-        }
-        else {
-            activeProjects.sort(new Comparator<Map.Entry<Integer, Project>>() {
-                @Override
-                public int compare(Map.Entry<Integer, Project> o1, Map.Entry<Integer, Project> o2) {
-                    return compareTime(o1, o2);
-                }
-            });
-        }
+        showProjects.sort(new Comparator<Map.Entry<Integer, Project>>() {
+            @Override
+            public int compare(Map.Entry<Integer, Project> o1, Map.Entry<Integer, Project> o2) {
+                //return compareTime(o1, o2);
+                return Integer.compare(o2.getKey(), o1.getKey());
+            }
+        });
     }
 
 
@@ -869,52 +684,47 @@ public class TableProjectsManagerController {
 
     private void handleFilters() {
 
-        //filterField.clear();
-        filterData = null;
         LocalDate fromDate = fromDatePicker.getValue();
         LocalDate tillDate = tillDatePicker.getValue();
 
         if (fromDate != null && tillDate != null) {
 
             if (showArchiveProjectsCheckBox.isSelected()) {
-                filterData = new FilteredList<>(this.allProjects, new Predicate<Map.Entry<Integer, Project>>() {
-                    @Override
-                    public boolean test(Map.Entry<Integer, Project> integerProjectEntry) {
-                        if (integerProjectEntry.getValue().containsWorkTime(fromDate, tillDate)) {
-                            return true;
-                        }
-                        return false;
-                    }
-                });
-                //initialize();
+                showProjects = FXCollections.observableArrayList(AllData.getAllProjects().entrySet());
             }
             else {
-                filterData = new FilteredList<>(this.activeProjects, new Predicate<Map.Entry<Integer, Project>>() {
-                    @Override
-                    public boolean test(Map.Entry<Integer, Project> integerProjectEntry) {
-                        if (integerProjectEntry.getValue().containsWorkTime(fromDate, tillDate)) {
-                            return true;
-                        }
-                        return false;
-                    }
-                });
-                //initialize();
+                showProjects = FXCollections.observableArrayList(AllData.getActiveProjects().entrySet());
             }
+
+            sortTableProjects();
+
+            filterData = new FilteredList<>(this.showProjects, new Predicate<Map.Entry<Integer, Project>>() {
+                @Override
+                public boolean test(Map.Entry<Integer, Project> integerProjectEntry) {
+                    if (integerProjectEntry.getValue().containsWorkTime(fromDate, tillDate)) {
+                        return true;
+                    }
+                    return false;
+                }
+            });
+            filterDataWrapper = new FilteredList<>(filterData, p -> true);
         }
         else {
             if (showArchiveProjectsCheckBox.isSelected()) {
-                allProjects = FXCollections.observableArrayList(AllData.getAllProjects().entrySet());
-                filterData = new FilteredList<>(this.allProjects, p -> true);
-                filterDataWrapper = new FilteredList<>(filterData, p -> true);
-                //initialize();
+                showProjects = FXCollections.observableArrayList(AllData.getAllProjects().entrySet());
             }
             else {
-                activeProjects = FXCollections.observableArrayList(AllData.getActiveProjects().entrySet());
-                filterData = new FilteredList<>(this.activeProjects, p -> true);
-                filterDataWrapper = new FilteredList<>(filterData, p -> true);
-                //initialize();
+                showProjects = FXCollections.observableArrayList(AllData.getActiveProjects().entrySet());
+
             }
+
+            sortTableProjects();
+
+            filterData = new FilteredList<>(this.showProjects, p -> true);
+            filterDataWrapper = new FilteredList<>(filterData, p -> true);
         }
+
+        projectsTable.refresh();
     }
 
 
@@ -979,29 +789,7 @@ public class TableProjectsManagerController {
                 };*/
     }
 
-    private int compareTime(Map.Entry<Integer, Project> o1, Map.Entry<Integer, Project> o2) {
 
-        List<WorkTime> timeList1 = o1.getValue().getWork();
-        List<WorkTime> timeList2 = o2.getValue().getWork();
-
-        int time1 = 0;
-        int time2 = 0;
-
-        for (WorkTime wt1 : timeList1) {
-            if ((wt1.getDesignerID() == AllUsers.getCurrentUser()) && (AllData.parseDate(wt1.getDateString()).equals(LocalDate.now()))) {
-                time1 = wt1.getTime();
-                break;
-            }
-        }
-
-        for (WorkTime wt2 : timeList2) {
-            if ((wt2.getDesignerID() == AllUsers.getCurrentUser()) && (AllData.parseDate(wt2.getDateString()).equals(LocalDate.now()))) {
-                time2 = wt2.getTime();
-                break;
-            }
-        }
-        return Integer.compare(time2, time1);
-    }
 
     /*public void testAdd() {
         TestBackgroundUpdate01 testBackgroundUpdate01 = new TestBackgroundUpdate01();
@@ -1013,116 +801,5 @@ public class TableProjectsManagerController {
         testBackgroundUpdate01.testBackgroundDeleteTime();
     }*/
 
-
-
-    class EditingCell extends TableCell<Map.Entry<Integer, Project>, String> {
-
-        private TextField textField;
-
-        public EditingCell() {
-        }
-
-        @Override
-        public void startEdit() {
-            if (!isEmpty()) {
-                super.startEdit();
-                createTextField();
-                setText(null);
-                setGraphic(textField);
-                textField.selectAll();
-            }
-
-        }
-
-        @Override
-        public void cancelEdit() {
-            super.cancelEdit();
-
-            setText((String) getItem());
-            setGraphic(null);
-        }
-
-        @Override
-        protected void updateItem(String item, boolean empty) {
-
-            super.updateItem(item, empty);
-            if (empty) {
-
-                setText(null);
-                setGraphic(null);
-            }
-            else {
-                if (isEditing()) {
-                    if (textField != null) {
-                        textField.setText(getString());
-                    }
-                    setText(null);
-                    setGraphic(null);
-                }
-                else {
-                    setText(getString());
-                    setGraphic(null);
-                }
-            }
-        }
-
-        private void createTextField() {
-            String oldText = getString();
-            textField = new TextField(oldText);
-            textField.setAlignment(Pos.CENTER);
-            textField.setMinWidth(this.getWidth() - this.getGraphicTextGap() * 2);
-            textField.setOnKeyPressed(new EventHandler<KeyEvent>() {
-                @Override
-                public void handle(KeyEvent event) {
-                    KeyCode keyCode = event.getCode();
-                    if (keyCode == KeyCode.ENTER) {
-                        commitEdit(formatStringInput(oldText, textField.getText()));
-                        TableProjectsManagerController.EditingCell.this.getTableView().requestFocus();
-                        TableProjectsManagerController.EditingCell.this.getTableView().getSelectionModel().selectAll();
-                        initialize();
-                        //projectsTable.refresh();
-                    }
-                }
-            });
-            textField.focusedProperty().addListener(new ChangeListener<Boolean>() {
-                @Override
-                public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
-                    if (!newValue) {
-                        commitEdit(formatStringInput(oldText, textField.getText()));
-                        TableProjectsManagerController.EditingCell.this.getTableView().requestFocus();
-                        TableProjectsManagerController.EditingCell.this.getTableView().getSelectionModel().selectAll();
-                        initialize();
-                        //projectsTable.refresh();
-                    }
-                }
-            });
-            TableProjectsManagerController.EditingCell.this.textField.selectAll();
-
-        }
-
-        private String formatStringInput(String oldText, String input) {
-            String newText = input.replaceAll(" ", ".");
-            newText = newText.replaceAll("-", ".");
-            newText = newText.replaceAll(",", ".");
-            newText = newText.replaceAll("=", ".");
-
-            Double newTimeDouble = null;
-            try {
-                newTimeDouble = Double.parseDouble(newText);
-            } catch (NumberFormatException e) {
-                return oldText;
-            }
-            if (newTimeDouble != null) {
-                newText = String.valueOf(AllData.formatDouble(newTimeDouble));
-                return newText;
-            }
-
-            return oldText;
-        }
-
-        private String getString() {
-            return getItem() == null ? "" : getItem().toString();
-        }
-    } // Конец класса EditingCell
 
 }

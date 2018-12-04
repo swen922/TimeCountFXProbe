@@ -42,9 +42,17 @@ public class AllData {
 
     private static volatile AtomicInteger workSumProjects = new AtomicInteger(0);
     private static volatile IntegerProperty workSumProjectsProperty = new SimpleIntegerProperty(workSumProjects.get());
-    private static DoubleProperty dayWorkSumProperty = new SimpleDoubleProperty(0);
-    private static IntegerProperty designerRatingPosition = new SimpleIntegerProperty(0);
 
+    private static DoubleProperty todayWorkSumProperty = new SimpleDoubleProperty(0);
+    private static DoubleProperty yesterdayWorkSumProperty = new SimpleDoubleProperty(0);
+    private static DoubleProperty weekWorkSumProperty = new SimpleDoubleProperty(0);
+    private static DoubleProperty monthWorkSumProperty = new SimpleDoubleProperty(0);
+    private static DoubleProperty yearWorkSumProperty = new SimpleDoubleProperty(0);
+
+    /** В чистовой версии перенести все поля по суммам рабочего времени дизайнера за день, неделю, месяц и год
+     * внутрь класса TableProjectsDesignerController, а в AllData оставить только глобальные суммы по всем дизайнерам */
+    private static DoubleProperty designerDayWorkSumProperty = new SimpleDoubleProperty(0);
+    private static IntegerProperty designerRatingPosition = new SimpleIntegerProperty(0);
     private static DoubleProperty designerWeekWorkSumProperty = new SimpleDoubleProperty(0);
     private static DoubleProperty designerMonthWorkSumProperty = new SimpleDoubleProperty(0);
     private static DoubleProperty designerYearWorkSumProperty = new SimpleDoubleProperty(0);
@@ -54,7 +62,7 @@ public class AllData {
     /** Поле нужно, чтобы передавать его отдельным нитям (см. класс TestBackgroundUpdate01)
      * */
 
-    /** !!!!!! В чистовой версии загнать сюда ВСЕ статические экземпляры котнтролеров и нодов!
+    /** !!!!!! В чистовой версии загнать сюда ВСЕ статические экземпляры контролеров и нодов!
      * А из MainApp убрать их !!!!!
      * И решить по всем единообразно: либо через геттеры-сеттеры доступ, либо public сделать (второе экономней по коду)
      * !!!!!!!!*/
@@ -144,28 +152,118 @@ public class AllData {
     }
 
 
-    public static double getDayWorkSumProperty() {
-        return dayWorkSumProperty.get();
+    public static double getTodayWorkSumProperty() {
+        return todayWorkSumProperty.get();
     }
 
-    public static DoubleProperty dayWorkSumProperty() {
-        return dayWorkSumProperty;
+    public static DoubleProperty todayWorkSumProperty() {
+        return todayWorkSumProperty;
     }
 
-    public static synchronized void setDayWorkSumProperty(double day) {
-        AllData.dayWorkSumProperty.set(day);
+    public static void setTodayWorkSumProperty(double todayWorkSumProperty) {
+        AllData.todayWorkSumProperty.set(todayWorkSumProperty);
     }
 
-    public static synchronized void rebuildDayWorkSumProperty() {
-        AllData.dayWorkSumProperty.set(0);
+
+    public static synchronized void rebuildTodayWorkSumProperty() {
+        AllData.todayWorkSumProperty.set(0);
         int counter = 0;
-        for (Project p : activeProjects.values()) {
+        for (Project p : allProjects.values()) {
+            if (p.containsWorkTime(LocalDate.now())) {
+                counter += p.getWorkSumForDate(LocalDate.now());
+            }
+        }
+        AllData.todayWorkSumProperty.set(AllData.intToDouble(counter));
+    }
+
+
+    public static double getYesterdayWorkSumProperty() {
+        return yesterdayWorkSumProperty.get();
+    }
+
+    public static DoubleProperty yesterdayWorkSumProperty() {
+        return yesterdayWorkSumProperty;
+    }
+
+    public static void setYesterdayWorkSumProperty(double yesterdayWorkSumProperty) {
+        AllData.yesterdayWorkSumProperty.set(yesterdayWorkSumProperty);
+    }
+
+    public static synchronized void rebuildYesterdayWorkSumProperty() {
+        AllData.yesterdayWorkSumProperty.set(0);
+        int counter = 0;
+        for (Project p : allProjects.values()) {
+            if (p.containsWorkTime(LocalDate.now().minusDays(1))) {
+                counter += p.getWorkSumForDate(LocalDate.now().minusDays(1));
+            }
+        }
+        AllData.yesterdayWorkSumProperty.set(AllData.intToDouble(counter));
+    }
+
+
+
+    public static double getWeekWorkSumProperty() {
+        return weekWorkSumProperty.get();
+    }
+
+    public static DoubleProperty weekWorkSumPropertyProperty() {
+        return weekWorkSumProperty;
+    }
+
+    public static void setWeekWorkSumProperty(double weekWorkSumProperty) {
+        AllData.weekWorkSumProperty.set(weekWorkSumProperty);
+    }
+
+    public static double getMonthWorkSumProperty() {
+        return monthWorkSumProperty.get();
+    }
+
+    public static DoubleProperty monthWorkSumPropertyProperty() {
+        return monthWorkSumProperty;
+    }
+
+    public static void setMonthWorkSumProperty(double monthWorkSumProperty) {
+        AllData.monthWorkSumProperty.set(monthWorkSumProperty);
+    }
+
+    public static double getYearWorkSumProperty() {
+        return yearWorkSumProperty.get();
+    }
+
+    public static DoubleProperty yearWorkSumPropertyProperty() {
+        return yearWorkSumProperty;
+    }
+
+    public static void setYearWorkSumProperty(double yearWorkSumProperty) {
+        AllData.yearWorkSumProperty.set(yearWorkSumProperty);
+    }
+
+
+
+
+    public static double getDesignerDayWorkSumProperty() {
+        return designerDayWorkSumProperty.get();
+    }
+
+    public static DoubleProperty designerDayWorkSumProperty() {
+        return designerDayWorkSumProperty;
+    }
+
+    public static synchronized void setDesignerDayWorkSumProperty(double day) {
+        AllData.designerDayWorkSumProperty.set(day);
+    }
+
+    public static synchronized void rebuildDesignerDayWorkSumProperty() {
+        AllData.designerDayWorkSumProperty.set(0);
+        int counter = 0;
+        for (Project p : allProjects.values()) {
             if (p.containsWorkTime(AllUsers.getCurrentUser(), LocalDate.now())) {
                 counter += p.getWorkSumForDesignerAndDate(AllUsers.getCurrentUser(), LocalDate.now());
             }
         }
-        AllData.dayWorkSumProperty.set(AllData.intToDouble(counter));
+        AllData.designerDayWorkSumProperty.set(AllData.intToDouble(counter));
     }
+
 
     public static double getDesignerWeekWorkSumProperty() {
         return designerWeekWorkSumProperty.get();
@@ -182,7 +280,7 @@ public class AllData {
     public static synchronized void rebuildDesignerWeekWorkSumProperty(int year, int week) {
         AllData.designerWeekWorkSumProperty.set(0);
         int counter = 0;
-        for (Project p : activeProjects.values()) {
+        for (Project p : allProjects.values()) {
             if (p.containsWorkTimeForDesignerAndWeek(AllUsers.getCurrentUser(), year, week)) {
                 counter += p.getWorkSumForDesignerAndWeek(AllUsers.getCurrentUser(), year, week);
             }
@@ -206,7 +304,7 @@ public class AllData {
     public static synchronized void rebuildDesignerMonthWorkSumProperty(int year, int month) {
         AllData.designerMonthWorkSumProperty().set(0);
         int counter = 0;
-        for (Project p : activeProjects.values()) {
+        for (Project p : allProjects.values()) {
             if (p.containsWorkTimeForDesignerAndMonth(AllUsers.getCurrentUser(), year, month)) {
                 counter += p.getWorkSumForDesignerAndMonth(AllUsers.getCurrentUser(), year, month);
             }
@@ -229,7 +327,7 @@ public class AllData {
     public static synchronized void rebuildDesignerYearWorkSumProperty(int year) {
         AllData.designerYearWorkSumProperty().set(0);
         int counter = 0;
-        for (Project p : activeProjects.values()) {
+        for (Project p : allProjects.values()) {
             if (p.containsWorkTimeForDesignerAndYear(AllUsers.getCurrentUser(), year)) {
                 counter += p.getWorkSumForDesignerAndYear(AllUsers.getCurrentUser(), year);
             }
@@ -257,7 +355,7 @@ public class AllData {
         for (User u : AllUsers.getUsers().values()) {
             int sum = 0;
             if(u.getRole().equals(Role.DESIGNER)) {
-                for (Project p : activeProjects.values()) {
+                for (Project p : allProjects.values()) {
                     sum += p.getWorkSumForDesignerAndPeriod(u.getIDNumber(), LocalDate.now().minusDays(31), LocalDate.now().minusDays(1));
                 }
                 places.put(sum, u.getIDNumber());
@@ -270,6 +368,9 @@ public class AllData {
 
         designerRatingPosition.set(result + 1);
     }
+
+
+
 
 
 
@@ -390,6 +491,69 @@ public class AllData {
 
 
 
+
+
+    public static List<Project> getAllProjectsForPeriodCreation(LocalDate fromDate, LocalDate tillDate) {
+        List<Project> result = new ArrayList<>();
+        for (Project p : allProjects.values()) {
+            LocalDate date = AllData.parseDate(p.getDateCreationString());
+            if ((date.compareTo(fromDate) >= 0) && (date.compareTo(tillDate) <= 0)) {
+                result.add(p);
+            }
+        }
+        return result;
+    }
+
+
+    public static List<Project> getAllProjectsForDesignerAndDate(int designerIDnumber, LocalDate workDate) {
+        List<Project> result = new ArrayList<>();
+        for (Project p : allProjects.values()) {
+            if (p.containsWorkTime(designerIDnumber, workDate)) {
+                result.add(p);
+            }
+        }
+        return result;
+    }
+
+    public static List<Project> getAllProjectsForPeriodWorking(LocalDate fromDate, LocalDate tillDate) {
+        List<Project> result = new ArrayList<>();
+        for (Project p : allProjects.values()) {
+            if (p.containsWorkTime(fromDate, tillDate)) {
+                result.add(p);
+            }
+        }
+        return result;
+    }
+
+    public static List<Project> getAllProjectsForDesignerAndPeriodWorking(int designerIDnumber, LocalDate fromDate, LocalDate tillDate) {
+        List<Project> result = new ArrayList<>();
+        for (Project p : allProjects.values()) {
+            if (p.containsWorkTime(designerIDnumber, fromDate, tillDate)) {
+                result.add(p);
+            }
+        }
+        return result;
+    }
+
+    public static List<Project> getAllProjectsForDesignerAndMonth(int designerIDnumber, Year year, Month month) {
+        List<Project> result = new ArrayList<>();
+        LocalDate fromDate = LocalDate.of(year.getValue(), month.getValue(), 1);
+        LocalDate tillDate = LocalDate.of(year.getValue(), month.getValue(), month.length(year.isLeap()));
+        for (Project p : allProjects.values()) {
+            if (p.containsWorkTime(designerIDnumber, fromDate, tillDate)) {
+                result.add(p);
+            }
+        }
+        return result;
+    }
+
+
+
+
+
+
+
+
     /** Методы добавления, удаления проектов */
 
     public synchronized static boolean addNewProject(Project newProject) {
@@ -470,9 +634,9 @@ public class AllData {
 
             if (idUser == AllUsers.getCurrentUser() && correctDate.equals(LocalDate.now())) {
 
-                int old = AllData.doubleToInt(dayWorkSumProperty.get());
+                int old = AllData.doubleToInt(designerDayWorkSumProperty.get());
 
-                dayWorkSumProperty.set(AllData.intToDouble(old + difference));
+                designerDayWorkSumProperty.set(AllData.intToDouble(old + difference));
             }
 
             return true;

@@ -173,10 +173,13 @@ public class TableProjectsDesignerController {
     @FXML
     public void initialize() {
 
+        /** В чистовой версии перенести все поля по суммам рабочего времени за день, неделю, месяц и год
+         * сюда внутрь класса, а в AllData оставить только глобальные суммы по всем дизайнерам */
+
         // Отработка методов данных
         LocalDate today = LocalDate.now();
         AllData.deleteZeroTime();
-        AllData.rebuildDayWorkSumProperty();
+        AllData.rebuildDesignerDayWorkSumProperty();
         AllData.rebuildDesignerWeekWorkSumProperty(today.getYear(), today.get(WeekFields.of(Locale.getDefault()).weekOfWeekBasedYear()));
         AllData.rebuildDesignerMonthWorkSumProperty(today.getYear(), today.getMonth().getValue());
         AllData.rebuildDesignerYearWorkSumProperty(today.getYear());
@@ -326,7 +329,7 @@ public class TableProjectsDesignerController {
         projectsTable.setItems(sortedList);
         sortedList.comparatorProperty().bind(projectsTable.comparatorProperty());
 
-        dayWorkSumLabel.textProperty().bind(AllData.dayWorkSumProperty().asString());
+        dayWorkSumLabel.textProperty().bind(AllData.designerDayWorkSumProperty().asString());
         ratingPositionLabel.textProperty().bind(AllData.designerRatingPositionProperty().asString());
         AllData.rebuildDesignerRatingPosition();
 
@@ -334,6 +337,8 @@ public class TableProjectsDesignerController {
         initLoggedUsersChoiceBox();
 
     }
+
+    // Может, перенести весь метод в AllData или в другой общий класс?
 
     public void initLoggedUsersChoiceBox() {
 
@@ -364,18 +369,30 @@ public class TableProjectsDesignerController {
 
                         Role role = user.getRole();
                         if (role.equals(Role.DESIGNER)) {
+                            AllData.getRootLayout().setCenter(null);
                             AllUsers.setCurrentUser(user.getIDNumber());
                             initialize();
                             mainApp.showTableProjectsDesigner();
-                            if (AllData.getStatStage().isShowing()) {
-                                mainApp.showStatisticWindow();
+                            if (AllData.getStatStage() != null) {
+                                if (AllData.getStatStage().isShowing()) {
+                                    mainApp.showStatisticWindow();
+                                }
                             }
+
 
                         }
                         else if (role.equals(Role.MANAGER)) {
-                            //this.stage.close();
-                            // TODO аписать класс таблицы для менеджера
-                            //this.mainApp.showTableProjectsDesigner();
+                            AllData.getRootLayout().setCenter(null);
+                            AllUsers.setCurrentUser(user.getIDNumber());
+                            initialize();
+                            mainApp.showTableProjectsManager();
+
+                            // Переписать для окна статистики менеджера
+                            if (AllData.getStatStage() != null) {
+                                if (AllData.getStatStage().isShowing()) {
+                                    mainApp.showStatisticWindow();
+                                }
+                            }
                         }
                     }
                 }
@@ -422,7 +439,7 @@ public class TableProjectsDesignerController {
 
     private void fillDatesChart(LocalDate from, LocalDate till) {
 
-        List<Project> decadeProjects = AllData.getActiveProjectsForPeriodWorking(from, till);
+        List<Project> decadeProjects = AllData.getAllProjectsForPeriodWorking(from, till);
 
         TreeSet<String> setForSorting = new TreeSet<>();
         for (Project p : decadeProjects) {
@@ -441,7 +458,7 @@ public class TableProjectsDesignerController {
 
     private void fillXYChartSeries(LocalDate from, LocalDate till) {
 
-        List<Project> myProjects = AllData.getActiveProjectsForDesignerAndPeriodWorking(AllUsers.getCurrentUser(), from, till);
+        List<Project> myProjects = AllData.getAllProjectsForDesignerAndPeriodWorking(AllUsers.getCurrentUser(), from, till);
         Map<String, Integer> decadeWorkSums = new TreeMap<>();
 
         for (Project p : myProjects) {

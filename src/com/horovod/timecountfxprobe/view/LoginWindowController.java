@@ -113,13 +113,14 @@ public class LoginWindowController {
                 if (role.equals(Role.DESIGNER)) {
                     this.stage.close();
                     /** TODO убрать эту строчку в рабочем варианте */
-                    Generator.generateProjects();
+                    //Generator.generateProjects();
                     this.mainApp.showTableProjectsDesigner();
                 }
                 else if (role.equals(Role.MANAGER)) {
                     this.stage.close();
                     // TODO аписать класс таблицы для менеджера
                     //this.mainApp.showTableProjectsDesigner();
+                    this.mainApp.showTableProjectsManager();
                 }
 
                 break;

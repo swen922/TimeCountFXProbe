@@ -36,6 +36,7 @@ public class MainApp extends Application {
 
         /** TODO убрать эту строчку в рабочем варианте */
         Generator.generateUsers();
+        Generator.generateProjects2();
 
         initRootLayut();
 
@@ -48,12 +49,10 @@ public class MainApp extends Application {
                 showTableProjectsDesigner();
             }
             else if (role.equals(Role.MANAGER)) {
-                // TODO аписать класс таблицы для менеджера
-                //showTableProjectsManager();
+                showTableProjectsManager();
             }
         }
 
-        //showTableProjectsDesigner();
     }
 
     public void initRootLayut() {

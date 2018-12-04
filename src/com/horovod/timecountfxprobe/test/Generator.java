@@ -175,9 +175,9 @@ public class Generator {
 
         int minusDays = 0;
 
-        for (int j = 0; j <= 100; j++) {
-            int projectID = (int) (Math.random() * 9 + 1);
-            if (j % 50 == 0) {
+        for (int j = 0; j <= 400; j++) {
+            int projectID = (int) (Math.random() * 10 + 1);
+            if (j % 10 == 0) {
                 minusDays++;
             }
             int ID = (int) (Math.random() * 6 + 1);
@@ -186,7 +186,7 @@ public class Generator {
             AllData.addWorkTime(projectID, LocalDate.now().minusDays(minusDays), ID, newtime);
         }
 
-        for (int j = 0; j <= 50; j++) {
+        for (int j = 0; j <= 20; j++) {
             int projectID = (int) (Math.random() * 9 + 1);
             int ID = (int) (Math.random() * 6 + 1);
             int tmp = (int) ((Math.random() * 1000) / 30);

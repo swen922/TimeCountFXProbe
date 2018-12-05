@@ -116,7 +116,7 @@
                   </Label>
                         <Label fx:id="dayWorkSumLabel" alignment="CENTER" contentDisplay="CENTER" text="0" textAlignment="CENTER" textFill="#f3622d">
                             <font>
-                                <Font name="System Bold" size="36.0" />
+                                <Font name="System Bold" size="32.0" />
                             </font>
                      <VBox.margin>
                         <Insets top="-5.0" />

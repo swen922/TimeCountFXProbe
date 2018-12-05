@@ -65,6 +65,8 @@ public class MainApp extends Application {
             primaryStage.setScene(scene);
             primaryStage.show();
 
+            primaryStage.setTitle("Заголовок окна");
+
             RootLayoutController controller = loader.getController();
             controller.setMainApp(this);
             AllData.setRootLayout(rootLayout);
@@ -212,6 +214,24 @@ public class MainApp extends Application {
             aboutWindowController.setAboutStage(aboutStage);
 
             aboutStage.showAndWait();
+        } catch (IOException e) {
+
+        }
+    }
+
+    public void showEditProjectWindow() {
+        try {
+            FXMLLoader loader = new FXMLLoader();
+            loader.setLocation(MainApp.class.getResource("view/EditProjectWindow.fxml"));
+            AnchorPane editWindow = (AnchorPane) loader.load();
+
+            Stage editProjectStage = new Stage();
+            editProjectStage.initModality(Modality.NONE);
+            Scene scene = new Scene(editWindow);
+            editProjectStage.setScene(scene);
+
+            EditProjectWindowController controller = loader.getController();
+            editProjectStage.show();
         } catch (IOException e) {
 
         }

@@ -7,8 +7,7 @@ import com.horovod.timecountfxprobe.project.WorkTime;
 import com.horovod.timecountfxprobe.user.AllUsers;
 import com.horovod.timecountfxprobe.user.Role;
 import com.horovod.timecountfxprobe.user.User;
-import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.property.StringProperty;
+import javafx.beans.property.*;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
@@ -43,11 +42,8 @@ public class TableProjectsManagerController {
 
     private MainApp mainApp;
     private Stage stage;
-    private StatisticWindowController statisticWindowController;
 
     private ObservableList<Map.Entry<Integer, Project>> showProjects = FXCollections.observableArrayList(AllData.getActiveProjects().entrySet());
-    //private ObservableList<Map.Entry<Integer, Project>> allProjects = FXCollections.observableArrayList(AllData.getAllProjects().entrySet());
-
     private FilteredList<Map.Entry<Integer, Project>> filterData = new FilteredList<>(showProjects, p -> true);
     private Predicate<Map.Entry<Integer, Project>> filterPredicate = new Predicate<Map.Entry<Integer, Project>>() {
         @Override
@@ -117,13 +113,13 @@ public class TableProjectsManagerController {
     private TableView<Map.Entry<Integer, Project>> projectsTable;
 
     @FXML
-    private TableColumn<Map.Entry<Integer, Project>, Void> columnAction;
+    private TableColumn<Map.Entry<Integer, Project>, Boolean> columnAction;
 
     @FXML
     private TableColumn<Map.Entry<Integer, Project>, Integer> columnID;
 
     @FXML
-    private TableColumn<Map.Entry<Integer, Project>, String> columnTime;
+    private TableColumn<Map.Entry<Integer, Project>, Double> columnTime;
 
     @FXML
     private TableColumn<Map.Entry<Integer, Project>, String> columnCompany;
@@ -164,30 +160,21 @@ public class TableProjectsManagerController {
         return filterField;
     }
 
-    public StatisticWindowController getStatisticWindowController() {
-        return statisticWindowController;
-    }
-
-    public void setStatisticWindowController(StatisticWindowController statisticWindowController) {
-        this.statisticWindowController = statisticWindowController;
-    }
 
 
-    class ManagerCell extends TableCell<Map.Entry<Integer, Project>, Void> {
+    class ManagerCell extends TableCell<Map.Entry<Integer, Project>, Boolean> {
         private final Button manageButton = new Button("Инфо");
         private final CheckBox archiveCheckBox = new CheckBox("Архивный");
         private final Button deleteButton = new Button("X");
 
         @Override
-        protected void updateItem(Void item, boolean empty) {
+        protected void updateItem(Boolean item, boolean empty) {
             if (empty) {
                 setGraphic(null);
             }
             else {
 
                 Map.Entry<Integer, Project> entry = getTableView().getItems().get(getIndex());
-
-                //System.out.println("entry.getValue().isArchive() = " + entry.getValue().isArchive());
 
                 if (entry.getValue().isArchive()) {
                     archiveCheckBox.setSelected(true);
@@ -198,13 +185,20 @@ public class TableProjectsManagerController {
                     setStyle(null);
                 }
 
-                archiveCheckBox.setOnAction(new EventHandler<ActionEvent>() {
+                manageButton.setOnAction(new EventHandler<ActionEvent>() {
                     @Override
                     public void handle(ActionEvent event) {
 
 
-                        if (archiveCheckBox.isSelected()) {
+                    }
+                });
 
+
+                archiveCheckBox.setOnAction(new EventHandler<ActionEvent>() {
+                    @Override
+                    public void handle(ActionEvent event) {
+
+                        if (archiveCheckBox.isSelected()) {
                             Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
                             alert.setTitle("Подтверждение перевода в архив");
                             alert.setHeaderText("Перевести проект id-" + entry.getKey() + " в архив?");
@@ -219,16 +213,8 @@ public class TableProjectsManagerController {
                                 AllData.changeProjectArchiveStatus(entry.getKey(), false);
                                 setStyle(null);
                             }
-
-
-                            /*AllData.changeProjectArchiveStatus(entry.getKey(), true);
-                            setStyle("-fx-background-color: linear-gradient(#99ccff 0%, #77acff 100%, #e0e0e0 100%);");
-                            handleFilters();
-                            initialize();*/
                         }
                         else {
-
-
                             Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
                             alert.setTitle("Подтверждение перевода в архив");
                             alert.setHeaderText("Вывести проект id-" + entry.getKey() + " из архива?");
@@ -243,15 +229,30 @@ public class TableProjectsManagerController {
                                 AllData.changeProjectArchiveStatus(entry.getKey(), true);
                                 setStyle("-fx-background-color: linear-gradient(#99ccff 0%, #77acff 100%, #e0e0e0 100%);");
                             }
-
-
-                            /*AllData.changeProjectArchiveStatus(entry.getKey(), false);
-                            setStyle(null);
-                            handleFilters();
-                            initialize();*/
                         }
                         handleFilters();
                         initialize();
+                    }
+                });
+
+                deleteButton.setOnAction(new EventHandler<ActionEvent>() {
+                    @Override
+                    public void handle(ActionEvent event) {
+                        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+                        alert.setTitle("Подтверждение удаления");
+                        alert.setHeaderText("Удалить проект id-" + entry.getKey() + "?");
+                        alert.setContentText("Проект и все рабочее время по нему\nбудут удалены из системы.\nЭто действие нельзя отменить.");
+
+                        Optional<ButtonType> option = alert.showAndWait();
+
+                        if (option.get() == ButtonType.OK) {
+                            AllData.deleteProject(entry.getKey());
+                            handleFilters();
+                            initialize();
+                        }
+                        else {
+
+                        }
                     }
                 });
 
@@ -332,14 +333,21 @@ public class TableProjectsManagerController {
 
         sortTableProjects();
 
-        columnAction.setCellValueFactory(new PropertyValueFactory<>(""));
-
-        columnAction.setCellFactory(new Callback<TableColumn<Map.Entry<Integer, Project>, Void>, TableCell<Map.Entry<Integer, Project>, Void>>() {
+        columnAction.setCellValueFactory(new Callback<TableColumn.CellDataFeatures<Map.Entry<Integer, Project>, Boolean>, ObservableValue<Boolean>>() {
             @Override
-            public TableCell<Map.Entry<Integer, Project>, Void> call(TableColumn<Map.Entry<Integer, Project>, Void> param) {
+            public ObservableValue<Boolean> call(TableColumn.CellDataFeatures<Map.Entry<Integer, Project>, Boolean> param) {
+                ObservableValue<Boolean> result = new SimpleBooleanProperty(param.getValue().getValue().isArchive());
+                return result;
+            }
+        });
+
+        columnAction.setCellFactory(new Callback<TableColumn<Map.Entry<Integer, Project>, Boolean>, TableCell<Map.Entry<Integer, Project>, Boolean>>() {
+            @Override
+            public TableCell<Map.Entry<Integer, Project>, Boolean> call(TableColumn<Map.Entry<Integer, Project>, Boolean> param) {
                 return new ManagerCell();
             }
         });
+
 
         columnID.setCellValueFactory(new Callback<TableColumn.CellDataFeatures<Map.Entry<Integer, Project>, Integer>, ObservableValue<Integer>>() {
             @Override
@@ -350,7 +358,7 @@ public class TableProjectsManagerController {
 
         columnID.setStyle("-fx-alignment: CENTER;");
 
-        columnTime.setCellValueFactory(new Callback<TableColumn.CellDataFeatures<Map.Entry<Integer, Project>, String>, ObservableValue<String>>() {
+        /*columnTime.setCellValueFactory(new Callback<TableColumn.CellDataFeatures<Map.Entry<Integer, Project>, String>, ObservableValue<Double>>() {
             @Override
             public ObservableValue<String> call(TableColumn.CellDataFeatures<Map.Entry<Integer, Project>, String> param) {
                 // Для списка менеджера – просто все рабочее время
@@ -359,6 +367,13 @@ public class TableProjectsManagerController {
                 int time = param.getValue().getValue().getWorkSum();
                 StringProperty result = new SimpleStringProperty(String.valueOf(AllData.intToDouble(time)));
                 return result;
+            }
+        });*/
+
+        columnTime.setCellValueFactory(new Callback<TableColumn.CellDataFeatures<Map.Entry<Integer, Project>, Double>, ObservableValue<Double>>() {
+            @Override
+            public ObservableValue<Double> call(TableColumn.CellDataFeatures<Map.Entry<Integer, Project>, Double> param) {
+                return new SimpleDoubleProperty(param.getValue().getValue().getWorkSumDouble()).asObject();
             }
         });
 

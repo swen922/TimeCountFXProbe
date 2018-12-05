@@ -480,9 +480,6 @@ public class TableProjectsDesignerController {
 
         for (String s : datesForChart) {
             if (decadeWorkSums.containsKey(s)) {
-
-                System.out.println("date = " + s + " and time = " + decadeWorkSums.get(s));
-
                 workTimeForChart.add(new XYChart.Data<>(s, decadeWorkSums.get(s)));
             }
             else {

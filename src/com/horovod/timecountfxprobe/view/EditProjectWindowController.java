@@ -9,6 +9,11 @@ import javafx.scene.control.TextArea;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
 
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.Writer;
+
 public class EditProjectWindowController {
 
     private MainApp mainApp;
@@ -29,7 +34,13 @@ public class EditProjectWindowController {
     private AnchorPane topColoredPane;
 
     @FXML
-    private TextArea companyName;
+    private TextArea companyNameTextArea;
+
+    @FXML
+    private TextArea managerTextArea;
+
+    @FXML
+    private TextArea descriptionTextArea;
 
 
 
@@ -56,4 +67,16 @@ public class EditProjectWindowController {
     public void setIdNumber(int idNumber) {
         this.idNumber = idNumber;
     }
+
+
+
+
+    public void writeCSV() {
+        /*Writer writer = null;
+        File file = new File("/_jToys/example1.csv");
+        writer = new BufferedWriter(new FileWriter(file));*/
+
+
+    }
+
 }

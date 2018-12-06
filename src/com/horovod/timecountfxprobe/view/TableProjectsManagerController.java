@@ -1,5 +1,7 @@
 package com.horovod.timecountfxprobe.view;
 
+
+import com.horovod.timecountfxprobe.view.LoginWindowOnStartController;
 import com.horovod.timecountfxprobe.MainApp;
 import com.horovod.timecountfxprobe.project.AllData;
 import com.horovod.timecountfxprobe.project.Project;
@@ -30,13 +32,18 @@ import javafx.scene.layout.HBox;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextAlignment;
+import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import javafx.util.Callback;
 
+import java.io.*;
+import java.net.URI;
 import java.time.LocalDate;
 import java.time.temporal.WeekFields;
 import java.util.*;
 import java.util.function.Predicate;
+
+import java.awt.Desktop;
 
 public class TableProjectsManagerController {
 
@@ -79,6 +86,12 @@ public class TableProjectsManagerController {
     private Button clearDatePicker;
 
     @FXML
+    private Button newProjectButton;
+
+    @FXML
+    private Button selectTMPButton;
+
+    @FXML
     private LineChart<String, Integer> decadeLineChart;
 
     @FXML
@@ -105,6 +118,9 @@ public class TableProjectsManagerController {
     @FXML
     private Label statusLabel;
 
+    @FXML
+    private Button exportToCSVButton;
+
 
 
     /** Таблица и ее колонки */
@@ -126,6 +142,9 @@ public class TableProjectsManagerController {
 
     @FXML
     private TableColumn<Map.Entry<Integer, Project>, String> columnManager;
+
+    @FXML
+    private TableColumn<Map.Entry<Integer, Project>, String> columnPOnumber;
 
     @FXML
     private TableColumn<Map.Entry<Integer, Project>, String> columnDescription;
@@ -410,6 +429,13 @@ public class TableProjectsManagerController {
         });
 
         columnManager.setStyle("-fx-alignment: CENTER;");
+
+        columnPOnumber.setCellValueFactory(new Callback<TableColumn.CellDataFeatures<Map.Entry<Integer, Project>, String>, ObservableValue<String>>() {
+            @Override
+            public ObservableValue<String> call(TableColumn.CellDataFeatures<Map.Entry<Integer, Project>, String> param) {
+                return param.getValue().getValue().PONumberProperty();
+            }
+        });
 
         columnDescription.setCellValueFactory(new Callback<TableColumn.CellDataFeatures<Map.Entry<Integer, Project>, String>, ObservableValue<String>>() {
             @Override
@@ -802,6 +828,63 @@ public class TableProjectsManagerController {
                         }
                     }
                 };*/
+    }
+
+
+    public void writeCSV() {
+
+        FileChooser chooser = new FileChooser();
+        FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("CSV file", "*.csv");
+        chooser.getExtensionFilters().add(extFilter);
+
+        String path = new File(System.getProperty("user.home")).getPath() + "/Documents";
+        chooser.setInitialDirectory(new File(path));
+        String fileName = "Все проекты " + AllData.formatDate(LocalDate.now()).replaceAll("\\.", "_");
+        chooser.setInitialFileName(fileName);
+
+        File file = chooser.showSaveDialog(stage);
+
+        if (file != null) {
+            if (!file.getPath().endsWith(".csv")) {
+                file = new File(file.getPath() + ".csv");
+            }
+        }
+
+        if (file != null) {
+            int counter = 0;
+            try (Writer writer = new BufferedWriter(new FileWriter(file))) {
+
+                writer.write("ID-номер" + "\t" + "Время" + "\t" + "Компания" + "\t" + "Менеджер" + "\t" + "Номер PO" + "\t" + "Описание" + "\n");
+
+                for (Map.Entry<Integer, Project> entry : filterDataWrapper) {
+                    String POnumber = entry.getValue().getPONumber() == null ? "нет" : entry.getValue().getPONumber();
+                    String s = entry.getKey() + "\t"
+                            + entry.getValue().getWorkSumDouble() + "\t"
+                            + entry.getValue().getCompany() + "\t"
+                            + entry.getValue().getInitiator() + "\t"
+                            + POnumber + "\t"
+                            + entry.getValue().getDescription() + "\n";
+                    writer.write(s);
+                    counter += entry.getValue().getWorkSum();
+                }
+                writer.write("Итого:" + "\t" + AllData.intToDouble(counter) + "\n");
+                writer.flush();
+            }
+            catch (Exception ex) {
+                ex.printStackTrace();
+            }
+        }
+    }
+
+    public void handleRevealFile() {
+        /*try {
+            File file = new File("/_jToys");
+            URI uri = file.toURI();
+            //Desktop.getDesktop()
+        } catch (IOException e) {
+            e.printStackTrace();
+        }*/
+
     }
 
 

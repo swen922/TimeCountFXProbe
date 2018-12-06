@@ -1,5 +1,34 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
-  <component name="Encoding" useUTFGuessing="true" native2AsciiForPropertiesFiles="false" />
+  <component name="Encoding">
+    <file url="file://$PROJECT_DIR$/../_Libraries/jaxb-ri-master/jaxb-ri" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/../_Libraries/jaxb-ri-master/jaxb-ri/boms/bom" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/../_Libraries/jaxb-ri-master/jaxb-ri/boms/bom-ext" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/../_Libraries/jaxb-ri-master/jaxb-ri/bundles" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/../_Libraries/jaxb-ri-master/jaxb-ri/bundles/jxc" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/../_Libraries/jaxb-ri-master/jaxb-ri/bundles/osgi" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/../_Libraries/jaxb-ri-master/jaxb-ri/bundles/osgi/osgi" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/../_Libraries/jaxb-ri-master/jaxb-ri/bundles/osgi/tests" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/../_Libraries/jaxb-ri-master/jaxb-ri/bundles/ri" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/../_Libraries/jaxb-ri-master/jaxb-ri/bundles/runtime" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/../_Libraries/jaxb-ri-master/jaxb-ri/bundles/xjc" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/../_Libraries/jaxb-ri-master/jaxb-ri/docs" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/../_Libraries/jaxb-ri-master/jaxb-ri/docs/release-documentation" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/../_Libraries/jaxb-ri-master/jaxb-ri/docs/www" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/../_Libraries/jaxb-ri-master/jaxb-ri/jxc" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/../_Libraries/jaxb-ri-master/jaxb-ri/runtime" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/../_Libraries/jaxb-ri-master/jaxb-ri/runtime/impl" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/../_Libraries/jaxb-ri-master/jaxb-ri/samples" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/../_Libraries/jaxb-ri-master/jaxb-ri/tools/osgi_tests" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/../_Libraries/jaxb-ri-master/jaxb-ri/tools/osgi_tests/core" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/../_Libraries/jaxb-ri-master/jaxb-ri/tools/osgi_tests/jxc" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/../_Libraries/jaxb-ri-master/jaxb-ri/tools/osgi_tests/osgi" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/../_Libraries/jaxb-ri-master/jaxb-ri/tools/osgi_tests/parent" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/../_Libraries/jaxb-ri-master/jaxb-ri/tools/osgi_tests/runtime" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/../_Libraries/jaxb-ri-master/jaxb-ri/tools/osgi_tests/xjc" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/../_Libraries/jaxb-ri-master/jaxb-ri/txw" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/../_Libraries/jaxb-ri-master/jaxb-ri/txw/compiler" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/../_Libraries/jaxb-ri-master/jaxb-ri/txw/runtime" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/../_Libraries/jaxb-ri-master/jaxb-ri/xjc" charset="UTF-8" />
+  </component>
 </project>
-

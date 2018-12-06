@@ -1,5 +1,8 @@
 package com.horovod.timecountfxprobe.view;
 
+
+import com.horovod.timecountfxprobe.view.RootLayoutController;
+import com.horovod.timecountfxprobe.view.TableProjectsDesignerController;
 import com.horovod.timecountfxprobe.MainApp;
 import com.horovod.timecountfxprobe.project.AllData;
 import com.horovod.timecountfxprobe.test.Generator;
@@ -111,15 +114,15 @@ public class LoginWindowOnStartController {
                 Role role = user.getRole();
                 if (role.equals(Role.DESIGNER)) {
                     this.stage.close();
-                    /** TODO убрать эту строчку в рабочем варианте */
-                    //Generator.generateProjects();
                     this.mainApp.showTableProjectsDesigner();
+                    /** TODO убрать эту строчку в рабочем варианте */
+                    //Generator.generateProjects2();
                 }
                 else if (role.equals(Role.MANAGER)) {
                     this.stage.close();
+                    this.mainApp.showTableProjectsManager();
                     /** TODO убрать эту строчку в рабочем варианте */
                     //Generator.generateProjects2();
-                    this.mainApp.showTableProjectsManager();
                 }
 
                 break;

@@ -92,11 +92,11 @@
                 </VBox>
             <VBox alignment="TOP_CENTER" prefHeight="200.0" prefWidth="100.0" spacing="10.0">
                <children>
-                  <Button mnemonicParsing="false" prefHeight="60.0" prefWidth="100.0" text="Новый" textAlignment="CENTER">
+                  <Button fx:id="newProjectButton" mnemonicParsing="false" prefHeight="60.0" prefWidth="100.0" text="Новый" textAlignment="CENTER">
                      <font>
                         <Font name="System Bold" size="16.0" />
                      </font></Button>
-                  <Button mnemonicParsing="false" prefHeight="50.0" prefWidth="100.0" text="Копия прежнего" textAlignment="CENTER" wrapText="true" />
+                  <Button fx:id="selectTMPButton" mnemonicParsing="false" onAction="#handleRevealFile" prefHeight="50.0" prefWidth="100.0" text="Копия прежнего" textAlignment="CENTER" wrapText="true" />
                </children>
                <padding>
                   <Insets top="15.0" />
@@ -206,10 +206,11 @@
         <TableView fx:id="projectsTable" editable="true" layoutX="93.0" layoutY="87.0" prefHeight="200.0" prefWidth="200.0" tableMenuButtonVisible="true" AnchorPane.bottomAnchor="35.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="160.0">
             <columns>
             <TableColumn fx:id="columnAction" maxWidth="3500.0" prefWidth="75.0" text="Управление" />
-                <TableColumn fx:id="columnID" maxWidth="1500.0" prefWidth="75.0" text="ID проекта" />
-                <TableColumn fx:id="columnTime" maxWidth="1500.0" prefWidth="75.0" text="Время" />
+                <TableColumn fx:id="columnID" maxWidth="1200.0" prefWidth="75.0" text="ID проекта" />
+                <TableColumn fx:id="columnTime" maxWidth="1200.0" prefWidth="75.0" text="Время" />
                 <TableColumn fx:id="columnCompany" maxWidth="2000.0" prefWidth="75.0" text="Компания" />
                 <TableColumn fx:id="columnManager" maxWidth="3000.0" prefWidth="75.0" text="Менеджер" />
+            <TableColumn fx:id="columnPOnumber" maxWidth="1200.0" prefWidth="75.0" text="номер PO" />
                 <TableColumn fx:id="columnDescription" maxWidth="4000.0" prefWidth="75.0" text="Описание" />
             </columns>
             <columnResizePolicy>
@@ -218,11 +219,12 @@
         </TableView>
         <AnchorPane layoutX="63.0" layoutY="682.0" prefHeight="35.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="260.0">
             <children>
-                <Label fx:id="statusLabel" alignment="TOP_LEFT" prefHeight="30.0" text="Статус: все системы работают нормально" textFill="#666666" wrapText="true" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="3.0">
+                <Label fx:id="statusLabel" alignment="TOP_LEFT" prefHeight="30.0" text="Статус: все системы работают нормально" textFill="#666666" wrapText="true" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="200.0" AnchorPane.topAnchor="3.0">
                     <font>
                         <Font size="9.0" />
                     </font>
                 </Label>
+            <Button fx:id="exportToCSVButton" alignment="CENTER_RIGHT" contentDisplay="RIGHT" layoutX="880.0" layoutY="8.0" mnemonicParsing="false" onAction="#writeCSV" text="Экспорт в CSV" textAlignment="CENTER" AnchorPane.bottomAnchor="5.0" AnchorPane.rightAnchor="5.0" AnchorPane.topAnchor="5.0" />
             </children>
         </AnchorPane>
         <ChoiceBox fx:id="usersLoggedChoiceBox" layoutX="1036.0" layoutY="773.0" prefWidth="240.0" AnchorPane.bottomAnchor="5.0" AnchorPane.rightAnchor="10.0">

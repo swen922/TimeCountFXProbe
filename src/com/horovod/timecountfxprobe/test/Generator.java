@@ -170,7 +170,14 @@ public class Generator {
         for (int i = 11; i >=1; i--) {
             String descr = "project-" + i;
             Project project = new Project("Nestle", "Ivanov", descr, LocalDate.now().minusDays(25));
+            if (i == 5) {
+                project.setPONumber("PO 2345676");
+            }
+            if (i == 7) {
+                project.setPONumber("PO 8798755");
+            }
             AllData.addNewProject(project);
+
         }
 
         int minusDays = 0;

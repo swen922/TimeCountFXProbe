@@ -3,6 +3,35 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/TimeCountFXProbe.iml" filepath="$PROJECT_DIR$/TimeCountFXProbe.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../_Libraries/jaxb-ri-master/jaxb-ri/boms/bom/jaxb-bom.iml" filepath="$PROJECT_DIR$/../_Libraries/jaxb-ri-master/jaxb-ri/boms/bom/jaxb-bom.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../_Libraries/jaxb-ri-master/jaxb-ri/boms/bom-ext/jaxb-bom-ext.iml" filepath="$PROJECT_DIR$/../_Libraries/jaxb-ri-master/jaxb-ri/boms/bom-ext/jaxb-bom-ext.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../_Libraries/jaxb-ri-master/jaxb-ri/bundles/jaxb-bundles.iml" filepath="$PROJECT_DIR$/../_Libraries/jaxb-ri-master/jaxb-ri/bundles/jaxb-bundles.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../_Libraries/jaxb-ri-master/jaxb-ri/docs/jaxb-docs-parent.iml" filepath="$PROJECT_DIR$/../_Libraries/jaxb-ri-master/jaxb-ri/docs/jaxb-docs-parent.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../_Libraries/jaxb-ri-master/jaxb-ri/bundles/runtime/jaxb-impl.iml" filepath="$PROJECT_DIR$/../_Libraries/jaxb-ri-master/jaxb-ri/bundles/runtime/jaxb-impl.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../_Libraries/jaxb-ri-master/jaxb-ri/bundles/jxc/jaxb-jxc (1) (com.sun.xml.bind).iml" filepath="$PROJECT_DIR$/../_Libraries/jaxb-ri-master/jaxb-ri/bundles/jxc/jaxb-jxc (1) (com.sun.xml.bind).iml" />
+      <module fileurl="file://$PROJECT_DIR$/../_Libraries/jaxb-ri-master/jaxb-ri/jxc/jaxb-jxc (2) (org.glassfish.jaxb).iml" filepath="$PROJECT_DIR$/../_Libraries/jaxb-ri-master/jaxb-ri/jxc/jaxb-jxc (2) (org.glassfish.jaxb).iml" />
+      <module fileurl="file://$PROJECT_DIR$/../_Libraries/jaxb-ri-master/jaxb-ri/bundles/osgi/osgi/jaxb-osgi (1) (com.sun.xml.bind).iml" filepath="$PROJECT_DIR$/../_Libraries/jaxb-ri-master/jaxb-ri/bundles/osgi/osgi/jaxb-osgi (1) (com.sun.xml.bind).iml" />
+      <module fileurl="file://$PROJECT_DIR$/../_Libraries/jaxb-ri-master/jaxb-ri/bundles/osgi/jaxb-osgi (2) (com.sun.xml.bind.mvn).iml" filepath="$PROJECT_DIR$/../_Libraries/jaxb-ri-master/jaxb-ri/bundles/osgi/jaxb-osgi (2) (com.sun.xml.bind.mvn).iml" />
+      <module fileurl="file://$PROJECT_DIR$/../_Libraries/jaxb-ri-master/jaxb-ri/jaxb-parent.iml" filepath="$PROJECT_DIR$/../_Libraries/jaxb-ri-master/jaxb-ri/jaxb-parent.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../_Libraries/jaxb-ri-master/jaxb-ri/docs/release-documentation/jaxb-release-documentation.iml" filepath="$PROJECT_DIR$/../_Libraries/jaxb-ri-master/jaxb-ri/docs/release-documentation/jaxb-release-documentation.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../_Libraries/jaxb-ri-master/jaxb-ri/bundles/ri/jaxb-ri.iml" filepath="$PROJECT_DIR$/../_Libraries/jaxb-ri-master/jaxb-ri/bundles/ri/jaxb-ri.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../_Libraries/jaxb-ri-master/jaxb-ri/runtime/impl/jaxb-runtime.iml" filepath="$PROJECT_DIR$/../_Libraries/jaxb-ri-master/jaxb-ri/runtime/impl/jaxb-runtime.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../_Libraries/jaxb-ri-master/jaxb-ri/runtime/jaxb-runtime-parent.iml" filepath="$PROJECT_DIR$/../_Libraries/jaxb-ri-master/jaxb-ri/runtime/jaxb-runtime-parent.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../_Libraries/jaxb-ri-master/jaxb-ri/samples/jaxb-samples.iml" filepath="$PROJECT_DIR$/../_Libraries/jaxb-ri-master/jaxb-ri/samples/jaxb-samples.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../_Libraries/jaxb-ri-master/jaxb-ri/txw/jaxb-txw-parent.iml" filepath="$PROJECT_DIR$/../_Libraries/jaxb-ri-master/jaxb-ri/txw/jaxb-txw-parent.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../_Libraries/jaxb-ri-master/jaxb-ri/docs/www/jaxb-www.iml" filepath="$PROJECT_DIR$/../_Libraries/jaxb-ri-master/jaxb-ri/docs/www/jaxb-www.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../_Libraries/jaxb-ri-master/jaxb-ri/bundles/xjc/jaxb-xjc (1) (com.sun.xml.bind).iml" filepath="$PROJECT_DIR$/../_Libraries/jaxb-ri-master/jaxb-ri/bundles/xjc/jaxb-xjc (1) (com.sun.xml.bind).iml" />
+      <module fileurl="file://$PROJECT_DIR$/../_Libraries/jaxb-ri-master/jaxb-ri/xjc/jaxb-xjc (2) (org.glassfish.jaxb).iml" filepath="$PROJECT_DIR$/../_Libraries/jaxb-ri-master/jaxb-ri/xjc/jaxb-xjc (2) (org.glassfish.jaxb).iml" />
+      <module fileurl="file://$PROJECT_DIR$/../_Libraries/jaxb-ri-master/jaxb-ri/tools/osgi_tests/core/osgi-test-core.iml" filepath="$PROJECT_DIR$/../_Libraries/jaxb-ri-master/jaxb-ri/tools/osgi_tests/core/osgi-test-core.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../_Libraries/jaxb-ri-master/jaxb-ri/tools/osgi_tests/jxc/osgi-test-jxc.iml" filepath="$PROJECT_DIR$/../_Libraries/jaxb-ri-master/jaxb-ri/tools/osgi_tests/jxc/osgi-test-jxc.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../_Libraries/jaxb-ri-master/jaxb-ri/tools/osgi_tests/osgi/osgi-test-osgi.iml" filepath="$PROJECT_DIR$/../_Libraries/jaxb-ri-master/jaxb-ri/tools/osgi_tests/osgi/osgi-test-osgi.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../_Libraries/jaxb-ri-master/jaxb-ri/tools/osgi_tests/parent/osgi-test-parent.iml" filepath="$PROJECT_DIR$/../_Libraries/jaxb-ri-master/jaxb-ri/tools/osgi_tests/parent/osgi-test-parent.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../_Libraries/jaxb-ri-master/jaxb-ri/tools/osgi_tests/runtime/osgi-test-runtime.iml" filepath="$PROJECT_DIR$/../_Libraries/jaxb-ri-master/jaxb-ri/tools/osgi_tests/runtime/osgi-test-runtime.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../_Libraries/jaxb-ri-master/jaxb-ri/tools/osgi_tests/xjc/osgi-test-xjc.iml" filepath="$PROJECT_DIR$/../_Libraries/jaxb-ri-master/jaxb-ri/tools/osgi_tests/xjc/osgi-test-xjc.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../_Libraries/jaxb-ri-master/jaxb-ri/tools/osgi_tests/osgi-tests.iml" filepath="$PROJECT_DIR$/../_Libraries/jaxb-ri-master/jaxb-ri/tools/osgi_tests/osgi-tests.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../_Libraries/jaxb-ri-master/jaxb-ri/bundles/osgi/tests/tests.iml" filepath="$PROJECT_DIR$/../_Libraries/jaxb-ri-master/jaxb-ri/bundles/osgi/tests/tests.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../_Libraries/jaxb-ri-master/jaxb-ri/txw/runtime/txw2.iml" filepath="$PROJECT_DIR$/../_Libraries/jaxb-ri-master/jaxb-ri/txw/runtime/txw2.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../_Libraries/jaxb-ri-master/jaxb-ri/txw/compiler/txwc2.iml" filepath="$PROJECT_DIR$/../_Libraries/jaxb-ri-master/jaxb-ri/txw/compiler/txwc2.iml" />
     </modules>
   </component>
 </project>

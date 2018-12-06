@@ -1,11 +1,16 @@
 package com.horovod.timecountfxprobe;
 
+import com.horovod.timecountfxprobe.view.TableProjectsManagerController;
+import com.horovod.timecountfxprobe.view.TableProjectsDesignerController;
+import com.horovod.timecountfxprobe.view.LoginWindowOnStartController;
+import com.horovod.timecountfxprobe.view.RootLayoutController;
 import com.horovod.timecountfxprobe.project.AllData;
 import com.horovod.timecountfxprobe.test.Generator;
 import com.horovod.timecountfxprobe.user.AllUsers;
 import com.horovod.timecountfxprobe.user.Designer;
 import com.horovod.timecountfxprobe.user.Role;
 import com.horovod.timecountfxprobe.view.*;
+
 import javafx.application.Application;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -55,6 +60,9 @@ public class MainApp extends Application {
 
     }
 
+    /** В чистовой версии сделать единообразно с табликой менеджера:
+     * поля stage, controller вытащить в AllData статиками */
+
     public void initRootLayut() {
         try {
             FXMLLoader loader = new FXMLLoader();
@@ -75,6 +83,8 @@ public class MainApp extends Application {
         }
     }
 
+    /** В чистовой версии сделать единообразно с табликой менеджера:
+     * поля stage, controller вытащить в AllData статиками */
     public void showTableProjectsDesigner() {
         try {
             FXMLLoader loader = new FXMLLoader();
@@ -102,6 +112,7 @@ public class MainApp extends Application {
 
             AllData.tableProjectsManagerController = loader.getController();
             AllData.tableProjectsManagerController.setMainApp(this);
+            AllData.tableProjectsManagerController.setStage(primaryStage);
         } catch (IOException e) {
             e.printStackTrace();
         }

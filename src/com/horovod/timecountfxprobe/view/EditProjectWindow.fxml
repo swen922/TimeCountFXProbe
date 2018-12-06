@@ -6,9 +6,9 @@
 <?import javafx.scene.control.TableColumn?>
 <?import javafx.scene.control.TableView?>
 <?import javafx.scene.control.TextArea?>
+<?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.text.Font?>
-
 
 <AnchorPane prefHeight="600.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/9.0.4" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.horovod.timecountfxprobe.view.EditProjectWindowController">
    <children>
@@ -24,18 +24,49 @@
          </children>
       </AnchorPane>
       <Separator prefWidth="200.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="55.0" />
-      <AnchorPane layoutX="98.0" layoutY="100.0" prefHeight="100.0" prefWidth="200.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="60.0">
+      <AnchorPane layoutX="98.0" layoutY="100.0" prefHeight="200.0" prefWidth="200.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="60.0">
          <children>
-            <Label text="Компания" AnchorPane.leftAnchor="25.0" AnchorPane.topAnchor="20.0" />
+            <Label text="Компания" AnchorPane.leftAnchor="30.0" AnchorPane.topAnchor="23.0">
+               <font>
+                  <Font size="11.0" />
+               </font></Label>
             <TextArea maxWidth="250.0" minWidth="150.0" prefHeight="40.0" text="Nestle" wrapText="true" AnchorPane.leftAnchor="100.0" AnchorPane.topAnchor="10.0" />
-            <Label text="Менеджер" AnchorPane.leftAnchor="370.0" AnchorPane.topAnchor="20.0" />
-            <TextArea prefHeight="40.0" prefWidth="300.0" text="Nestle - Сомкова Александра, Потапова Александра, Зенцова Ольга" wrapText="true" AnchorPane.leftAnchor="450.0" AnchorPane.rightAnchor="15.0" AnchorPane.topAnchor="10.0" />
-            <TextArea layoutX="53.0" layoutY="6.0" prefWidth="660.0" text="Purina ONE Cat’s Day layout 2018_11 - мейл от Сомковой 15.11.2018 в 18.20 - дизайн макета на тему праздника День Кошек по бренду Пурина Уан" wrapText="true" AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="100.0" AnchorPane.rightAnchor="15.0" AnchorPane.topAnchor="60.0" />
-            <Label layoutX="28.0" layoutY="80.0" text="Описание" AnchorPane.leftAnchor="25.0" AnchorPane.topAnchor="70.0" />
+            <Label text="Менеджер" AnchorPane.leftAnchor="380.0" AnchorPane.topAnchor="23.0">
+               <font>
+                  <Font size="11.0" />
+               </font></Label>
+            <TextArea prefHeight="40.0" prefWidth="300.0" text="Сомкова Александра, Потапова Александра, Зенцова Ольга" wrapText="true" AnchorPane.leftAnchor="450.0" AnchorPane.rightAnchor="15.0" AnchorPane.topAnchor="10.0" />
+            <Label layoutX="28.0" layoutY="80.0" text="Описание" AnchorPane.leftAnchor="30.0" AnchorPane.topAnchor="73.0">
+               <font>
+                  <Font size="11.0" />
+               </font></Label>
+            <TextArea layoutX="53.0" layoutY="6.0" prefHeight="40.0" text="Purina ONE Cat’s Day layout 2018_11 - мейл от Сомковой 15.11.2018 в 18.20 - дизайн макета на тему праздника День Кошек по бренду Пурина Уан" wrapText="true" AnchorPane.leftAnchor="100.0" AnchorPane.rightAnchor="15.0" AnchorPane.topAnchor="60.0" />
+            <Label layoutX="26.0" layoutY="122.0" text="Комментарий" AnchorPane.leftAnchor="15.0" AnchorPane.topAnchor="120.0">
+               <font>
+                  <Font size="11.0" />
+               </font>
+            </Label>
+            <TextArea layoutX="63.0" layoutY="16.0" prefHeight="40.0" promptText="Впишите любой комментарий по этому проекту, например где брать исходник. Комментарий будет виден всем дизайнерам и менеджерам." wrapText="true" AnchorPane.leftAnchor="100.0" AnchorPane.rightAnchor="15.0" AnchorPane.topAnchor="110.0">
+               <font>
+                  <Font size="11.0" />
+               </font>
+            </TextArea>
+            <Label layoutX="20.0" layoutY="173.0" prefWidth="70.0" text="Связанные проекты" wrapText="true" AnchorPane.leftAnchor="30.0" AnchorPane.topAnchor="160.0">
+               <font>
+                  <Font size="11.0" />
+               </font>
+            </Label>
+            <TextField layoutX="100.0" layoutY="165.0" prefWidth="250.0" text="5648, 4256" AnchorPane.leftAnchor="100.0" AnchorPane.topAnchor="160.0" />
+            <TextField layoutX="450.0" layoutY="160.0" prefWidth="250.0" text="РО 2345677" AnchorPane.leftAnchor="450.0" AnchorPane.rightAnchor="15.0" AnchorPane.topAnchor="160.0" />
+            <Label layoutX="380.0" layoutY="166.0" text="Номер РО" AnchorPane.leftAnchor="385.0" AnchorPane.topAnchor="165.0">
+               <font>
+                  <Font size="11.0" />
+               </font>
+            </Label>
          </children>
       </AnchorPane>
-      <Separator layoutX="10.0" layoutY="10.0" prefWidth="200.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="190.0" />
-      <AnchorPane layoutX="200.0" layoutY="337.0" prefHeight="200.0" prefWidth="200.0" AnchorPane.bottomAnchor="50.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="200.0">
+      <Separator layoutX="10.0" layoutY="10.0" prefWidth="200.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="260.0" />
+      <AnchorPane layoutX="200.0" layoutY="337.0" AnchorPane.bottomAnchor="50.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="300.0">
          <children>
             <Label alignment="CENTER" contentDisplay="CENTER" text="Рабочее время в проекте" textAlignment="CENTER" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="5.0" />
             <TableView AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="30.0">

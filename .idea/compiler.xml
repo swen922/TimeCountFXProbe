@@ -1,8 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="CompilerConfiguration">
-    <option name="DEFAULT_COMPILER" value="Javac" />
-    <resourceExtensions />
     <wildcardResourcePatterns>
       <entry name="!?*.java" />
       <entry name="!?*.form" />
@@ -14,10 +12,58 @@
       <entry name="!?*.clj" />
     </wildcardResourcePatterns>
     <annotationProcessing>
-      <profile default="true" name="Default" enabled="false">
-        <processorPath useClasspath="true" />
+      <profile name="Maven default annotation processors profile" enabled="true">
+        <sourceOutputDir name="target/generated-sources/annotations" />
+        <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
+        <outputRelativeToContentRoot value="true" />
+        <module name="jaxb-impl" />
+        <module name="jaxb-jxc (1) (com.sun.xml.bind)" />
+        <module name="jaxb-jxc (2) (org.glassfish.jaxb)" />
+        <module name="jaxb-osgi (1) (com.sun.xml.bind)" />
+        <module name="jaxb-runtime" />
+        <module name="jaxb-xjc (1) (com.sun.xml.bind)" />
+        <module name="jaxb-xjc (2) (org.glassfish.jaxb)" />
+        <module name="osgi-test-core" />
+        <module name="osgi-test-jxc" />
+        <module name="osgi-test-osgi" />
+        <module name="osgi-test-parent" />
+        <module name="osgi-test-runtime" />
+        <module name="osgi-test-xjc" />
+        <module name="tests" />
+        <module name="txw2" />
+        <module name="txwc2" />
       </profile>
     </annotationProcessing>
+    <bytecodeTargetLevel>
+      <module name="jaxb-bom" target="1.5" />
+      <module name="jaxb-bom-ext" target="1.5" />
+      <module name="jaxb-bundles" target="9" />
+      <module name="jaxb-docs-parent" target="9" />
+      <module name="jaxb-impl" target="9" />
+      <module name="jaxb-jxc (1) (com.sun.xml.bind)" target="9" />
+      <module name="jaxb-jxc (2) (org.glassfish.jaxb)" target="9" />
+      <module name="jaxb-osgi (1) (com.sun.xml.bind)" target="9" />
+      <module name="jaxb-osgi (2) (com.sun.xml.bind.mvn)" target="9" />
+      <module name="jaxb-parent" target="9" />
+      <module name="jaxb-release-documentation" target="9" />
+      <module name="jaxb-ri" target="9" />
+      <module name="jaxb-runtime" target="9" />
+      <module name="jaxb-runtime-parent" target="9" />
+      <module name="jaxb-samples" target="9" />
+      <module name="jaxb-txw-parent" target="9" />
+      <module name="jaxb-www" target="9" />
+      <module name="jaxb-xjc (1) (com.sun.xml.bind)" target="9" />
+      <module name="jaxb-xjc (2) (org.glassfish.jaxb)" target="9" />
+      <module name="osgi-test-core" target="9" />
+      <module name="osgi-test-jxc" target="9" />
+      <module name="osgi-test-osgi" target="9" />
+      <module name="osgi-test-parent" target="9" />
+      <module name="osgi-test-runtime" target="9" />
+      <module name="osgi-test-xjc" target="9" />
+      <module name="osgi-tests" target="9" />
+      <module name="tests" target="9" />
+      <module name="txw2" target="9" />
+      <module name="txwc2" target="9" />
+    </bytecodeTargetLevel>
   </component>
 </project>
-

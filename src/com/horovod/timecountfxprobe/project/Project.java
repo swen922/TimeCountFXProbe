@@ -3,15 +3,18 @@ package com.horovod.timecountfxprobe.project;
 
 import javafx.beans.property.*;
 
+import javax.xml.bind.annotation.*;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
+
 import java.time.LocalDate;
 import java.time.temporal.WeekFields;
 import java.util.*;
 
 @XmlRootElement(name = "project")
 public class Project {
+
 
     private int idNumber;
     //private StringProperty idNumberProperty;
@@ -26,7 +29,8 @@ public class Project {
     private volatile boolean isArchive = false;
     private String comment;
     private Set<Integer> linkedProjects = new TreeSet<>();
-    private int PONumber;
+    private String PONumber;
+    private StringProperty PONumberProperty;
     private volatile int workSum = 0;
     private volatile StringProperty workSumProperty;
     //private DoubleProperty workSumProperty;
@@ -219,12 +223,21 @@ public class Project {
     }
 
     @XmlElement(name = "ponumber")
-    public int getPONumber() {
+    public String getPONumber() {
         return PONumber;
     }
 
-    public synchronized void setPONumber(int newPONumber) {
-        this.PONumber = newPONumber;
+    @XmlTransient
+    public StringProperty PONumberProperty() {
+        return PONumberProperty;
+    }
+
+    public void setPONumber(String PONumber) {
+        this.PONumber = PONumber;
+        if (PONumberProperty == null) {
+            PONumberProperty = new SimpleStringProperty();
+        }
+        this.PONumberProperty.set(PONumber);
     }
 
     @XmlElement(name = "worksumint")
@@ -661,23 +674,29 @@ public class Project {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Project project = (Project) o;
-        return getIdNumber() == project.getIdNumber() &&
-                isArchive() == project.isArchive() &&
-                getPONumber() == project.getPONumber() &&
-                getWorkSum() == project.getWorkSum() &&
-                Objects.equals(getCompany(), project.getCompany()) &&
-                Objects.equals(getInitiator(), project.getInitiator()) &&
-                Objects.equals(getDescription(), project.getDescription()) &&
-                Objects.equals(getDateCreationString(), project.getDateCreationString()) &&
-                Objects.equals(getComment(), project.getComment()) &&
-                Objects.equals(getLinkedProjects(), project.getLinkedProjects()) &&
-                Objects.equals(getWork(), project.getWork());
+        return idNumber == project.idNumber &&
+                isArchive == project.isArchive &&
+                workSum == project.workSum &&
+                Objects.equals(idNumberProperty, project.idNumberProperty) &&
+                Objects.equals(company, project.company) &&
+                Objects.equals(companyProperty, project.companyProperty) &&
+                Objects.equals(initiator, project.initiator) &&
+                Objects.equals(initiatorProperty, project.initiatorProperty) &&
+                Objects.equals(description, project.description) &&
+                Objects.equals(descriptionProperty, project.descriptionProperty) &&
+                Objects.equals(dateCreationString, project.dateCreationString) &&
+                Objects.equals(comment, project.comment) &&
+                Objects.equals(linkedProjects, project.linkedProjects) &&
+                Objects.equals(PONumber, project.PONumber) &&
+                Objects.equals(PONumberProperty, project.PONumberProperty) &&
+                Objects.equals(workSumProperty, project.workSumProperty) &&
+                Objects.equals(work, project.work);
     }
 
     @Override
     public int hashCode() {
 
-        return Objects.hash(getIdNumber(), getCompany(), getInitiator(), getDescription(), getDateCreationString(), isArchive(), getComment(), getLinkedProjects(), getPONumber(), getWorkSum(), getWork());
+        return Objects.hash(idNumber, idNumberProperty, company, companyProperty, initiator, initiatorProperty, description, descriptionProperty, dateCreationString, isArchive, comment, linkedProjects, PONumber, PONumberProperty, workSum, workSumProperty, work);
     }
 
     @Override
